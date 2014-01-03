@@ -116,49 +116,282 @@ memory.registerexec(0xe68a, 1,
 		
 		-- TODO finish this, this is just from the unused page
 		local sprites = {
+		[0x00] = "Waddle Dee (slow)",
+		[0x01] = "Waddle Dee (medium)",
+		[0x02] = "Waddle Dee (fast)",
+		[0x03] = "Waddle Dee (very fast)",
+		
+		[0x04] = "Waddle Doo (slow)",
+		[0x05] = "Waddle Doo (medium)",
+		[0x06] = "Waddle Doo (fast)",
+		[0x07] = "Waddle Doo (very fast)",
+		
+		[0x08] = "Shotzo (slow)",
+		[0x09] = "Shotzo (medium)",
+		[0x0a] = "Shotzo (fast)",
+		[0x0b] = "Shotzo (very fast)",
+		[0x0c] = "Shotzo (3-shot up)",
+		[0x0d] = "Shotzo (3-shot up-right)",
+		[0x0e] = "Shotzo (3-shot up-left)",
+		
+		[0x0f] = "Sparky (slow)",
+		[0x10] = "Sparky (fast)",
+
+		[0x11] = "Poppy Bros. Jr. (slow)",
+		[0x12] = "Poppy Bros. Jr. (medium)",
+		[0x13] = "Poppy Bros. Jr. (fast)",
+		
+		[0x14] = "Poppy Bros. Jr. on apple (slow)",
+		[0x15] = "Poppy Bros. Jr. on apple (medium)",
+		[0x16] = "Poppy Bros. Jr. on apple (fast)",
+		
 		[0x17] = "Poppy Bros. Jr. on tomato (slow)",
 		[0x18] = "Poppy Bros. Jr. on tomato (medium)",
 		[0x19] = "Poppy Bros. Jr. on tomato (fast)",
 		
-		[0x41] = "Flamer (slow)",
-		[0x42] = "Flamer (medium)",
-		[0x43] = "Flamer (fast)",
+		[0x1a] = "Laser Ball (slow)",
+		[0x1b] = "Laser Ball (medium)",
+		[0x1c] = "Laser Ball (fast)",
 		
-		[0x4d] = "Squishy (slow)",
-		[0x4e] = "Squishy (fast)",
+		[0x1d] = "Blipper (slow homing)",
+		[0x1e] = "Blipper (fast homing)",
+		[0x1f] = "Blipper (sinking?)",
+		[0x20] = "Blipper (horizontal)",
+		[0x21] = "Blipper (jump)",
 		
-		[0x52] = "Bronto Burt (slow, adjusts Y)",
-		[0x53] = "Bronto Burt (fast, adjusts Y)",
+		[0x22] = "Bounder 1?",
+		[0x23] = "Bounder 2",
+		
+		[0x24] = "Hothead 1?",
+		[0x25] = "Hothead 2",
+		
+		[0x26] = "Parasol Waddle Doo (hold)",
+		[0x27] = "Parasol Waddle Dee (hold)",
+		[0x28] = "Parasol Waddle Doo (fly away)",
+		[0x29] = "Parasol Waddle Dee (fly away)",
+		[0x2a] = "Parasol Shotzo (fly away)",
+		[0x2b] = "Parasol Waddle Doo (chase)",
+		[0x2c] = "Parasol Waddle Dee (chase)",
+		[0x2d] = "Parasol Shotzo (chase)",
+		
+		[0x2e] = "Blade Knight",
+		
+		[0x2f] = "Bubbles (slow)",
+		[0x30] = "Bubbles (fast)",
+		
+		[0x31] = "Noddy (slow)",
+		[0x32] = "Noddy (fast)",
+		
+		[0x33] = "Coner (slow)",
+		[0x34] = "Coner (fast)",
+		
+		[0x35] = "Maxim Tomato",
+		[0x36] = "1up",
+		[0x37] = "Invincibility Candy",
+		
+		[0x38] = "Waddle Dee (slow walk?)",
+		[0x39] = "Waddle Dee (medium walk?)",
+		[0x3a] = "Waddle Dee (fast walk?)",
+		[0x3b] = "Waddle Dee (very fast walk?)",
+		[0x3c] = "Waddle Dee (slow jump)",
+		[0x3d] = "Waddle Dee (medium jump)",
+		[0x3e] = "Waddle Dee (fast jump)",
+		[0x3f] = "Waddle Dee (very fast jump)",
+		
+		[0x40] = "Bomber",
+		
+		[0x41] = "Flamer (peaceful slow)",
+		[0x42] = "Flamer (peaceful medium)",
+		[0x43] = "Flamer (peaceful fast)",
+		
+		[0x44] = "Twister 1",
+		[0x45] = "Twister 2",
+		[0x46] = "Twister 3",
+		
+		[0x47] = "Flamer (slow attack)", 
+		[0x48] = "Flamer (medium attack)",
+		
+		[0x49] = "Meta Knight throwing candy",
+		
+		[0x4a] = "Squishy (walking slow)",
+		[0x4b] = "Squishy (walking fast)",
+		[0x4c] = "Squishy (appearing suddenly)",
+		[0x4d] = "Squishy (floating slow)",
+		[0x4e] = "Squishy (floating fast)",
+		
+		[0x4f] = "Nut bomb (fast left?)",
+		
+		[0x50] = "Bronto Burt (slow wave)",
+		[0x51] = "Bronto Burt (fast wave)",
+		[0x52] = "Bronto Burt (slow homing)",
+		[0x53] = "Bronto Burt (fast homing)",
+		[0x54] = "Bronto Burt (slow drop in)",
+		[0x55] = "Bronto Burt (fast drop in)",
+		[0x56] = "Bronto Burt (slow diagonal)",
+		[0x57] = "Bronto Burt (fast diagonal)",
+		[0x58] = "Bronto Burt (slow chasing)",
+		[0x59] = "Bronto Burt (fast chasing)",
+		[0x5a] = "Bronto Burt (jump up)",
+		[0x5b] = "Bronto Burt (fast jump up?)",
+		
+		[0x5c] = "Glunk (not shooting)",
+		[0x5d] = "Glunk (shooting)",
+		
+		[0x5e] = "Nut bomb (slow left?)",
+		[0x5f] = "Nut bomb (slow right?)",
+		
+		[0x60] = "Slippy (slow)",
+		[0x61] = "Slippy (fast)",
 		
 		[0x62] = "Starman (slow walk)",
 		[0x63] = "Starman (fast walk)",
+		[0x64] = "Starman (peaceful)",
+		[0x65] = "Starman (slow fly)",
+		[0x66] = "Starman (fast fly)",
 		
-		[0x64] = "Starman (slow fly)",
-		[0x65] = "Starman (fast fly)",
+		[0x67] = "Sir Kibble (stationary?)",
+		[0x68] = "Sir Kibble (stationary, dodges?)",
+		[0x69] = "Sir Kibble (slow walk?)",
+		[0x6a] = "Sir Kibble (fast walk?)",
 		
-		[0x81] = "Meta Knight battle (room 13F)",
-		[0x86] = "Meta Knight battle (room ???)",
-		[0x87] = "Meta Knight battle (room 141)",
-		[0x8b] = "Meta Knight battle (shotzo)",
+		[0x6b] = "Kabu (slow jump)",
+		[0x6c] = "Kabu (fast jump)",
+		[0x6d] = "Kabu (slow disappear)",
+		[0x6e] = "Kabu (fast disappear)",
+		[0x6f] = "Kabu (slide)",
+		
+		[0x70] = "Gordo (stationary)",
+		[0x71] = "Gordo (vertical 1)",
+		[0x72] = "Gordo (vertical 2)",
+		[0x73] = "Gordo (horizontal 1)",
+		[0x74] = "Gordo (horizontal 2)",
+		[0x75] = "Gordo (vertical float)",
+		
+		[0x76] = "Scarfy (slow hover)",
+		[0x77] = "Scarfy (fast hover)",
+		[0x78] = "Scarfy (slow drop in left)",
+		[0x79] = "Scarfy (fast drop in left)",
+		[0x7a] = "Scarfy (slow drop in right)",
+		[0x7b] = "Scarfy (fast drop in right)",
+		[0x7c] = "Scarfy (slow rise in left)",
+		[0x7d] = "Scarfy (fast rise in left)",
+		[0x7e] = "Scarfy (slow rise in right)",
+		[0x7f] = "Scarfy (fast rise in right)",
+		
+		[0x80] = "Meta Knight battle (2-3, room 0B4)",
+		[0x81] = "Meta Knight battle (unused, room 13F)",
+		[0x82] = "Meta Knight battle (6-6, room 06A)",
+		[0x83] = "Meta Knight battle (3-4, room 0DB)",
+		[0x84] = "Meta Knight battle (4-5, room 108)",
+		[0x85] = "Meta Knight battle (5-4, room 124)",
+		[0x86] = "Meta Knight battle (unused, room 13E?)",
+		[0x87] = "Meta Knight battle (unused, room 141 or 144?)",
+		
+		[0x88] = "Wheelie (slow)",
+		[0x89] = "Wheelie (fast)",
+		[0x8a] = "Wheelie (faster?)",
+		
+		[0x8b] = "Meta Knight battle (Shotzo)",
 		[0x8c] = "Meta Knight battle (dummy)",
 		[0x8d] = "Meta Knight battle (dummy)",
 		[0x8e] = "Meta Knight battle (dummy)",
 		
-		[0xa0] = "Twizzy (drop, slow fly)",
-		[0xa1] = "Twizzy (drop, fast fly)",
+		-- 8F: unused
+		[0x90] = "Rocky",
+		
+		[0x91] = "Pep Drink",
+		[0x92] = "UFO",
+		[0x93] = "Cool Spook",
+		[0x94] = "Pengy (slow)",
+		[0x95] = "Pengy (fast)",
+		[0x96] = "Broom Hatter",
+		[0x97] = "Chilly (slow)",
+		[0x98] = "Chilly (fast)",
+		[0x99] = "Cappy",
+		[0x9a] = "Spiny (slow)",
+		[0x9b] = "Spiny (fast)",
+		
+		[0x9c] = "Twizzy (slow straight)",
+		[0x9d] = "Twizzy (fast straight)",
+		[0x9e] = "Twizzy (slow up/down homing)",
+		[0x9f] = "Twizzy (fast up/down homing)",
+		[0xa0] = "Twizzy (slow drop in)",
+		[0xa1] = "Twizzy (fast drop in)",
 		[0xa2] = "Twizzy (slow fly diagonal)",
 		[0xa3] = "Twizzy (fast fly diagonal)",
-		[0xa9] = "Twizzy (slow fly from ground)",
-		[0xaa] = "Twizzy (fast fly from ground)",
+		[0xa4] = "Twizzy (slow homing)",
+		[0xa5] = "Twizzy (fast homing)",
+		[0xa6] = "Twizzy (waiting 1?)",
+		[0xa7] = "Twizzy (waiting 2?)",
+		[0xa8] = "Twizzy (hopping)",
+		[0xa9] = "Twizzy (slow jump up)",
+		[0xaa] = "Twizzy (fast jump up)",
+		[0xab] = "Twizzy (hovering)",
 		
+		[0xac] = "Coconut (fast right)",
+		
+		-- AD-AF unused
+		[0xb0] = "Mr. Frosty (slow)",
+		[0xb1] = "Mr. Frosty (fast)",
+		[0xb2] = "Bonkers (slow)",
+		[0xb3] = "Bonkers (fast)",
+		[0xb4] = "Grand Wheelie (slow)",
+		[0xb5] = "Grand Wheelie (fast)",
+		[0xb6] = "Buggzy (slow)",
+		[0xb7] = "Buggzy (fast)",
+		[0xb8] = "Rolling Turtle (slow)",
+		[0xb9] = "Rolling Turtle (fast)",
+		[0xba] = "Mr. Tick Tock (slow)",
+		[0xbb] = "Mr. Tick Tock (fast)",
+		[0xbc] = "Poppy Bros. Sr. (slow)",
+		[0xbd] = "Poppy Bros. Sr. (fast)",
+		[0xbe] = "Fire Lion (slow)",
+		[0xbf] = "Fire Lion (fast)",
+		
+		-- C0-CF unused
+		[0xd0] = "Whispy Woods",
+		-- D1 unused
+		[0xd2] = "Paint Roller",
+		[0xd3] = "Mr. Shine & Mr. Bright",
+		[0xd4] = "Heavy Mole",
+		[0xd5] = "Kracko",
+		-- D6 unused
+		[0xd7] = "Meta Knight",
+		[0xd8] = "King Dedede",
+		[0xd9] = "Nightmare Orb",
+		[0xda] = "Nightmare",
+		
+		-- DB-DF unused
 		[0xe0] = "Museum Sparky",
+		[0xe1] = "Museum Laser Ball",
+		[0xe2] = "Museum Hothead",
 		[0xe3] = "Museum Flamer",
+		[0xe4] = "Museum Blade Knight",
+		[0xe5] = "Museum Bubbles",
+		[0xe6] = "Museum Noddy",
+		[0xe7] = "Museum Starman",
 		[0xe8] = "Museum Sir Kibble",
+		[0xe9] = "Museum Twister",
+		[0xea] = "Museum Wheelie",
 		[0xeb] = "Museum Hammer(?)",
+		[0xec] = "Museum Rocky",
 		[0xed] = "Museum Spiny",
 		[0xee] = "Museum Pengi",
 		[0xef] = "Museum Chilly",
 		
+		[0xf0] = "Warp Star (level 1)",
+		[0xf1] = "Warp Star (level 2)",
+		[0xf2] = "Warp Star (level 3)",
+		[0xf3] = "Warp Star (level 4)",
+		[0xf4] = "Warp Star (level 5)",
+		[0xf5] = "Warp Star (level 6)",
+		[0xf6] = "Warp Star (level 7)",
+		[0xf7] = "Warp Star",
+		[0xf8] = "Warp Star 2?",
+		[0xf9] = "Cannon",
+		[0xfa] = "Cannon 2?",
+		[0xfb] = "Fuse",
+		-- FC/FD unused
 		[0xfe] = "Floor switch",
 		[0xff] = "Ceiling switch"
 		}
@@ -285,6 +518,8 @@ pages = {
 	[0x25] = "hammer stake",
 	[0x28] = "door",
 	
+	-- 30 - 5f are underwater
+	
 	-- 60 - 7e = ??
 	[0x60] = "ice",
 	[0x61] = "ice, press down to drop",
@@ -295,6 +530,25 @@ pages = {
 	[0x66] = "ice floor halfslope up, top",
 	[0x67] = "ice floor halfslope down, bottom",
 	[0x68] = "ice floor halfslope down, top",
+	[0x69] = "ice ceiling slope down",
+	[0x6a] = "ice ceiling slope up",
+	[0x6b] = "ice ceiling halfslope down, bottom",
+	[0x6c] = "ice ceiling halfslope down, top",
+	[0x6d] = "ice ceiling halfslope up, bottom",
+	[0x6e] = "ice ceiling halfslope up, top",
+	[0x6f] = "ice breakable(?)",
+	[0x70] = "ice breakable with ability(?)",
+	[0x71] = "ice breakable with ability(?)",
+	[0x72] = "ice spikes",
+	
+	-- verify these ones (73-78) are used
+	
+	[0x79] = "fuse upper left",
+	[0x7a] = "fuse horizontal",
+	[0x7b] = "fuse upper right",
+	[0x7c] = "fuse vertical",
+	[0x7d] = "fuse lower left",
+	[0x7e] = "fuse lower right",
 	
 	[0xFF] = "background",
 	}
