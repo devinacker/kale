@@ -108,10 +108,7 @@ memory.registerexec(0xa646, 1,
 )
 memory.registerexec(0xe68a, 1, 
 	function()
-		--local screens = memory.readbyte(sprptr)
-		--              * memory.readbyte(sprptr+1)
-		local screens = hscreens * vscreens
-		
+		local screens = memory.readbyte(sprptr)
 		local numspr = memory.readbyte(sprptr+screens+1)
 		
 		-- TODO finish this, this is just from the unused page
@@ -409,6 +406,7 @@ memory.registerexec(0xe68a, 1,
 			end
 			firstspr = lastspr
 		end
+		
 	end
 )
 
