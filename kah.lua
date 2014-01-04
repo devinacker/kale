@@ -445,9 +445,7 @@ memory.registerexec(0xa0fb, 1,
 			if (b >= 0x80) then
 				exit.level = exit.level + 256
 			end
-			if (math.floor(b / 16) % 8 > 0) then
-				exit.type = exit.type + 0x10
-			end
+			exit.type = exit.type + (math.floor(b / 16) % 8)*16
 			exit.to_screen = b % 16
 			
 			b = memory.readbyte(ptr + (i*5) + 4)
