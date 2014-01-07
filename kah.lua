@@ -27,6 +27,8 @@ exit_from   = 0
 exits       = {}
 numexits    = 0
 
+maxlevel = 0x147 - 1
+
 addr_tileact    = 0x7f00
 addr_leveldata  = 0x67ee
 addr_hscreens   = addr_leveldata+0
@@ -637,9 +639,17 @@ end,
 		if (option < 0) then
 			return
 		elseif (option == 0) then
-			level = level + 1
+			if (level == maxlevel) then
+				level = 0
+			else
+				level = level + 1
+			end
 		elseif (option == 1) then
-			level = level - 1
+			if (level > 0) then
+				level = level - 1
+			else
+				level = maxlevel
+			end
 		elseif (option == 2) then
 			level = 0x00A8
 		end
