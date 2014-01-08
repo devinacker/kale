@@ -109,15 +109,15 @@ uint32_t ROMFile::readInt32(romaddr_t addr) {
 size_t ROMFile::readFromPointer(romaddr_t addrL, romaddr_t addrH, romaddr_t addrB,
                                 uint size, void *buffer, uint offset) {
     //romaddr_t addr = {this->readByte(addrB),
-    romaddr_t addr = {this->readByte(addrB + offset) & 0x7F,
-                      this->readByte(addrH + offset)*256 + this->readByte(addrL + offset)};
+    romaddr_t addr = {this->readByte(addrB + offset) & 0x7Fu,
+                      this->readByte(addrH + offset)*256u + this->readByte(addrL + offset)};
 
     return this->readData(addr, size, buffer);
 }
 size_t ROMFile::readFromShortPointer(romaddr_t addrL, romaddr_t addrH, uint bank,
                                      uint size, void *buffer, uint offset) {
     romaddr_t addr = {bank,
-                      this->readByte(addrH + offset)*256 + this->readByte(addrL + offset)};
+                      this->readByte(addrH + offset)*256u + this->readByte(addrL + offset)};
 
     return this->readData(addr, size, buffer);
 }

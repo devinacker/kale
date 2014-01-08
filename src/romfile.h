@@ -14,8 +14,8 @@
 #define HEADER_SIZE 16
 
 struct romaddr_t {
-    uint8_t bank;
-    uint16_t addr;
+    uint bank;
+    uint addr;
 
     romaddr_t operator+(uint offset) const {
         return {bank, addr + offset};
