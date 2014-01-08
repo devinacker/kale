@@ -25,7 +25,8 @@ SOURCES += \
     src/mainwindow.cpp \
     src/level.cpp \
     src/compress.c \
-    src/main.cpp
+    src/main.cpp \
+    src/tileset.cpp
 
 HEADERS  += \
     src/romfile.h \
@@ -35,7 +36,8 @@ HEADERS  += \
     src/level.h \
     src/compress.h \
     src/version.h \
-    src/graphics.h
+    src/graphics.h \
+    src/tileset.h
 
 FORMS += \
     src/mainwindow.ui
