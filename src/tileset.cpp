@@ -20,7 +20,7 @@ void loadTilesets(ROMFile& rom) {
             tilesets[set][tile].ur      = tileset[tile*4 + 1];
             tilesets[set][tile].ll      = tileset[tile*4 + 2];
             tilesets[set][tile].lr      = tileset[tile*4 + 3];
-            tilesets[set][tile].palette = (palettes[tile / 4] >> (tile % 4)) & 3;
+            tilesets[set][tile].palette = (palettes[tile / 4] >> (3 - tile%4)*2) & 3;
             tilesets[set][tile].action  = behavior[tile];
         }
     }
