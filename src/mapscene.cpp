@@ -318,9 +318,7 @@ void MapScene::deleteTiles() {
   Called when the mouse is clicked outside of any current selection.
 */
 void MapScene::beginSelection(QGraphicsSceneMouseEvent *event) {
-    qDebug("MapScene::beginSelection not implemented");
-    return;
-    /*
+
     QPointF pos = event->scenePos();
 
     int x = pos.x() / TILE_SIZE;
@@ -328,7 +326,8 @@ void MapScene::beginSelection(QGraphicsSceneMouseEvent *event) {
 
     // ignore invalid click positions
     // (use the floating point X coord to avoid roundoff stupidness)
-    if (x >= level->header.width || y >= level->header.length
+    if (x >= level->header.screensH * SCREEN_WIDTH
+            || y >= level->header.screensV * SCREEN_HEIGHT
             || pos.x() < 0 || y < 0)
         return;
 
@@ -341,7 +340,7 @@ void MapScene::beginSelection(QGraphicsSceneMouseEvent *event) {
         selLength = 1;
         updateSelection(event);
     }
-    */
+
 }
 
 /*
@@ -349,10 +348,7 @@ void MapScene::beginSelection(QGraphicsSceneMouseEvent *event) {
   Called when the mouse is over the MapScene with the left button held down.
 */
 void MapScene::updateSelection(QGraphicsSceneMouseEvent *event) {
-    qDebug("MapScene::updateSelection not implemented");
-    return;
 
-    /*
     int x = selX;
     int y = selY;
 
@@ -366,7 +362,8 @@ void MapScene::updateSelection(QGraphicsSceneMouseEvent *event) {
 
         // ignore invalid mouseover/click positions
         // (use the floating point X coord to avoid roundoff stupidness)
-        if (x >= level->header.width || y >= level->header.length
+        if (x >= level->header.screensH * SCREEN_WIDTH
+                || y >= level->header.screensV * SCREEN_HEIGHT
                 || pos.x() < 0 || y < 0)
             return;
 
@@ -404,7 +401,7 @@ void MapScene::updateSelection(QGraphicsSceneMouseEvent *event) {
 
     // also, pass the mouseover coords to the main window
     emit mouseOverTile(x, y);
-    */
+
 }
 
 /*
@@ -412,10 +409,7 @@ void MapScene::updateSelection(QGraphicsSceneMouseEvent *event) {
   Called when the mouse is over the MapScene without the left button held down.
 */
 void MapScene::showTileInfo(QGraphicsSceneMouseEvent *event) {
-    //qDebug("MapScene::showTileInfo not implemented");
-    return;
 
-    /*
     QPointF pos = event->scenePos();
     // if hte mouse is moved onto a different tile, erase the old one
     // and draw the new one
@@ -431,7 +425,8 @@ void MapScene::showTileInfo(QGraphicsSceneMouseEvent *event) {
 
         // ignore invalid mouseover positions
         // (use the floating point X coord to avoid roundoff stupidness)
-        if (tileX < level->header.width && tileY < level->header.length
+        if (tileX < level->header.screensH * SCREEN_WIDTH
+                && tileY < level->header.screensV * SCREEN_HEIGHT
                 && pos.x() >= 0 && tileY >= 0) {
             QPainter painter(&infoPixmap);
 
@@ -441,21 +436,16 @@ void MapScene::showTileInfo(QGraphicsSceneMouseEvent *event) {
 
             // render tile info
             painter.setFont(MapScene::infoFont);
-            maptile_t tile = level->tiles[tileY][tileX];
+            uint8_t tile = level->tiles[tileY][tileX];
 
             // only draw bottom part if terrain != 0 (i.e. not empty space)
-            if (tile.geometry) {
+            if (tile) {
                 //...
             }
 
             // show tile contents on the status bar
-            QString stat(QString("(%1,%2,%3)").arg(tileX).arg(tileY).arg(tile.height));
-            try {
-                stat.append(QString(" %1").arg(kirbyGeometry.at(tile.geometry)));
-
-                if (tile.obstacle)
-                    stat.append(QString(" / %1").arg(kirbyObstacles.at(tile.obstacle)));
-            } catch (const std::out_of_range &dummy) {}
+            QString stat(QString("(%1,%2)").arg(tileX).arg(tileY));
+            // ...
 
             emit statusMessage(stat);
         }
@@ -466,7 +456,7 @@ void MapScene::showTileInfo(QGraphicsSceneMouseEvent *event) {
         // also, pass the mouseover coords to the main window
         emit mouseOverTile(tileX, tileY);
     }
-    */
+
 }
 
 /*
