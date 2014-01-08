@@ -24,6 +24,7 @@
 
 #include "romfile.h"
 #include "level.h"
+#include "tileset.h"
 #include "version.h"
 
 #ifdef _WIN32
@@ -324,7 +325,7 @@ void MainWindow::openFile() {
                 }
             }
 
-            int ver = rom.getVersion();
+            loadTilesets(rom);
 
             // show first level
             setLevel(0);

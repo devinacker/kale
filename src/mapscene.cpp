@@ -13,6 +13,7 @@
 #include "mapscene.h"
 #include "mapchange.h"
 #include "graphics.h"
+#include "tileset.h"
 
 #define MAP_TEXT_OFFSET 8
 #define MAP_TEXT_PAD 2
@@ -528,10 +529,36 @@ void MapScene::drawLevelMap() {
     for (uint y = 0; y < height; y++) {
         for (uint x = 0; x < width; x++) {
             uint8_t tile = level->tiles[y][x];
-            if (!tile) continue;
+            //if (!tile) continue;
+            uint tileset = level->tileset;
+            uint palette = tilesets[tileset][tile].palette;
+            uint action = tilesets[tileset][tile].action;
 
-            // TODO: load tileset and color by palette + behavior for nicer results
-            QColor fill(255-(tile % 128), 160, 255);
+            QColor fill;
+            // make up some pretty(???) colors for now;
+            // obviously real palettes will be loaded eventually
+            uint shade = (action % 64) * 2;
+            if (action == 0xFF)
+                shade = tile % 128;
+
+            switch (palette) {
+            case 0:
+                // blue
+                fill = QColor(127+shade, 127+shade, 255);
+                break;
+            case 1:
+                // green
+                fill = QColor(127+shade, 255, 127+shade);
+                break;
+            case 2:
+                // red
+                fill = QColor(255, 127+shade, 127+shade);
+                break;
+            case 3:
+                // orange/brown
+                fill = QColor(127+shade, 64+shade, 64);
+            }
+
             painter.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, fill);
             // TODO also: draw tile numbers
         }
