@@ -17,6 +17,8 @@ QMAKE_CXXFLAGS += -std=c++11
 TARGET = kale
 TEMPLATE = app
 
+# OS-specific metadata and stuff
+win32:RC_FILE = src/windows.rc
 
 SOURCES += \
     src/romfile.cpp \
