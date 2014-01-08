@@ -8,7 +8,7 @@ const romaddr_t ptrTilesetB = {0x12, 0x89ed};
 metatile_t tilesets[NUM_TILESETS][0x100];
 
 void loadTilesets(ROMFile& rom) {
-    uint8_t tileset[0x65536];
+    uint8_t tileset[0x10000];
     uint8_t *palettes = tileset + 0x400;
     uint8_t *behavior = tileset + 0x440;
 
