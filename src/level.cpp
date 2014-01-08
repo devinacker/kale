@@ -52,7 +52,7 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
 
     auto result = file.readFromPointer(ptrMapDataL, ptrMapDataH, ptrMapDataB, 0, buf, num);
     // TODO: "error reading level, attempt to continue?"
-    if (result == -1) return NULL;
+    if (result == 0) return NULL;
     /*
     std::cerr << QString("level %1 width %2 height %3\n")
             .arg(num).arg(header->screensH).arg(header->screensV).toStdString();
