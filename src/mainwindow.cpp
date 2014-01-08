@@ -315,7 +315,7 @@ void MainWindow::openFile() {
 
             fileOpen = true;
 
-            for (int i = 0; i < numLevels; i++) {
+            for (uint i = 0; i < numLevels; i++) {
                 levels[i] = loadLevel(rom, i);
 
                 // if the user aborted level load, give up and close the ROM
@@ -568,8 +568,9 @@ void MainWindow::setLevel(uint level) {
     ui->graphicsView->update();
 
     // display the level name in the toolbar label
-    levelLabel->setText(QString(" Level %1")
-                        .arg(level));
+    levelLabel->setText(QString(" Level ")
+                      + QString::number(level, 16)
+                        .rightJustified(3, QLatin1Char('0')).toUpper());
 }
 
 void MainWindow::saveCurrentLevel() {
