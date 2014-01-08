@@ -504,10 +504,6 @@ void MapScene::removeInfoItem() {
 }
 
 void MapScene::drawLevelMap() {
-    qDebug("MapScene::drawLevelMap not implemented");
-    return;
-
-    /*
     // reset the scene (remove all members)
     erase();
 
@@ -517,11 +513,12 @@ void MapScene::drawLevelMap() {
         return;
     }
 
-    int width = level->header.width;
-    int height = level->header.length;
+    uint width = level->header.screensH * SCREEN_WIDTH;
+    uint height = level->header.screensV * SCREEN_HEIGHT;
 
     // set the pixmap and scene size based on the level's size
     QPixmap pixmap(width * TILE_SIZE, height * TILE_SIZE);
+    // TODO: use the actual palettes' background
     pixmap.fill(QColor(128, 128, 128));
 
     setSceneRect(0, 0, width * TILE_SIZE, height * TILE_SIZE);
@@ -535,16 +532,27 @@ void MapScene::drawLevelMap() {
 
     // assign a painter to the target pixmap
     QPainter painter;
-    //if (width + height)
-        painter.begin(&pixmap);
+    painter.begin(&pixmap);
 
     // slowly blit shit from the tile resource onto the pixmap
+    for (uint y = 0; y < height; y++) {
+        for (uint x = 0; x < width; x++) {
+            uint8_t tile = level->tiles[y][x];
+            if (!tile) continue;
+
+            // TODO: load tileset and color by palette + behavior for nicer results
+            QColor fill(255-(tile % 128), 160, 255);
+            painter.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, fill);
+            // TODO also: draw tile numbers
+        }
+    }
+
+    // TODO: draw screen boundaries
 
     // put the new finished pixmap into the scene
-    //if (width + height > 0)
-        painter.end();
+    painter.end();
 
     addPixmap(pixmap);
     update();
-    */
+
 }

@@ -36,6 +36,7 @@ const uint numLevels = 0x147;
 const romaddr_t ptrMapDataL = {0x12, 0x88a6};
 const romaddr_t ptrMapDataH = {0x12, 0x875f};
 const romaddr_t ptrMapDataB = {0x12, 0x84d1};
+const romaddr_t mapTilesets = {0x12, 0x8618};
 
 /*
   Load a level by number. Returns pointer to the level data as a struct.
@@ -49,11 +50,41 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
     uint8_t  *screens = buf + 8;
     uint8_t  *tiles   = buf + 0xDA;
 
-    file.readFromPointer(ptrMapDataL, ptrMapDataH, ptrMapDataB, 0, buf, num);
+    auto result = file.readFromPointer(ptrMapDataL, ptrMapDataH, ptrMapDataB, 0, buf, num);
+    // TODO: "error reading level, attempt to continue?"
+    if (result == -1) return NULL;
+    /*
     std::cerr << QString("level %1 width %2 height %3\n")
             .arg(num).arg(header->screensH).arg(header->screensV).toStdString();
+    */
 
-    return NULL;
+    leveldata_t *level = (leveldata_t*)malloc(sizeof(leveldata_t));
+    if (!level) {
+        QMessageBox::critical(0,
+                              "Load ROM",
+                              QString("Unable to allocate memory for level %1").arg(num),
+                              QMessageBox::Ok);
+        return NULL;
+    }
+
+    memcpy(&level->header, header, sizeof(header_t));
+
+    // kinda slow, but eh
+    for (uint y = 0; y < SCREEN_HEIGHT * header->screensV; y++) {
+        for (uint x = 0; x < SCREEN_WIDTH * header->screensH; x++) {
+            uint idx = (y / SCREEN_HEIGHT * header->screensH) + (x / SCREEN_WIDTH);
+            uint8_t screen = screens[idx];
+            level->tiles[y][x] = tiles[(screen * SCREEN_HEIGHT * SCREEN_WIDTH)
+                    + (y % SCREEN_HEIGHT * 16) + (x % SCREEN_WIDTH)];
+        }
+    }
+
+    level->modified = false;
+    level->modifiedRecently = false;
+
+    level->tileset = file.readByte(mapTilesets + num);
+
+    return level;
 }
 
 /*

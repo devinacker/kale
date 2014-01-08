@@ -6,6 +6,6 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
-#define TILE_SIZE 16
+#define TILE_SIZE 32
 
 #endif // GRAPHICS_H

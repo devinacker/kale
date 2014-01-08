@@ -112,7 +112,6 @@ size_t ROMFile::readFromPointer(romaddr_t addrL, romaddr_t addrH, romaddr_t addr
     romaddr_t addr = {this->readByte(addrB + offset) & 0x7F,
                       this->readByte(addrH + offset)*256 + this->readByte(addrL + offset)};
 
-    fprintf(stderr, "readFromPointer: %02X:%04X\n", addr.bank, addr.addr);
     return this->readData(addr, size, buffer);
 }
 size_t ROMFile::readFromShortPointer(romaddr_t addrL, romaddr_t addrH, uint bank,

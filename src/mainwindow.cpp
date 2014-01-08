@@ -318,12 +318,10 @@ void MainWindow::openFile() {
                 levels[i] = loadLevel(rom, i);
 
                 // if the user aborted level load, give up and close the ROM
-                /*
                 if (!levels[i]) {
                     closeFile();
                     return;
                 }
-                */
             }
 
             int ver = rom.getVersion();
@@ -338,7 +336,6 @@ void MainWindow::openFile() {
                                      tr("File opened successfully. Not doing anything with it yet."),
                                      QMessageBox::Ok);
             rom.close();
-            closeFile();
 
         } else {
             // if file open fails, display an error
@@ -551,8 +548,8 @@ void MainWindow::showAbout() {
 
 void MainWindow::setLevel(uint level) {
     // loadLevel only returns null so don't do this yet
-    qDebug("MainWindow::setLevel not implemented");
-    return;
+    //qDebug("MainWindow::setLevel not implemented");
+    //return;
 
     if (level > numLevels || !fileOpen)
         return;
