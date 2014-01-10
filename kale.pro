@@ -28,7 +28,10 @@ SOURCES += \
     src/level.cpp \
     src/compress.c \
     src/main.cpp \
-    src/tileset.cpp
+    src/tileset.cpp \
+    src/spriteitem.cpp \
+    src/exititem.cpp \
+    src/coursewindow.cpp
 
 HEADERS  += \
     src/romfile.h \
@@ -39,10 +42,14 @@ HEADERS  += \
     src/compress.h \
     src/version.h \
     src/graphics.h \
-    src/tileset.h
+    src/tileset.h \
+    src/spriteitem.h \
+    src/exititem.h \
+    src/coursewindow.h
 
 FORMS += \
-    src/mainwindow.ui
+    src/mainwindow.ui \
+    src/coursewindow.ui
 
 RESOURCES += \
     src/icons.qrc

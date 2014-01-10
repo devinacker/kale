@@ -14,6 +14,8 @@
 #include "mapchange.h"
 #include "graphics.h"
 #include "tileset.h"
+#include "spriteitem.h"
+#include "exititem.h"
 
 #define MAP_TEXT_OFFSET 8
 #define MAP_TEXT_PAD 2
@@ -445,8 +447,9 @@ void MapScene::showTileInfo(QGraphicsSceneMouseEvent *event) {
             }
 
             // show tile contents on the status bar
-            QString stat(QString("(%1,%2)").arg(tileX).arg(tileY));
-            // ...
+            QString stat(QString("(%1, %2) tile %3 (%4)").arg(tileX).arg(tileY)
+                         .arg(QString::number(tile, 16).rightJustified(2, QLatin1Char('0')).toUpper())
+                         .arg(tileType(tilesets[level->tileset][tile].action)));
 
             emit statusMessage(stat);
         }
@@ -570,6 +573,16 @@ void MapScene::drawLevelMap() {
     painter.end();
 
     addPixmap(pixmap);
-    update();
 
+    // add sprites
+    for (std::vector<sprite_t>::iterator i = level->sprites.begin(); i != level->sprites.end(); i++) {
+        addItem(new SpriteItem(&(*i)));
+    }
+
+    // add exits
+    for (std::vector<exit_t>::iterator i = level->exits.begin(); i != level->exits.end(); i++) {
+        addItem(new ExitItem(&(*i)));
+    }
+
+    update();
 }

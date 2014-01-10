@@ -8,7 +8,7 @@
 
 #include "romfile.h"
 #include <cstdint>
-
+#include <vector>
 
 #define SCREEN_WIDTH  16
 #define SCREEN_HEIGHT 12
@@ -22,26 +22,44 @@ extern const uint newDataAddress[];
   The level header.
 */
 #pragma pack(1)
-typedef struct {
+struct header_t {
     uint8_t screensH, screensV;
     uint8_t tileIndex, tilePal;
     uint8_t sprIndex, sprPal;
     uint8_t music;
     uint8_t animSpeed;
-} header_t;
+};
 #pragma pack()
+
+struct sprite_t {
+    uint8_t type;
+    uint x, y;
+};
+
+struct exit_t {
+    uint8_t type;
+    uint x, y;
+    uint dest, destScreen, destX, destY;
+};
 
 /*
   Definition for level data.
   Currently consists of tile and obstacle data and flags, as well as modified state
-  (both overall and for the current session) and music track.
+  (both overall and for the current session), tileset #, and (TODO) sprites/exits.
 */
-typedef struct {
+struct leveldata_t {
     header_t  header;
 
     // The maximum number of screens in a map is 16 (due to memory limits),
     // and each screen is 16x12 tiles.
-    uint tiles[16 * SCREEN_HEIGHT][16 * SCREEN_WIDTH];
+    uint8_t   tiles[16 * SCREEN_HEIGHT][16 * SCREEN_WIDTH];
+
+    // tileset number (calculated based on pointer)
+    uint8_t   tileset;
+
+    // containers for other data
+    std::vector<sprite_t> sprites;
+    std::vector<exit_t>   exits;
 
     // have any of the tile data fields been changed from the original data?
     // (determined based on their position in the ROM file, also set as soon
@@ -51,9 +69,9 @@ typedef struct {
     // (set when modified, cleared when saved)
     bool      modifiedRecently;
 
-    // tileset number (calculated based on pointer)
-    uint8_t   tileset;
-} leveldata_t;
+    leveldata_t() : sprites(), exits() {}
+
+};
 
 /*
   Functions for loading/saving level data

@@ -111,7 +111,7 @@
     <addaction name="action_Level_Properties"/>
     <addaction name="separator"/>
     <addaction name="separator"/>
-    <addaction name="action_Select_Course"/>
+    <addaction name="action_Select_Level"/>
     <addaction name="action_Previous_Level"/>
     <addaction name="action_Next_Level"/>
    </widget>
@@ -377,13 +377,13 @@
     <string>Save Level to Image...</string>
    </property>
   </action>
-  <action name="action_Select_Course">
+  <action name="action_Select_Level">
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/images/icons/door_in.png</normaloff>:/images/icons/door_in.png</iconset>
    </property>
    <property name="text">
-    <string>Select Course...</string>
+    <string>Select Level...</string>
    </property>
   </action>
   <action name="action_Undo">

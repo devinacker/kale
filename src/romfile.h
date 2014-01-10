@@ -42,6 +42,8 @@ public:
     uint8_t      readByte(romaddr_t addr);
     uint16_t     readInt16(romaddr_t addr);
     uint32_t     readInt32(romaddr_t addr);
+    romaddr_t    readPointer(romaddr_t addrL, romaddr_t addrH, romaddr_t addrB, uint offset);
+    romaddr_t    readShortPointer(romaddr_t addrL, romaddr_t addrH, uint Bank, uint offset);
     size_t       readFromPointer(romaddr_t addrL, romaddr_t addrH, romaddr_t addrB,
                                  uint size, void *buffer, uint offset = 0);
     size_t       readFromShortPointer(romaddr_t addrL, romaddr_t addrH, uint bank,

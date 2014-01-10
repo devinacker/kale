@@ -25,6 +25,7 @@
 #include "romfile.h"
 #include "level.h"
 #include "tileset.h"
+#include "coursewindow.h"
 #include "version.h"
 
 #ifdef _WIN32
@@ -142,8 +143,8 @@ void MainWindow::setupSignals() {
     QObject::connect(ui->action_Level_Properties, SIGNAL(triggered()),
                      this, SLOT(levelProperties()));
 
-    QObject::connect(ui->action_Select_Course, SIGNAL(triggered()),
-                     this, SLOT(selectCourse()));
+    QObject::connect(ui->action_Select_Level, SIGNAL(triggered()),
+                     this, SLOT(selectLevel()));
     QObject::connect(ui->action_Previous_Level, SIGNAL(triggered()),
                      this, SLOT(prevLevel()));
     QObject::connect(ui->action_Next_Level, SIGNAL(triggered()),
@@ -181,7 +182,7 @@ void MainWindow::setupActions() {
     ui->toolBar->addSeparator();
 
     // from level menu
-    ui->toolBar->addAction(ui->action_Select_Course);
+    ui->toolBar->addAction(ui->action_Select_Level);
     ui->toolBar->addAction(ui->action_Previous_Level);
     ui->toolBar->addAction(ui->action_Next_Level);
     ui->toolBar->addWidget(levelLabel);
@@ -227,7 +228,7 @@ void MainWindow::setUnsaved() {
 */
 void MainWindow::setOpenFileActions(bool val) {
     ui->action_Dump_Level         ->setEnabled(val);
-    ui->action_Select_Course      ->setEnabled(val);
+    ui->action_Select_Level       ->setEnabled(val);
     ui->action_Save_Level_to_Image->setEnabled(val);
     setEditActions(val);
     setLevelChangeActions(val);
@@ -451,9 +452,7 @@ int MainWindow::closeFile() {
 
     // deallocate all level data
     for (uint i = 0; i < numLevels; i++) {
-        if (levels[i])
-            free(levels[i]);
-
+        delete levels[i];
         levels[i] = NULL;
     }
 
@@ -502,14 +501,12 @@ void MainWindow::levelProperties() {
     */
 }
 
-void MainWindow::selectCourse() {
-    /*
+void MainWindow::selectLevel() {
     CourseWindow win(this);
 
-    int newLevel = win.select(level, rom.getGame());
-    if (newLevel != level)
+    int newLevel = win.select(level);
+    if (newLevel != -1)
         setLevel(newLevel);
-    */
 }
 
 void MainWindow::prevLevel() {
@@ -568,7 +565,7 @@ void MainWindow::setLevel(uint level) {
     ui->graphicsView->update();
 
     // display the level name in the toolbar label
-    levelLabel->setText(QString(" Level ")
+    levelLabel->setText(QString("  Level ")
                       + QString::number(level, 16)
                         .rightJustified(3, QLatin1Char('0')).toUpper());
 }
@@ -622,7 +619,7 @@ QMessageBox::StandardButton MainWindow::checkSaveROM() {
 
     QMessageBox::StandardButton button =
             QMessageBox::question(this, tr("Save ROM"),
-                                  tr("Save changes to ") + fileName + tr("?"),
+                                  tr("Save changes to %1?").arg(fileName),
                                   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
     // yes = save current level to group of all levels

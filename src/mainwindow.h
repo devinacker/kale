@@ -45,7 +45,7 @@ protected slots:
 
     void levelProperties();
 
-    void selectCourse();
+    void selectLevel();
     void prevLevel();
     void nextLevel();
 

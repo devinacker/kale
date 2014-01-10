@@ -25,3 +25,18 @@ void loadTilesets(ROMFile& rom) {
         }
     }
 }
+
+const StringMap tileTypes ({
+    {0x00, "00: none"},
+
+    {0xFF, "FF: background"}
+});
+
+QString tileType(uint type) {
+    try {
+        return tileTypes.at(type);
+    } catch (std::out_of_range) {
+        return QString("%1: unknown")
+                .arg(QString::number(type, 16).rightJustified(2, QLatin1Char('0')).toUpper());
+    }
+}

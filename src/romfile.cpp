@@ -44,7 +44,7 @@ uint ROMFile::toOffset(romaddr_t address) {
   Opens the file and also verifies that it is one of the ROMS supported
   by the editor; displays a dialog and returns false on failure.
 
-  TODO: actually implement this if need be
+  TODO: actually implement version checking if need be
 */
 
 bool ROMFile::openROM(OpenMode flags) {
@@ -52,12 +52,6 @@ bool ROMFile::openROM(OpenMode flags) {
         return false;
 
     return true;
-
-    // no valid ROM detected - throw error
-    QMessageBox::critical(NULL, "Open File",
-                          "Please select a valid Kirby Bowl or Kirby's Dream Course ROM.",
-                          QMessageBox::Ok);
-    return false;
 }
 
 /*
@@ -106,19 +100,26 @@ uint32_t ROMFile::readInt32(romaddr_t addr) {
 
   readFromShortPointer takes a constant bank number instead of bank pointer.
 */
+romaddr_t ROMFile::readPointer(romaddr_t addrL, romaddr_t addrH, romaddr_t addrB,
+                               uint offset) {
+    return {this->readByte(addrB + offset) & 0x7Fu,
+            this->readByte(addrH + offset)*256u + this->readByte(addrL + offset)};
+}
+romaddr_t ROMFile::readShortPointer(romaddr_t addrL, romaddr_t addrH, uint bank,
+                               uint offset) {
+    return {bank,
+            this->readByte(addrH + offset)*256u + this->readByte(addrL + offset)};
+}
+
 size_t ROMFile::readFromPointer(romaddr_t addrL, romaddr_t addrH, romaddr_t addrB,
                                 uint size, void *buffer, uint offset) {
     //romaddr_t addr = {this->readByte(addrB),
-    romaddr_t addr = {this->readByte(addrB + offset) & 0x7Fu,
-                      this->readByte(addrH + offset)*256u + this->readByte(addrL + offset)};
-
+    romaddr_t addr = readPointer(addrL, addrH, addrB, offset);
     return this->readData(addr, size, buffer);
 }
 size_t ROMFile::readFromShortPointer(romaddr_t addrL, romaddr_t addrH, uint bank,
                                      uint size, void *buffer, uint offset) {
-    romaddr_t addr = {bank,
-                      this->readByte(addrH + offset)*256u + this->readByte(addrL + offset)};
-
+    romaddr_t addr = readShortPointer(addrL, addrH, bank, offset);
     return this->readData(addr, size, buffer);
 }
 
