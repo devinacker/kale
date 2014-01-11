@@ -80,7 +80,7 @@ private:
 
     // The level data
     uint         level;
-    leveldata_t* levels[512];
+    leveldata_t* levels[NUM_LEVELS];
     leveldata_t  currentLevel;
     QLabel *levelLabel;
 

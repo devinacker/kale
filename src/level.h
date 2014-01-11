@@ -13,7 +13,9 @@
 #define SCREEN_WIDTH  16
 #define SCREEN_HEIGHT 12
 
-extern const uint numLevels;
+// high/low parts of level pointer table are 328 bytes apart;
+// the last one seems to be bogus
+#define NUM_LEVELS 0x147
 
 // location of where to write new level data
 extern const uint newDataAddress[];

@@ -52,7 +52,7 @@ CourseWindow::CourseWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    spinBox->setMaximum(numLevels - 1);
+    spinBox->setMaximum(NUM_LEVELS - 1);
     ui->horizontalLayout->addWidget(spinBox);
     // prevent window resizing
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);

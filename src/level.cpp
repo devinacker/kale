@@ -26,10 +26,6 @@
 
 //using namespace stuff;
 
-// high/low parts of level pointer table are 328 bytes apart;
-// the last one seems to be bogus
-const uint numLevels = 0x147;
-
 //Locations of chunk data in ROM (using CPU addressing.)
 //currently assumes table locations are constant in all versions,
 // may need to change this later to use version arrays like kdceditor

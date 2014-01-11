@@ -47,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    for (int i = 0; i < 224; i++)
+    for (int i = 0; i < NUM_LEVELS; i++)
         levels[i] = NULL;
 
     currentLevel.header.screensH = 0;
@@ -269,7 +269,7 @@ void MainWindow::setUndoRedoActions(bool val) {
 */
 void MainWindow::setLevelChangeActions(bool val) {
     ui->action_Previous_Level ->setEnabled(val && level > 0);
-    ui->action_Next_Level     ->setEnabled(val && level < numLevels - 1);
+    ui->action_Next_Level     ->setEnabled(val && level < NUM_LEVELS - 1);
 }
 
 /*
@@ -316,7 +316,7 @@ void MainWindow::openFile() {
 
             fileOpen = true;
 
-            for (uint i = 0; i < numLevels; i++) {
+            for (uint i = 0; i < NUM_LEVELS; i++) {
                 levels[i] = loadLevel(rom, i);
 
                 // if the user aborted level load, give up and close the ROM
@@ -384,7 +384,7 @@ void MainWindow::saveFile() {
     /*
     int addr = newDataAddress[rom.getVersion()];
 
-    for (int i = 0; i < numLevels[game]; i++) {
+    for (int i = 0; i < NUM_LEVELS[game]; i++) {
         if (levels[i]->modified) {
             addr = saveLevel(rom, i, levels[i], addr);
 
@@ -451,7 +451,7 @@ int MainWindow::closeFile() {
         return -1;
 
     // deallocate all level data
-    for (uint i = 0; i < numLevels; i++) {
+    for (uint i = 0; i < NUM_LEVELS; i++) {
         delete levels[i];
         levels[i] = NULL;
     }
@@ -513,7 +513,7 @@ void MainWindow::prevLevel() {
     if (level) setLevel(level - 1);
 }
 void MainWindow::nextLevel() {
-    if (level < numLevels) setLevel(level + 1);
+    if (level < NUM_LEVELS) setLevel(level + 1);
 }
 
 /*
@@ -545,7 +545,7 @@ void MainWindow::setLevel(uint level) {
     //qDebug("MainWindow::setLevel not implemented");
     //return;
 
-    if (level > numLevels || !fileOpen)
+    if (level > NUM_LEVELS || !fileOpen)
         return;
 
     // save changes to the level?
