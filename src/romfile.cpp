@@ -20,7 +20,9 @@
 #include "compress.h"
 
 ROMFile::ROMFile() : QFile(),
-    version(kirby_jp)
+    version(kirby_jp),
+    numPRGBanks(0),
+    numCHRBanks(0)
 {}
 
 ROMFile::version_e ROMFile::getVersion() const {
@@ -50,6 +52,14 @@ uint ROMFile::toOffset(romaddr_t address) {
 bool ROMFile::openROM(OpenMode flags) {
     if (!this->open(flags))
         return false;
+
+    // get size of PRG/CHR banks
+    this->seek(4);
+    this->read((char*)&numPRGBanks, 1);
+    // iNES uses 16kb banks, MMC3 uses 8kb
+    numPRGBanks *= 2;
+    this->seek(5);
+    this->read((char*)&numCHRBanks, 1);
 
     return true;
 }

@@ -35,6 +35,9 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
+    levelLabel(new QLabel()),
+    selectGroup(new QActionGroup(this)),
+
     settings(new QSettings("settings.ini", QSettings::IniFormat, this)),
 
     fileOpen(false),
@@ -42,10 +45,15 @@ MainWindow::MainWindow(QWidget *parent) :
     saving(false),
     level(0),
 
-    levelLabel(new QLabel()),
     scene(new MapScene(this, &currentLevel))
 {
     ui->setupUi(this);
+    selectGroup->addAction(ui->action_Select_Tiles);
+    selectGroup->addAction(ui->action_Select_Sprites);
+    selectGroup->addAction(ui->action_Select_Exits);
+    selectGroup->setExclusive(true);
+    ui->action_Select_Tiles->setChecked(true);
+    enableSelectTiles(true);
 
     for (int i = 0; i < NUM_LEVELS; i++)
         levels[i] = NULL;
@@ -87,6 +95,7 @@ MainWindow::~MainWindow()
     saveSettings();
     delete ui;
     delete levelLabel;
+    delete selectGroup;
     delete scene;
     delete settings;
 }
@@ -139,6 +148,13 @@ void MainWindow::setupSignals() {
                      this, SLOT(loadCourseFromFile()));
     QObject::connect(ui->action_Save_Course_to_File, SIGNAL(triggered()),
                      this, SLOT(saveCourseToFile()));
+
+    QObject::connect(ui->action_Select_Tiles, SIGNAL(toggled(bool)),
+                     this, SLOT(enableSelectTiles(bool)));
+    QObject::connect(ui->action_Select_Sprites, SIGNAL(toggled(bool)),
+                     this, SLOT(enableSelectSprites(bool)));
+    QObject::connect(ui->action_Select_Exits, SIGNAL(toggled(bool)),
+                     this, SLOT(enableSelectExits(bool)));
 
     QObject::connect(ui->action_Level_Properties, SIGNAL(triggered()),
                      this, SLOT(levelProperties()));
@@ -251,6 +267,9 @@ void MainWindow::setEditActions(bool val) {
     ui->action_Save_ROM_As     ->setEnabled(val);
     ui->action_Save_Level      ->setEnabled(val);
     ui->action_Edit_Tiles      ->setEnabled(val);
+    ui->action_Select_Tiles    ->setEnabled(val);
+    ui->action_Select_Exits    ->setEnabled(val);
+    ui->action_Select_Sprites  ->setEnabled(val);
     ui->action_Level_Properties->setEnabled(val);
     ui->action_Load_Course_from_File->setEnabled(val);
     ui->action_Save_Course_to_File->setEnabled(val);
@@ -484,6 +503,25 @@ void MainWindow::loadCourseFromFile() {
 void MainWindow::saveCourseToFile() {
     if (!fileOpen || checkSaveLevel() == QMessageBox::Cancel) return;
     //...
+}
+
+void MainWindow::enableSelectTiles(bool on) {
+    scene->enableSelectTiles(on);
+    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+}
+
+void MainWindow::enableSelectSprites(bool on) {
+    // TODO: enable sprite selection
+    scene->enableSelectSprites(on);
+    if (on)
+        ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+}
+
+void MainWindow::enableSelectExits(bool on) {
+    // TODO: enable exit selection
+    scene->enableSelectExits(on);
+    if (on)
+        ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 }
 
 void MainWindow::levelProperties() {

@@ -56,6 +56,7 @@ public:
 
 private:
     ROMFile::version_e version;
+    uint numPRGBanks, numCHRBanks;
 };
 
 #endif // FILE_H

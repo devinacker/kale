@@ -8,14 +8,15 @@
 #include <algorithm>
 #include <stdexcept>
 #include <cstdlib>
+#include <vector>
 #include "level.h"
 #include "mainwindow.h"
 #include "mapscene.h"
 #include "mapchange.h"
 #include "graphics.h"
 #include "tileset.h"
-#include "spriteitem.h"
-#include "exititem.h"
+#include "sceneitem.h"
+#include "stuff.h"
 
 #define MAP_TEXT_OFFSET 8
 #define MAP_TEXT_PAD 2
@@ -38,6 +39,8 @@ MapScene::MapScene(QObject *parent, leveldata_t *currentLevel)
 
       tileX(-1), tileY(-1),
       selLength(0), selWidth(0), selecting(false),
+      selectTiles(false), selectSprites(false), selectExits(false),
+      sprites(), exits(),
       copyWidth(0), copyLength(0),
       stack(this),
       level(currentLevel),
@@ -55,6 +58,8 @@ void MapScene::erase() {
     clear();
     infoItem = NULL;
     selectionItem = NULL;
+    this->sprites.clear();
+    this->exits.clear();
 }
 
 /*
@@ -98,9 +103,13 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     // if the level is not being displayed, don't do anything
     if (!isActive()) return;
 
+    // different selection type: try passing the event somewhere else
+    if (!selectTiles) {
+        QGraphicsScene::mousePressEvent(event);
+
     // left button: start or continue selection
     // right button: cancel selection
-    if (event->buttons() & Qt::LeftButton) {
+    } else if (event->buttons() & Qt::LeftButton) {
         beginSelection(event);
 
         event->accept();
@@ -116,19 +125,24 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
   Handle when a double-click occurs (used to start the tile edit window)
 */
 void MapScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
-    if (isActive()) {
+    if (!isActive()) return;
+
+    if (selectTiles) {
         editTiles();
         emit doubleClicked();
 
         event->accept();
+    } else {
+        QGraphicsScene::mouseDoubleClickEvent(event);
     }
+
 }
 
 /*
   Handle when the left mouse button is released
 */
 void MapScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
+    if (selectTiles && event->button() == Qt::LeftButton) {
         selecting = false;
 
         // normalize selection dimensions (i.e. handle negative height/width)
@@ -143,6 +157,8 @@ void MapScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
         }
 
         event->accept();
+    } else if (!selectTiles) {
+        QGraphicsScene::mouseReleaseEvent(event);
     }
 }
 
@@ -153,17 +169,21 @@ void MapScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     // if inactive, don't handle mouse moves
     if (!isActive()) return;
 
-    // behave differently based on left mouse button status
-    if (selecting && event->buttons() & Qt::LeftButton) {
-        // left button down: destroy tile info pixmap
-        // and generate/show selection
-        removeInfoItem();
-        updateSelection(event);
-    } else {
-        showTileInfo(event);
-    }
+    if (selectTiles) {
+        // behave differently based on left mouse button status
+        if (selecting && event->buttons() & Qt::LeftButton) {
+            // left button down: destroy tile info pixmap
+            // and generate/show selection
+            removeInfoItem();
+            updateSelection(event);
+        } else {
+            showTileInfo(event);
+        }
 
-    event->accept();
+        event->accept();
+    } else {
+        QGraphicsScene::mouseMoveEvent(event);
+    }
 }
 
 /*
@@ -441,11 +461,6 @@ void MapScene::showTileInfo(QGraphicsSceneMouseEvent *event) {
             painter.setFont(MapScene::infoFont);
             uint8_t tile = level->tiles[tileY][tileX];
 
-            // only draw bottom part if terrain != 0 (i.e. not empty space)
-            if (tile) {
-                //...
-            }
-
             // show tile contents on the status bar
             QString stat(QString("(%1, %2) tile %3 (%4)").arg(tileX).arg(tileY)
                          .arg(QString::number(tile, 16).rightJustified(2, QLatin1Char('0')).toUpper())
@@ -464,10 +479,37 @@ void MapScene::showTileInfo(QGraphicsSceneMouseEvent *event) {
 }
 
 /*
+ *Enable selections/editing using the mouse.
+ *If false, mouse events will be ignored and the current selection
+ *will be destroyed.
+ */
+void MapScene::enableSelectTiles(bool on) {
+    this->selectTiles = on;
+    if (!on) {
+        cancelSelection(true);
+    }
+}
+
+void MapScene::enableSelectSprites(bool on) {
+    this->selectSprites = on;
+    for (std::vector<SpriteItem*>::iterator i = this->sprites.begin(); i != this->sprites.end(); i++) {
+        (*i)->setFlag(QGraphicsItem::ItemIsSelectable, on);
+        (*i)->setFlag(QGraphicsItem::ItemIsMovable, on);
+    }
+}
+
+void MapScene::enableSelectExits(bool on) {
+    this->selectExits = on;
+    for (std::vector<ExitItem*>::iterator i = this->exits.begin(); i != this->exits.end(); i++) {
+        (*i)->setFlag(QGraphicsItem::ItemIsSelectable, on);
+        (*i)->setFlag(QGraphicsItem::ItemIsMovable, on);
+    }
+}
+
+/*
   Remove the selection pixmap from the scene.
   if "perma" is true, the selection rectangle is also reset.
 */
-
 // public version used to deselect when changing levels
 void MapScene::cancelSelection() {
     cancelSelection(true);
@@ -486,6 +528,11 @@ void MapScene::cancelSelection(bool perma) {
         delete selectionItem;
         selectionItem = NULL;
     }
+    if (infoItem) {
+        removeItem(infoItem);
+        delete infoItem;
+        infoItem = NULL;
+    }
 }
 
 void MapScene::removeInfoItem() {
@@ -497,6 +544,7 @@ void MapScene::removeInfoItem() {
     }
 }
 
+// TODO: probably reimplement most of this as drawBackground()
 void MapScene::drawLevelMap() {
     // reset the scene (remove all members)
     erase();
@@ -576,12 +624,20 @@ void MapScene::drawLevelMap() {
 
     // add sprites
     for (std::vector<sprite_t>::iterator i = level->sprites.begin(); i != level->sprites.end(); i++) {
-        addItem(new SpriteItem(&(*i)));
+        SpriteItem *spr = new SpriteItem(&(*i));
+        spr->setFlag(QGraphicsItem::ItemIsSelectable, selectSprites);
+        spr->setFlag(QGraphicsItem::ItemIsMovable, selectSprites);
+        addItem(spr);
+        this->sprites.push_back(spr);
     }
 
     // add exits
     for (std::vector<exit_t>::iterator i = level->exits.begin(); i != level->exits.end(); i++) {
-        addItem(new ExitItem(&(*i)));
+        ExitItem *exit = new ExitItem(&(*i));
+        exit->setFlag(QGraphicsItem::ItemIsSelectable, selectExits);
+        exit->setFlag(QGraphicsItem::ItemIsMovable, selectExits);
+        addItem(exit);
+        this->exits.push_back(exit);
     }
 
     update();

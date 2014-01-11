@@ -108,8 +108,11 @@
     <addaction name="action_Load_Course_from_File"/>
     <addaction name="action_Save_Course_to_File"/>
     <addaction name="separator"/>
-    <addaction name="action_Level_Properties"/>
+    <addaction name="action_Select_Tiles"/>
+    <addaction name="action_Select_Sprites"/>
+    <addaction name="action_Select_Exits"/>
     <addaction name="separator"/>
+    <addaction name="action_Level_Properties"/>
     <addaction name="separator"/>
     <addaction name="action_Select_Level"/>
     <addaction name="action_Previous_Level"/>
@@ -408,6 +411,36 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="action_Select_Tiles">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Edit Tiles</string>
+   </property>
+  </action>
+  <action name="action_Select_Sprites">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Edit Sprites</string>
+   </property>
+  </action>
+  <action name="action_Select_Exits">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Edit Exits</string>
    </property>
   </action>
  </widget>

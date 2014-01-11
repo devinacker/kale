@@ -10,6 +10,7 @@
 
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QActionGroup>
 #include <QSettings>
 
 #include "romfile.h"
@@ -43,6 +44,10 @@ protected slots:
 
     void saveCurrentLevel();
 
+    void enableSelectTiles(bool);
+    void enableSelectSprites(bool);
+    void enableSelectExits(bool);
+
     void levelProperties();
 
     void selectLevel();
@@ -70,6 +75,8 @@ protected:
 
 private:
     Ui::MainWindow *ui;
+    QLabel *levelLabel;
+    QActionGroup *selectGroup;
 
     QSettings *settings;
 
@@ -82,7 +89,6 @@ private:
     uint         level;
     leveldata_t* levels[NUM_LEVELS];
     leveldata_t  currentLevel;
-    QLabel *levelLabel;
 
     // renderin stuff
     MapScene *scene;

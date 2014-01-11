@@ -10,8 +10,10 @@
 #include <QtWidgets/QGraphicsPixmapItem>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QUndoStack>
+#include <vector>
 
 #include "level.h"
+#include "sceneitem.h"
 
 // subclass of QGraphicsScene used to draw the 2d map and handle mouse/kb events for it
 class MapScene : public QGraphicsScene {
@@ -26,6 +28,10 @@ private:
     int tileX, tileY;
     int selX, selY, selLength, selWidth;
     bool selecting;
+    bool selectTiles, selectSprites, selectExits;
+
+    std::vector<SpriteItem*> sprites;
+    std::vector<ExitItem*>   exits;
 
     uint copyBuffer[64][64];
     uint copyWidth, copyLength;
@@ -54,6 +60,9 @@ public:
     bool canRedo() const;
     bool isClean() const;
 
+    void enableSelectTiles(bool);
+    void enableSelectSprites(bool);
+    void enableSelectExits(bool);
     void cancelSelection();
 
 public slots:
