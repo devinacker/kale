@@ -12,7 +12,7 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
-    static const QColor strokeColor;
+    static const QBrush strokeColor;
     static const QColor fillColor;
 
 private:

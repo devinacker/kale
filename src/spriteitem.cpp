@@ -13,7 +13,7 @@
 #include "graphics.h"
 
 // TODO: better colors
-const QColor SpriteItem::strokeColor(255, 0, 0, 255);
+const QBrush SpriteItem::strokeColor(Qt::black, Qt::NoBrush);
 const QColor SpriteItem::fillColor  (255, 0, 0, 128);
 
 SpriteItem::SpriteItem(sprite_t *sprite) :
@@ -35,5 +35,7 @@ QRectF SpriteItem::boundingRect() const {
 void SpriteItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     // just draw a goofy rectangle for now until actual sprite graphics loading is in
     painter->fillRect(this->boundingRect(), SpriteItem::fillColor);
-    //painter->drawRect(this->boundingRect(), SpriteItem::strokeColor);
+    painter->setBrush(SpriteItem::strokeColor);
+    painter->drawRect(this->boundingRect());
+    painter->drawRect(QRectF(1, 1, TILE_SIZE-2, TILE_SIZE-2));
 }

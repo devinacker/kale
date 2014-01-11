@@ -4,7 +4,7 @@
 #include "graphics.h"
 
 // TODO: better colors
-const QColor ExitItem::strokeColor(0, 0, 255, 255);
+const QBrush ExitItem::strokeColor(Qt::black, Qt::NoBrush);
 const QColor ExitItem::fillColor  (0, 0, 255, 128);
 
 ExitItem::ExitItem(exit_t *exit):
@@ -32,5 +32,7 @@ void ExitItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     // just draw a goofy rectangle for now, dunno a better thing to do
     // (door icon?)
     painter->fillRect(this->boundingRect(), ExitItem::fillColor);
-    //painter->drawRect(this->boundingRect(), ExitItem::strokeColor);
+    painter->setBrush(ExitItem::strokeColor);
+    painter->drawRect(this->boundingRect());
+    painter->drawRect(QRectF(1, 1, TILE_SIZE-2, TILE_SIZE-2));
 }
