@@ -24,7 +24,7 @@
 const QFont MapScene::infoFont("Consolas", 8);
 
 const QColor MapScene::infoColor(255, 192, 192, 192);
-const QColor MapScene::infoBackColor(255, 192, 192, 64);
+const QColor MapScene::infoBackColor(255, 192, 192, 128);
 
 const QColor MapScene::selectionColor(255, 192, 192, 128);
 const QColor MapScene::selectionBorder(255, 192, 192, 255);
@@ -169,21 +169,20 @@ void MapScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     // if inactive, don't handle mouse moves
     if (!isActive()) return;
 
-    if (selectTiles) {
-        // behave differently based on left mouse button status
-        if (selecting && event->buttons() & Qt::LeftButton) {
-            // left button down: destroy tile info pixmap
-            // and generate/show selection
-            removeInfoItem();
-            updateSelection(event);
-        } else {
-            showTileInfo(event);
-        }
-
-        event->accept();
+    // behave differently based on left mouse button status
+    if (selecting && event->buttons() & Qt::LeftButton) {
+        // left button down: destroy tile info pixmap
+        // and generate/show selection
+        removeInfoItem();
+        updateSelection(event);
     } else {
-        QGraphicsScene::mouseMoveEvent(event);
+        showTileInfo(event);
     }
+
+    if (selectTiles)
+        event->accept();
+    else
+        QGraphicsScene::mouseMoveEvent(event);
 }
 
 /*

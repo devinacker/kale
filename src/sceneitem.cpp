@@ -17,7 +17,7 @@
 #include "sceneitem.h"
 
 // TODO: better colors
-const QBrush SceneItem::strokeColor(Qt::black, Qt::NoBrush);
+const QBrush SceneItem::strokeColor(Qt::black);
 const QColor SceneItem::selectedColor(255, 0, 255, 128);
 const QColor SceneItem::fillColor    (0, 0, 0, 0);
 
@@ -46,9 +46,8 @@ void SceneItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     // (door icon?)
     painter->fillRect(this->boundingRect(), this->color(this->isSelected()));
 
-    painter->setBrush(strokeColor);
+    painter->setPen(QPen(strokeColor, 2));
     painter->drawRect(this->boundingRect());
-    painter->drawRect(QRectF(1, 1, TILE_SIZE-2, TILE_SIZE-2));
 }
 
 QVariant SceneItem::itemChange(GraphicsItemChange change, const QVariant& value) {
