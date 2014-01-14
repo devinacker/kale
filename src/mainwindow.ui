@@ -421,7 +421,10 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Edit Tiles</string>
+    <string>Select Tiles</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
    </property>
   </action>
   <action name="action_Select_Sprites">
@@ -432,7 +435,10 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Edit Sprites</string>
+    <string>Select Sprites</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
    </property>
   </action>
   <action name="action_Select_Exits">
@@ -440,7 +446,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Edit Exits</string>
+    <string>Select Exits</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
    </property>
   </action>
  </widget>

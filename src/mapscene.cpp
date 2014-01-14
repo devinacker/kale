@@ -491,6 +491,7 @@ void MapScene::enableSelectTiles(bool on) {
 
 void MapScene::enableSelectSprites(bool on) {
     this->selectSprites = on;
+    cancelSelection(true);
     for (std::vector<SpriteItem*>::iterator i = this->sprites.begin(); i != this->sprites.end(); i++) {
         (*i)->setFlag(QGraphicsItem::ItemIsSelectable, on);
         (*i)->setFlag(QGraphicsItem::ItemIsMovable, on);
@@ -499,6 +500,7 @@ void MapScene::enableSelectSprites(bool on) {
 
 void MapScene::enableSelectExits(bool on) {
     this->selectExits = on;
+    cancelSelection(true);
     for (std::vector<ExitItem*>::iterator i = this->exits.begin(); i != this->exits.end(); i++) {
         (*i)->setFlag(QGraphicsItem::ItemIsSelectable, on);
         (*i)->setFlag(QGraphicsItem::ItemIsMovable, on);
@@ -516,6 +518,7 @@ void MapScene::cancelSelection() {
 
 void MapScene::cancelSelection(bool perma) {
     if (perma) {
+        selecting = false;
         selWidth = 0;
         selLength = 0;
         selX = 0;
