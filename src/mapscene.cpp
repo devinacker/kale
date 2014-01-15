@@ -97,7 +97,7 @@ void MapScene::refresh() {
     setSceneRect(0, 0, width * TILE_SIZE, height * TILE_SIZE);
 
     // no width/height = don't draw anything
-    if (width + height == 0) {
+    if (width * height == 0) {
         update();
         return;
     }
@@ -523,13 +523,13 @@ void MapScene::cancelSelection() {
 }
 
 void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
-    // slowly blit shit from the tile resource onto the pixmap
-    printf("scene rect = (%f, %f) %f x %f\n", rect.x(), rect.y(), rect.width(), rect.height());
-    fflush(stdout);
+    QRectF rec = sceneRect() & rect;
 
-    // TODO: only paint within rect
-    for (uint y = 0; y < level->header.screensV * SCREEN_HEIGHT; y++) {
-        for (uint x = 0; x < level->header.screensH * SCREEN_WIDTH; x++) {
+    if (rec.isNull())
+        return;
+
+    for (uint y = rec.top() / TILE_SIZE; y < rec.bottom() / TILE_SIZE; y++) {
+        for (uint x = rec.left() / TILE_SIZE; x < rec.right() / TILE_SIZE; x++) {
             uint8_t tile = level->tiles[y][x];
             //if (!tile) continue;
             uint tileset = level->tileset;
