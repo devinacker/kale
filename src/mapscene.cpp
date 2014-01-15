@@ -43,23 +43,11 @@ MapScene::MapScene(QObject *parent, leveldata_t *currentLevel)
       sprites(), exits(),
       copyWidth(0), copyLength(0),
       stack(this),
-      level(currentLevel),
-      infoItem(NULL), selectionItem(NULL)
+      level(currentLevel)
 
 {
     QObject::connect(this, SIGNAL(edited()),
                      this, SLOT(refresh()));
-}
-
-/*
-  clear the scene AND erase the item pointers
-*/
-void MapScene::erase() {
-    clear();
-    infoItem = NULL;
-    selectionItem = NULL;
-    this->sprites.clear();
-    this->exits.clear();
 }
 
 /*
@@ -91,9 +79,48 @@ void MapScene::editTiles() {
 void MapScene::refresh() {
     tileX = -1;
     tileY = -1;
-    drawLevelMap();
-    removeInfoItem();
     updateSelection();
+
+    // reset the scene
+    clear();
+    this->sprites.clear();
+    this->exits.clear();
+
+    // if level is null , minimize the scene and return
+    if (!level) {
+        setSceneRect(0, 0, 0, 0);
+        return;
+    }
+
+    uint width = level->header.screensH * SCREEN_WIDTH;
+    uint height = level->header.screensV * SCREEN_HEIGHT;
+    setSceneRect(0, 0, width * TILE_SIZE, height * TILE_SIZE);
+
+    // no width/height = don't draw anything
+    if (width + height == 0) {
+        update();
+        return;
+    }
+
+    // add sprites
+    for (std::vector<sprite_t>::iterator i = level->sprites.begin(); i != level->sprites.end(); i++) {
+        SpriteItem *spr = new SpriteItem(&(*i));
+        spr->setFlag(QGraphicsItem::ItemIsSelectable, selectSprites);
+        spr->setFlag(QGraphicsItem::ItemIsMovable, selectSprites);
+        addItem(spr);
+        this->sprites.push_back(spr);
+    }
+
+    // add exits
+    for (std::vector<exit_t>::iterator i = level->exits.begin(); i != level->exits.end(); i++) {
+        ExitItem *exit = new ExitItem(&(*i));
+        exit->setFlag(QGraphicsItem::ItemIsSelectable, selectExits);
+        exit->setFlag(QGraphicsItem::ItemIsMovable, selectExits);
+        addItem(exit);
+        this->exits.push_back(exit);
+    }
+
+    update();
 }
 
 /*
@@ -111,14 +138,13 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     // right button: cancel selection
     } else if (event->buttons() & Qt::LeftButton) {
         beginSelection(event);
-
         event->accept();
 
     } else if (event->buttons() & Qt::RightButton) {
-        cancelSelection(true);
-
+        cancelSelection();
         event->accept();
     }
+    update();
 }
 
 /*
@@ -135,7 +161,7 @@ void MapScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
     } else {
         QGraphicsScene::mouseDoubleClickEvent(event);
     }
-
+    update();
 }
 
 /*
@@ -160,6 +186,7 @@ void MapScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     } else if (!selectTiles) {
         QGraphicsScene::mouseReleaseEvent(event);
     }
+    update();
 }
 
 /*
@@ -171,9 +198,7 @@ void MapScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 
     // behave differently based on left mouse button status
     if (selecting && event->buttons() & Qt::LeftButton) {
-        // left button down: destroy tile info pixmap
-        // and generate/show selection
-        removeInfoItem();
+        // left button down: generate/show selection
         updateSelection(event);
     } else {
         showTileInfo(event);
@@ -183,6 +208,8 @@ void MapScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
         event->accept();
     else
         QGraphicsScene::mouseMoveEvent(event);
+
+    update();
 }
 
 /*
@@ -402,18 +429,8 @@ void MapScene::updateSelection(QGraphicsSceneMouseEvent *event) {
 
     if (selWidth == 0 || selLength == 0) return;
 
-    // temporarily destroy the old selection pixmap
-    cancelSelection(false);
-
-    QRect selArea(0, 0, abs(selWidth) * TILE_SIZE, abs(selLength) * TILE_SIZE);
-    QPixmap selPixmap(selArea.width(), selArea.height());
-    selPixmap.fill(selectionColor);
-
     int top = std::min(y, selY);
     int left = std::min(x, selX);
-
-    selectionItem = addPixmap(selPixmap);
-    selectionItem->setOffset(left * TILE_SIZE, top * TILE_SIZE);
 
     if (event)
         emit statusMessage(QString("Selected (%1, %2) to (%3, %4)")
@@ -439,25 +456,12 @@ void MapScene::showTileInfo(QGraphicsSceneMouseEvent *event) {
         tileX = pos.x() / TILE_SIZE;
         tileY = pos.y() / TILE_SIZE;
 
-        removeInfoItem();
-
-        // brand new pixmap
-        QPixmap infoPixmap(TILE_SIZE, TILE_SIZE);
-        infoPixmap.fill(QColor(0,0,0,0));
-
         // ignore invalid mouseover positions
-        // (use the floating point X coord to avoid roundoff stupidness)
+        // (use the floating point coords to avoid roundoff stupidness)
         if (tileX < level->header.screensH * SCREEN_WIDTH
                 && tileY < level->header.screensV * SCREEN_HEIGHT
-                && pos.x() >= 0 && tileY >= 0) {
-            QPainter painter(&infoPixmap);
+                && pos.x() >= 0 && pos.y() >= 0) {
 
-            // render background
-            painter.fillRect(0, 0, TILE_SIZE, TILE_SIZE,
-                             MapScene::infoBackColor);
-
-            // render tile info
-            painter.setFont(MapScene::infoFont);
             uint8_t tile = level->tiles[tileY][tileX];
 
             // show tile contents on the status bar
@@ -466,10 +470,10 @@ void MapScene::showTileInfo(QGraphicsSceneMouseEvent *event) {
                          .arg(tileType(tilesets[level->tileset][tile].action)));
 
             emit statusMessage(stat);
+        } else {
+            tileX = -1;
+            tileY = -1;
         }
-
-        infoItem = addPixmap(infoPixmap);
-        infoItem->setOffset(tileX * TILE_SIZE, tileY * TILE_SIZE);
 
         // also, pass the mouseover coords to the main window
         emit mouseOverTile(tileX, tileY);
@@ -485,13 +489,13 @@ void MapScene::showTileInfo(QGraphicsSceneMouseEvent *event) {
 void MapScene::enableSelectTiles(bool on) {
     this->selectTiles = on;
     if (!on) {
-        cancelSelection(true);
+        cancelSelection();
     }
 }
 
 void MapScene::enableSelectSprites(bool on) {
     this->selectSprites = on;
-    cancelSelection(true);
+    cancelSelection();
     for (std::vector<SpriteItem*>::iterator i = this->sprites.begin(); i != this->sprites.end(); i++) {
         (*i)->setFlag(QGraphicsItem::ItemIsSelectable, on);
         (*i)->setFlag(QGraphicsItem::ItemIsMovable, on);
@@ -500,7 +504,7 @@ void MapScene::enableSelectSprites(bool on) {
 
 void MapScene::enableSelectExits(bool on) {
     this->selectExits = on;
-    cancelSelection(true);
+    cancelSelection();
     for (std::vector<ExitItem*>::iterator i = this->exits.begin(); i != this->exits.end(); i++) {
         (*i)->setFlag(QGraphicsItem::ItemIsSelectable, on);
         (*i)->setFlag(QGraphicsItem::ItemIsMovable, on);
@@ -509,78 +513,23 @@ void MapScene::enableSelectExits(bool on) {
 
 /*
   Remove the selection pixmap from the scene.
-  if "perma" is true, the selection rectangle is also reset.
 */
-// public version used to deselect when changing levels
 void MapScene::cancelSelection() {
-    cancelSelection(true);
+    selecting = false;
+    selWidth = 0;
+    selLength = 0;
+    selX = 0;
+    selY = 0;
 }
 
-void MapScene::cancelSelection(bool perma) {
-    if (perma) {
-        selecting = false;
-        selWidth = 0;
-        selLength = 0;
-        selX = 0;
-        selY = 0;
-    }
-
-    if (selectionItem) {
-        removeItem(selectionItem);
-        delete selectionItem;
-        selectionItem = NULL;
-    }
-    if (infoItem) {
-        removeItem(infoItem);
-        delete infoItem;
-        infoItem = NULL;
-    }
-}
-
-void MapScene::removeInfoItem() {
-    // infoItem is no longer valid so kill it
-    if (infoItem) {
-        removeItem(infoItem);
-        delete infoItem;
-        infoItem = NULL;
-    }
-}
-
-// TODO: probably reimplement most of this as drawBackground()
-void MapScene::drawLevelMap() {
-    // reset the scene (remove all members)
-    erase();
-
-    // if level is null , minimize the scene and return
-    if (!level) {
-        setSceneRect(0, 0, 0, 0);
-        return;
-    }
-
-    uint width = level->header.screensH * SCREEN_WIDTH;
-    uint height = level->header.screensV * SCREEN_HEIGHT;
-
-    // set the pixmap and scene size based on the level's size
-    QPixmap pixmap(width * TILE_SIZE, height * TILE_SIZE);
-    // TODO: use the actual palettes' background
-    pixmap.fill(QColor(128, 128, 128));
-
-    setSceneRect(0, 0, width * TILE_SIZE, height * TILE_SIZE);
-
-    // no width/height = don't draw anything
-    if (width + height == 0) {
-        addPixmap(pixmap);
-        update();
-        return;
-    }
-
-    // assign a painter to the target pixmap
-    QPainter painter;
-    painter.begin(&pixmap);
-
+void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
     // slowly blit shit from the tile resource onto the pixmap
-    for (uint y = 0; y < height; y++) {
-        for (uint x = 0; x < width; x++) {
+    printf("scene rect = (%f, %f) %f x %f\n", rect.x(), rect.y(), rect.width(), rect.height());
+    fflush(stdout);
+
+    // TODO: only paint within rect
+    for (uint y = 0; y < level->header.screensV * SCREEN_HEIGHT; y++) {
+        for (uint x = 0; x < level->header.screensH * SCREEN_WIDTH; x++) {
             uint8_t tile = level->tiles[y][x];
             //if (!tile) continue;
             uint tileset = level->tileset;
@@ -612,35 +561,30 @@ void MapScene::drawLevelMap() {
                 fill = QColor(127+shade, 64+shade, 64);
             }
 
-            painter.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, fill);
-            // TODO also: draw tile numbers
+            painter->fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, fill);
         }
     }
 
     // TODO: draw screen boundaries
 
-    // put the new finished pixmap into the scene
-    painter.end();
+}
 
-    addPixmap(pixmap);
+void MapScene::drawForeground(QPainter *painter, const QRectF &rect) {
+    // highlight tile under cursor
+    if (tileX < level->header.screensH * SCREEN_WIDTH
+            && tileY < level->header.screensV * SCREEN_HEIGHT
+            && tileX >= 0 && tileY >= 0) {
 
-    // add sprites
-    for (std::vector<sprite_t>::iterator i = level->sprites.begin(); i != level->sprites.end(); i++) {
-        SpriteItem *spr = new SpriteItem(&(*i));
-        spr->setFlag(QGraphicsItem::ItemIsSelectable, selectSprites);
-        spr->setFlag(QGraphicsItem::ItemIsMovable, selectSprites);
-        addItem(spr);
-        this->sprites.push_back(spr);
+        painter->fillRect(tileX * TILE_SIZE, tileY * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                         MapScene::infoBackColor);
     }
 
-    // add exits
-    for (std::vector<exit_t>::iterator i = level->exits.begin(); i != level->exits.end(); i++) {
-        ExitItem *exit = new ExitItem(&(*i));
-        exit->setFlag(QGraphicsItem::ItemIsSelectable, selectExits);
-        exit->setFlag(QGraphicsItem::ItemIsMovable, selectExits);
-        addItem(exit);
-        this->exits.push_back(exit);
+    // draw selection
+    if (selWidth != 0 && selLength != 0) {
+        // account for selections in either negative direction
+        int selLeft = qMin(selX, selX + selWidth + 1);
+        int selTop  = qMin(selY, selY + selLength + 1);
+        QRect selArea(selLeft * TILE_SIZE, selTop * TILE_SIZE, abs(selWidth) * TILE_SIZE, abs(selLength) * TILE_SIZE);
+        painter->fillRect(selArea, MapScene::selectionColor);
     }
-
-    update();
 }

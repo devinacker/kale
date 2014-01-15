@@ -67,6 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setScene(scene);
     // enable mouse tracking for graphics view
     ui->graphicsView->setMouseTracking(true);
+    ui->graphicsView->setBackgroundRole(QPalette::Mid);
 
     // remove margins around map view and other stuff
     this->centralWidget()->layout()->setContentsMargins(0,0,0,0);

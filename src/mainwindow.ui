@@ -42,15 +42,6 @@
       <property name="horizontalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOn</enum>
       </property>
-      <property name="backgroundBrush">
-       <brush brushstyle="SolidPattern">
-        <color alpha="255">
-         <red>128</red>
-         <green>128</green>
-         <blue>128</blue>
-        </color>
-       </brush>
-      </property>
       <property name="foregroundBrush">
        <brush brushstyle="NoBrush">
         <color alpha="255">

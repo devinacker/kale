@@ -40,18 +40,11 @@ private:
 
     leveldata_t *level;
 
-    QGraphicsPixmapItem *infoItem, *selectionItem;
-
     void copyTiles(bool cut);
     void showTileInfo(QGraphicsSceneMouseEvent *event);
     void beginSelection(QGraphicsSceneMouseEvent *event);
     void updateSelection(QGraphicsSceneMouseEvent *event = NULL);
-    void removeInfoItem();
-    void cancelSelection(bool perma);
     void drawLevelMap();
-
-private slots:
-    void erase();
 
 public:
     MapScene(QObject *parent = 0, leveldata_t *currentLevel = 0);
@@ -88,6 +81,9 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+    void drawBackground(QPainter *painter, const QRectF &rect);
+    void drawForeground(QPainter *painter, const QRectF &rect);
 };
 
 #endif // MAPSCENE_H
