@@ -20,8 +20,7 @@ void loadCHRBanks(ROMFile& rom) {
 QImage getCHRBank(uint bank, uint pal) {
     if (banks) {
         QImage newBank(banks[bank % numBanks]);
-        // test: save bank to image
-        newBank.save(QString("bank%1.png").arg(bank));
+
         // apply palette here eventually
         return newBank;
     } else return QImage();
