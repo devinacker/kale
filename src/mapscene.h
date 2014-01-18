@@ -40,7 +40,7 @@ private:
 
     leveldata_t *level;
 
-    QImage gfxBanks[4];
+    QPixmap tilesetPixmap;
 
     void copyTiles(bool cut);
     void showTileInfo(QGraphicsSceneMouseEvent *event);
@@ -71,6 +71,7 @@ public slots:
     void paste();
     void deleteTiles();
     void refresh();
+    void refreshPixmap();
 
 signals:
     void doubleClicked();

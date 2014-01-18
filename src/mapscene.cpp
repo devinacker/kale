@@ -43,7 +43,8 @@ MapScene::MapScene(QObject *parent, leveldata_t *currentLevel)
       sprites(), exits(),
       copyWidth(0), copyLength(0),
       stack(this),
-      level(currentLevel)
+      level(currentLevel),
+      tilesetPixmap(256*16, 16)
 
 {
     QObject::connect(this, SIGNAL(edited()),
@@ -102,14 +103,7 @@ void MapScene::refresh() {
         return;
     }
 
-    // update CHR banks
-    // TODO : generate a tile set pixmap here instead of doing lots of lookups on BG draw
-    uint chr = level->header.tileIndex;
-    uint pal = level->header.tilePal;
-    this->gfxBanks[0] = getCHRBank(0, pal);
-    this->gfxBanks[1] = getCHRBank(bankTable[0][chr], pal);
-    this->gfxBanks[2] = getCHRBank(bankTable[1][chr], pal);
-    this->gfxBanks[3] = getCHRBank(bankTable[2][chr], pal);
+    refreshPixmap();
 
     // add sprites
     for (std::vector<sprite_t>::iterator i = level->sprites.begin(); i != level->sprites.end(); i++) {
@@ -130,6 +124,52 @@ void MapScene::refresh() {
     }
 
     update();
+}
+
+void MapScene::refreshPixmap() {
+    // update CHR banks
+    // TODO : generate a tile set pixmap here instead of doing lots of lookups on BG draw
+    uint chr = level->header.tileIndex;
+    uint pal = level->header.tilePal;
+    QImage gfxBanks[4] = {
+        getCHRBank(0, pal),
+        getCHRBank(bankTable[0][chr], pal),
+        getCHRBank(bankTable[1][chr], pal),
+        getCHRBank(bankTable[2][chr], pal),
+    };
+
+    QPainter painter(&tilesetPixmap);
+    uint tileset = level->tileset;
+    for (uint i = 0; i < 256; i++) {
+        metatile_t thisTile = tilesets[tileset][i];
+        uint palette = thisTile.palette;
+
+        uint srcX = i * 16;
+
+        QRect destRect(0, 0, 8, 8);
+        QRect srcRect(0, 8 * palette, 8, 8);
+
+        // upper left
+        destRect.moveTopLeft(QPoint(srcX, 0));
+        srcRect.moveLeft(8 * (thisTile.ul % 64));
+        painter.drawImage(destRect, gfxBanks[thisTile.ul / 64], srcRect);
+
+        // upper right
+        destRect.moveTopLeft(QPoint(srcX + 8, 0));
+        srcRect.moveLeft(8 * (thisTile.ur % 64));
+        painter.drawImage(destRect, gfxBanks[thisTile.ur / 64], srcRect);
+
+        // lower left
+        destRect.moveTopLeft(QPoint(srcX, 8));
+        srcRect.moveLeft(8 * (thisTile.ll % 64));
+        painter.drawImage(destRect, gfxBanks[thisTile.ll / 64], srcRect);
+
+        // lower right
+        destRect.moveTopLeft(QPoint(srcX + 8, 8));
+        srcRect.moveLeft(8 * (thisTile.lr % 64));
+        painter.drawImage(destRect, gfxBanks[thisTile.lr / 64], srcRect);
+    }
+
 }
 
 /*
@@ -537,81 +577,21 @@ void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
     if (rec.isNull())
         return;
 
-    // draw at double magnification
-    //painter->scale(2, 2);
-
     for (uint y = rec.top() / TILE_SIZE; y < rec.bottom() / TILE_SIZE; y++) {
         for (uint x = rec.left() / TILE_SIZE; x < rec.right() / TILE_SIZE; x++) {
             uint8_t tile = level->tiles[y][x];
 
-            //if (!tile) continue;
-            uint tileset = level->tileset;
-            metatile_t thisTile = tilesets[tileset][tile];
-            uint palette = thisTile.palette;
-            uint action = thisTile.action;
-
-            uint srcX = x * TILE_SIZE;
-            uint srcY = y * TILE_SIZE;
-
-            QRect destRect(0, 0, TILE_SIZE/2, TILE_SIZE/2);
-            QRect srcRect(0, 8 * palette, 8, 8);
-
-            // upper left
-            destRect.moveTopLeft(QPoint(srcX, srcY));
-            srcRect.moveLeft(8 * (thisTile.ul % 64));
-            painter->drawImage(destRect, gfxBanks[thisTile.ul / 64], srcRect);
-
-            // upper right
-            destRect.moveTopLeft(QPoint(srcX + TILE_SIZE/2, srcY));
-            srcRect.moveLeft(8 * (thisTile.ur % 64));
-            painter->drawImage(destRect, gfxBanks[thisTile.ur / 64], srcRect);
-
-            // lower left
-            destRect.moveTopLeft(QPoint(srcX, srcY + TILE_SIZE/2));
-            srcRect.moveLeft(8 * (thisTile.ll % 64));
-            painter->drawImage(destRect, gfxBanks[thisTile.ll / 64], srcRect);
-
-            // lower right
-            destRect.moveTopLeft(QPoint(srcX + TILE_SIZE/2, srcY + TILE_SIZE/2));
-            srcRect.moveLeft(8 * (thisTile.lr % 64));
-            painter->drawImage(destRect, gfxBanks[thisTile.lr / 64], srcRect);
-
-            /*
-            QColor fill;
-            // make up some pretty(???) colors for now;
-            // obviously real palettes will be loaded eventually
-            uint shade = (action % 64) * 2;
-            if (action == 0xFF)
-                shade = tile % 128;
-
-            switch (palette) {
-            case 0:
-                // blue
-                fill = QColor(127+shade, 127+shade, 255);
-                break;
-            case 1:
-                // green
-                fill = QColor(127+shade, 255, 127+shade);
-                break;
-            case 2:
-                // red
-                fill = QColor(255, 127+shade, 127+shade);
-                break;
-            case 3:
-                // orange/brown
-                fill = QColor(127+shade, 64+shade, 64);
-            }
-
-            painter->fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, fill);
-            */
+            QRect destRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            QRect srcRect (tile * 16, 0, 16, 16);
+            painter->drawPixmap(destRect, tilesetPixmap, srcRect);
         }
     }
-
-    // TODO: draw screen boundaries
 
 }
 
 void MapScene::drawForeground(QPainter *painter, const QRectF &rect) {
+    // TODO: draw screen boundaries
+
     // highlight tile under cursor
     if (tileX < level->header.screensH * SCREEN_WIDTH
             && tileY < level->header.screensV * SCREEN_HEIGHT

@@ -107,7 +107,7 @@ QImage getCHRBank(uint bank, uint pal) {
 
         // apply palette here eventually
         for (uint i = 0; i < 10; i++)
-            newBank.setColor(i, nesPalette[palettes[i][pal]]);
+            newBank.setColor(i, nesPalette[palettes[i][pal] & 0x3F]);
 
         // constant brown/orange palette (the one used by the status bar)
         newBank.setColor(10, nesPalette[0x37]);
