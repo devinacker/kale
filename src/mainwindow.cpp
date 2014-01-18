@@ -25,6 +25,7 @@
 #include "romfile.h"
 #include "level.h"
 #include "tileset.h"
+#include "graphics.h"
 #include "coursewindow.h"
 #include "version.h"
 
@@ -346,6 +347,8 @@ void MainWindow::openFile() {
                 }
             }
 
+            // TODO: load graphics
+            loadCHRBanks(rom);
             loadTilesets(rom);
 
             // show first level

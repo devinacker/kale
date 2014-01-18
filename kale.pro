@@ -31,7 +31,8 @@ SOURCES += \
     src/tileset.cpp \
     src/coursewindow.cpp \
     src/stuff.cpp \
-    src/sceneitem.cpp
+    src/sceneitem.cpp \
+    src/graphics.cpp
 
 HEADERS  += \
     src/romfile.h \

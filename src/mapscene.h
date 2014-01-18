@@ -40,6 +40,8 @@ private:
 
     leveldata_t *level;
 
+    QImage gfxBanks[4];
+
     void copyTiles(bool cut);
     void showTileInfo(QGraphicsSceneMouseEvent *event);
     void beginSelection(QGraphicsSceneMouseEvent *event);

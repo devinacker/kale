@@ -102,6 +102,14 @@ void MapScene::refresh() {
         return;
     }
 
+    // update CHR banks
+    // this uses hardcoded values for level 000 for now
+    // this will be fixed later (and palettes added) obviously
+    this->gfxBanks[0] = getCHRBank(0x00, 0);
+    this->gfxBanks[1] = getCHRBank(0xF0, 0);
+    this->gfxBanks[2] = getCHRBank(0xF1, 0);
+    this->gfxBanks[3] = getCHRBank(0xFD, 0);
+
     // add sprites
     for (std::vector<sprite_t>::iterator i = level->sprites.begin(); i != level->sprites.end(); i++) {
         SpriteItem *spr = new SpriteItem(&(*i));
@@ -528,14 +536,46 @@ void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
     if (rec.isNull())
         return;
 
+    // draw at double magnification
+    //painter->scale(2, 2);
+
     for (uint y = rec.top() / TILE_SIZE; y < rec.bottom() / TILE_SIZE; y++) {
         for (uint x = rec.left() / TILE_SIZE; x < rec.right() / TILE_SIZE; x++) {
             uint8_t tile = level->tiles[y][x];
+
             //if (!tile) continue;
             uint tileset = level->tileset;
-            uint palette = tilesets[tileset][tile].palette;
-            uint action = tilesets[tileset][tile].action;
+            metatile_t thisTile = tilesets[tileset][tile];
+            uint palette = thisTile.palette;
+            uint action = thisTile.action;
 
+            uint srcX = x * TILE_SIZE;
+            uint srcY = y * TILE_SIZE;
+
+            QRect destRect(0, 0, TILE_SIZE/2, TILE_SIZE/2);
+            QRect srcRect(0, 8 * palette, 8, 8);
+
+            // upper left
+            destRect.moveTopLeft(QPoint(srcX, srcY));
+            srcRect.moveLeft(8 * (thisTile.ul % 64));
+            painter->drawImage(destRect, gfxBanks[thisTile.ul / 64], srcRect);
+
+            // upper right
+            destRect.moveTopLeft(QPoint(srcX + TILE_SIZE/2, srcY));
+            srcRect.moveLeft(8 * (thisTile.ur % 64));
+            painter->drawImage(destRect, gfxBanks[thisTile.ur / 64], srcRect);
+
+            // lower left
+            destRect.moveTopLeft(QPoint(srcX, srcY + TILE_SIZE/2));
+            srcRect.moveLeft(8 * (thisTile.ll % 64));
+            painter->drawImage(destRect, gfxBanks[thisTile.ll / 64], srcRect);
+
+            // lower right
+            destRect.moveTopLeft(QPoint(srcX + TILE_SIZE/2, srcY + TILE_SIZE/2));
+            srcRect.moveLeft(8 * (thisTile.lr % 64));
+            painter->drawImage(destRect, gfxBanks[thisTile.lr / 64], srcRect);
+
+            /*
             QColor fill;
             // make up some pretty(???) colors for now;
             // obviously real palettes will be loaded eventually
@@ -562,6 +602,7 @@ void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
             }
 
             painter->fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, fill);
+            */
         }
     }
 

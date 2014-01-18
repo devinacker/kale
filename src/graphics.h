@@ -6,6 +6,12 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
+#include "romfile.h"
+
+// size of on-screen metatile display (16x16 magnified x2)
 #define TILE_SIZE 32
+
+void loadCHRBanks(ROMFile& rom);
+QImage getCHRBank(uint bank, uint pal);
 
 #endif // GRAPHICS_H

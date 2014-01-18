@@ -8,9 +8,11 @@
 
 #include <cstdio>
 #include <QFile>
+#include <QImage>
 #include <cstdint>
 
 #define BANK_SIZE 0x2000
+#define CHR_SIZE  0x400
 #define HEADER_SIZE 16
 
 struct romaddr_t {
@@ -34,9 +36,11 @@ public:
 
     bool         openROM(OpenMode flags);
 
-    ROMFile::ROMFile::version_e getVersion() const;
+    ROMFile::version_e getVersion() const;
+    uint getNumPRGBanks() const;
+    uint getNumCHRBanks() const;
 
-    uint toOffset(romaddr_t addr);
+    uint toOffset(romaddr_t addr) const;
 
     size_t       readData(romaddr_t addr, uint size, void *buffer);
     uint8_t      readByte(romaddr_t addr);
@@ -54,6 +58,7 @@ public:
     uint writeInt32(romaddr_t addr, uint32_t data);
     uint writeToPointer(romaddr_t ptr, romaddr_t addr, uint size, void *buffer);
 
+    QImage readCHRBank(uint bank);
 private:
     ROMFile::version_e version;
     uint numPRGBanks, numCHRBanks;
