@@ -105,10 +105,11 @@ void MapScene::refresh() {
     // update CHR banks
     // TODO : generate a tile set pixmap here instead of doing lots of lookups on BG draw
     uint chr = level->header.tileIndex;
-    this->gfxBanks[0] = getCHRBank(0x00, 0);
-    this->gfxBanks[1] = getCHRBank(bankTable[0][chr], 0);
-    this->gfxBanks[2] = getCHRBank(bankTable[1][chr], 0);
-    this->gfxBanks[3] = getCHRBank(bankTable[2][chr], 0);
+    uint pal = level->header.tilePal;
+    this->gfxBanks[0] = getCHRBank(0, pal);
+    this->gfxBanks[1] = getCHRBank(bankTable[0][chr], pal);
+    this->gfxBanks[2] = getCHRBank(bankTable[1][chr], pal);
+    this->gfxBanks[3] = getCHRBank(bankTable[2][chr], pal);
 
     // add sprites
     for (std::vector<sprite_t>::iterator i = level->sprites.begin(); i != level->sprites.end(); i++) {
