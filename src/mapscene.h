@@ -10,6 +10,7 @@
 #include <QtWidgets/QGraphicsPixmapItem>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QUndoStack>
+#include <QTimer>
 #include <vector>
 
 #include "level.h"
@@ -41,6 +42,8 @@ private:
     leveldata_t *level;
 
     QPixmap tilesetPixmap;
+    uint animFrame;
+    QTimer animTimer;
 
     void copyTiles(bool cut);
     void showTileInfo(QGraphicsSceneMouseEvent *event);
@@ -72,6 +75,7 @@ public slots:
     void deleteTiles();
     void refresh();
     void refreshPixmap();
+    void animate();
 
 signals:
     void doubleClicked();

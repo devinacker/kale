@@ -5,6 +5,7 @@
 
 #include <QPixmap>
 #include <QPainter>
+#include <QTimer>
 #include <algorithm>
 #include <stdexcept>
 #include <cstdlib>
@@ -44,11 +45,14 @@ MapScene::MapScene(QObject *parent, leveldata_t *currentLevel)
       copyWidth(0), copyLength(0),
       stack(this),
       level(currentLevel),
-      tilesetPixmap(256*16, 16)
+      tilesetPixmap(256*16, 16),
+      animFrame(0), animTimer(this)
 
 {
     QObject::connect(this, SIGNAL(edited()),
                      this, SLOT(refresh()));
+    QObject::connect(&animTimer, SIGNAL(timeout()),
+                     this, SLOT(animate()));
 }
 
 /*
@@ -103,6 +107,16 @@ void MapScene::refresh() {
         return;
     }
 
+    // set up tile animation
+    // frame length (NTSC frames -> msec)
+    animFrame = 0;
+    uint timeout = level->header.animSpeed * 16;
+    if (timeout) {
+        animTimer.start(timeout);
+    } else {
+        animTimer.stop();
+    }
+
     refreshPixmap();
 
     // add sprites
@@ -135,7 +149,7 @@ void MapScene::refreshPixmap() {
         getCHRBank(0, pal),
         getCHRBank(bankTable[0][chr], pal),
         getCHRBank(bankTable[1][chr], pal),
-        getCHRBank(bankTable[2][chr], pal),
+        getCHRBank(bankTable[2][chr] + animFrame, pal),
     };
 
     QPainter painter(&tilesetPixmap);
@@ -170,6 +184,13 @@ void MapScene::refreshPixmap() {
         painter.drawImage(destRect, gfxBanks[thisTile.lr / 64], srcRect);
     }
 
+}
+
+// advance to next animation frame
+void MapScene::animate() {
+    ++animFrame &= 3;
+    refreshPixmap();
+    update();
 }
 
 /*
