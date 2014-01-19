@@ -73,6 +73,7 @@ public slots:
     void copy();
     void paste();
     void deleteTiles();
+    void setAnimSpeed(int);
     void refresh();
     void refreshPixmap();
     void animate();

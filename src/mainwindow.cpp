@@ -46,7 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
     saving(false),
     level(0),
 
-    scene(new MapScene(this, &currentLevel))
+    scene(new MapScene(this, &currentLevel)),
+    propWindow(new PropertiesWindow(this))
 {
     ui->setupUi(this);
     selectGroup->addAction(ui->action_Select_Tiles);
@@ -183,6 +184,14 @@ void MainWindow::setupSignals() {
     // receive status bar messages from scene
     QObject::connect(scene, SIGNAL(statusMessage(QString)),
                      ui->statusBar, SLOT(showMessage(QString)));
+
+    // apply changes immediately from properties window
+    QObject::connect(propWindow, SIGNAL(changed()),
+                     scene, SLOT(refresh()));
+    QObject::connect(propWindow, SIGNAL(speedChanged(int)),
+                     scene, SLOT(setAnimSpeed(int)));
+    QObject::connect(propWindow, SIGNAL(speedChanged(int)),
+                     scene, SLOT(update()));
 }
 
 void MainWindow::setupActions() {
@@ -531,16 +540,7 @@ void MainWindow::enableSelectExits(bool on) {
 void MainWindow::levelProperties() {
     if (currentLevel.header.screensH == 0) return;
 
-    /*
-    PropertiesWindow win(this);
-    win.startEdit(&currentLevel,
-                   &background[course % 8],
-                   &palette[course],
-                   &waterPalette[course]);
-
-    // update 2D and 3D displays
-    scene->refresh();
-    */
+    propWindow->startEdit(&currentLevel);
 }
 
 void MainWindow::selectLevel() {

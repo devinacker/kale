@@ -132,14 +132,21 @@ romaddr_t ROMFile::readShortPointer(romaddr_t addrL, romaddr_t addrH, uint bank,
 
 size_t ROMFile::readFromPointer(romaddr_t addrL, romaddr_t addrH, romaddr_t addrB,
                                 uint size, void *buffer, uint offset) {
-    //romaddr_t addr = {this->readByte(addrB),
+    memset(buffer, 0, 0x10000);
     romaddr_t addr = readPointer(addrL, addrH, addrB, offset);
-    return this->readData(addr, size, buffer);
+    if (addr.addr)
+        return this->readData(addr, size, buffer);
+
+    return 0;
 }
 size_t ROMFile::readFromShortPointer(romaddr_t addrL, romaddr_t addrH, uint bank,
                                      uint size, void *buffer, uint offset) {
+    memset(buffer, 0, 0x10000);
     romaddr_t addr = readShortPointer(addrL, addrH, bank, offset);
-    return this->readData(addr, size, buffer);
+    if (addr.addr)
+        return this->readData(addr, size, buffer);
+
+    return 0;
 }
 
 /*

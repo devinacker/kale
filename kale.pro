@@ -32,7 +32,8 @@ SOURCES += \
     src/coursewindow.cpp \
     src/stuff.cpp \
     src/sceneitem.cpp \
-    src/graphics.cpp
+    src/graphics.cpp \
+    src/propertieswindow.cpp
 
 HEADERS  += \
     src/romfile.h \
@@ -46,11 +47,13 @@ HEADERS  += \
     src/tileset.h \
     src/coursewindow.h \
     src/stuff.h \
-    src/sceneitem.h
+    src/sceneitem.h \
+    src/propertieswindow.h
 
 FORMS += \
     src/mainwindow.ui \
-    src/coursewindow.ui
+    src/coursewindow.ui \
+    src/propertieswindow.ui
 
 RESOURCES += \
     src/icons.qrc

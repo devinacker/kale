@@ -9,6 +9,7 @@ typedef std::map<uint, QString> StringMap;
 extern const StringMap tileTypes;
 extern const StringMap exitTypes;
 extern const StringMap spriteTypes;
+extern const StringMap musicNames;
 
 QString tileType(uint);
 QString exitType(uint);

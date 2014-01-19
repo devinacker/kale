@@ -16,6 +16,7 @@
 #include "romfile.h"
 #include "mapscene.h"
 #include "level.h"
+#include "propertieswindow.h"
 
 namespace Ui {
 class MainWindow;
@@ -92,6 +93,7 @@ private:
 
     // renderin stuff
     MapScene *scene;
+    PropertiesWindow *propWindow;
 
     // various funcs
     void setupSignals();

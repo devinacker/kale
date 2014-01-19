@@ -395,6 +395,10 @@ const StringMap spriteTypes ({
      {0xff, "FF: Ceiling switch"}
 });
 
+const StringMap musicNames ({
+    {0x00, "00: Unknown"}
+});
+
 QString tileType(uint type) {
     return fromStringMap(tileTypes, type);
 }

@@ -107,16 +107,7 @@ void MapScene::refresh() {
         return;
     }
 
-    // set up tile animation
-    // frame length (NTSC frames -> msec)
-    animFrame = 0;
-    uint timeout = level->header.animSpeed * 16;
-    if (timeout) {
-        animTimer.start(timeout);
-    } else {
-        animTimer.stop();
-    }
-
+    setAnimSpeed(level->header.animSpeed);
     refreshPixmap();
 
     // add sprites
@@ -138,6 +129,19 @@ void MapScene::refresh() {
     }
 
     update();
+}
+
+void MapScene::setAnimSpeed(int speed) {
+    // set up tile animation
+    // frame length (NTSC frames -> msec)
+    uint timeout = speed * 16;
+    if (timeout) {
+        animTimer.start(timeout);
+    } else {
+        animFrame = 0;
+        animTimer.stop();
+        refreshPixmap();
+    }
 }
 
 void MapScene::refreshPixmap() {
