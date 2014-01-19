@@ -113,7 +113,6 @@ memory.registerexec(0xe68a, 1,
 		local screens = memory.readbyte(sprptr)
 		local numspr = memory.readbyte(sprptr+screens+1)
 		
-		-- TODO finish this, this is just from the unused page
 		local sprites = {
 		[0x00] = "Waddle Dee (slow)",
 		[0x01] = "Waddle Dee (medium)",

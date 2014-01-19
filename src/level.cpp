@@ -84,22 +84,22 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
     // get tileset from table
     level->tileset = file.readByte(mapTilesets + num);
 
-    // get sprite data (TODO: actually add this to the level data)
     romaddr_t spritePtr = file.readPointer(ptrSpritesL, ptrSpritesH, ptrSpritesB, num);
     // true number of screens (this can differ in e.g. rotating tower levels)
     uint sprScreens = file.readByte(spritePtr);
 
     // last # of sprite on each screen
     romaddr_t spriteCounts = spritePtr + 2;
+    uint numSprites = file.readByte(spriteCounts + (sprScreens - 1));
     // position of each sprite
     romaddr_t spritePos    = spriteCounts + sprScreens;
     // type of each sprite
-    romaddr_t spriteTypes  = spritePos + sprScreens;
+    romaddr_t spriteTypes  = spritePos + numSprites;
 
     uint sprNum = 0;
     for (uint i = 0; i < sprScreens; i++) {
         // number of sprites on this screen
-        uint numSprites = file.readByte(spriteCounts + i);
+        numSprites = file.readByte(spriteCounts + i);
         while (sprNum < numSprites) {            
             sprite_t sprite;
 

@@ -27,7 +27,7 @@ const QFont MapScene::infoFont("Consolas", 8);
 const QColor MapScene::infoColor(255, 192, 192, 192);
 const QColor MapScene::infoBackColor(255, 192, 192, 128);
 
-const QColor MapScene::selectionColor(255, 192, 192, 128);
+const QColor MapScene::selectionColor(255, 192, 192, 192);
 const QColor MapScene::selectionBorder(255, 192, 192, 255);
 
 const QColor MapScene::layerColor(0, 192, 224, 192);
@@ -605,6 +605,19 @@ void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
             QRect destRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             QRect srcRect (tile * 16, 0, 16, 16);
             painter->drawPixmap(destRect, tilesetPixmap, srcRect);
+
+            // blend destructible tiles with the tile that they turn into
+            // (TODO: did i miss any?)
+            uint act = tilesets[level->tileset][tile].action;
+            if ((act >= 0x1c && act < 0x22)
+             || (act >= 0x4c && act < 0x52)) {
+                tile &= 0xf7;
+
+                srcRect.moveLeft(tile * 16);
+                painter->setOpacity(0.4);
+                painter->drawPixmap(destRect, tilesetPixmap, srcRect);
+                painter->setOpacity(1.0);
+            }
         }
     }
 
