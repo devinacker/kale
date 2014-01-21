@@ -9,8 +9,7 @@
 #include <QDialog>
 #include "level.h"
 #include "romfile.h"
-
-class HexSpinBox;
+#include "hexspinbox.h"
 
 namespace Ui {
 class CourseWindow;

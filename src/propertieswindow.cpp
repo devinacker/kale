@@ -10,6 +10,7 @@
 #include "stuff.h"
 #include "level.h"
 #include "graphics.h"
+#include "hexspinbox.h"
 
 PropertiesWindow::PropertiesWindow(QWidget *parent) :
     QDialog(parent, Qt::CustomizeWindowHint
@@ -17,12 +18,23 @@ PropertiesWindow::PropertiesWindow(QWidget *parent) :
             | Qt::WindowCloseButtonHint
             | Qt::MSWindowsFixedSizeDialogHint
            ),
-    ui(new Ui::PropertiesWindow)
+    ui(new Ui::PropertiesWindow),
+    tileBox(new HexSpinBox(this, 2)),
+    tilePalBox(new HexSpinBox(this, 2)),
+    spriteBox(new HexSpinBox(this, 2)),
+    spritePalBox(new HexSpinBox(this, 2))
 {
     ui->setupUi(this);
 
     // prevent window resizing
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);
+
+    // add spinboxes
+    QGridLayout *layout = ui->gridLayout;
+    layout->addWidget(tileBox,      2, 2, 1, 1);
+    layout->addWidget(tilePalBox,   2, 5, 1, 1);
+    layout->addWidget(spriteBox,    3, 2, 1, 1);
+    layout->addWidget(spritePalBox, 3, 5, 1, 1);
 
     // add music names to other dropdown
     for (StringMap::const_iterator i = musicNames.begin(); i != musicNames.end(); i++) {
@@ -32,13 +44,13 @@ PropertiesWindow::PropertiesWindow(QWidget *parent) :
     // set up signals to automatically apply changes
     QObject::connect(ui->comboBox_TileGFX, SIGNAL(currentIndexChanged(int)),
                      this, SLOT(applyChange()));
-    QObject::connect(ui->spinBox_Tileset, SIGNAL(valueChanged(int)),
+    QObject::connect(this->tileBox, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
-    QObject::connect(ui->spinBox_TilePalette, SIGNAL(valueChanged(int)),
+    QObject::connect(this->tilePalBox, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
-    QObject::connect(ui->spinBox_Sprites, SIGNAL(valueChanged(int)),
+    QObject::connect(this->spriteBox, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
-    QObject::connect(ui->spinBox_SpritePalette, SIGNAL(valueChanged(int)),
+    QObject::connect(this->spritePalBox, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
     QObject::connect(ui->slider_AnimSpeed, SIGNAL(valueChanged(int)),
                      this, SLOT(applySpeed(int)));
@@ -82,12 +94,16 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
 
 
     // set graphics values
-    ui->comboBox_TileGFX     ->setCurrentIndex(level->header.tileIndex);
-    ui->spinBox_Tileset      ->setValue(level->tileset);
-    ui->spinBox_TilePalette  ->setValue(level->header.tilePal);
-    ui->spinBox_Sprites      ->setValue(level->header.sprIndex);
-    ui->spinBox_SpritePalette->setValue(level->header.sprPal);
-    ui->slider_AnimSpeed     ->setValue(level->header.animSpeed);
+    ui->comboBox_TileGFX->setCurrentIndex(level->header.tileIndex);
+    this->tileBox       ->setValue(level->tileset);
+    this->tileBox       ->setMaximum(255);
+    this->tilePalBox    ->setValue(level->header.tilePal);
+    this->tilePalBox    ->setMaximum(255);
+    this->spriteBox     ->setValue(level->header.sprIndex);
+    this->spriteBox     ->setMaximum(255);
+    this->spritePalBox  ->setValue(level->header.sprPal);
+    this->spritePalBox  ->setMaximum(255);
+    ui->slider_AnimSpeed->setValue(level->header.animSpeed);
 
     // set height and width values
     ui->spinBox_Length->setValue(level->header.screensV);
@@ -111,7 +127,9 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
 
 void PropertiesWindow::applySpeed(int speed) {
     if (speed)
-        ui->label_FrameLength->setText(QString("%1 msec").arg(speed * 16));
+        //ui->label_FrameLength->setText(QString("%1 msec").arg(speed * 16));
+        ui->label_FrameLength->setText(QString("%1 frame%2").arg(speed)
+                                       .arg(speed > 1 ? "s" : ""));
     else
         ui->label_FrameLength->setText("none");
 
@@ -125,10 +143,10 @@ void PropertiesWindow::applyChange() {
     if (!level) return;
 
     level->header.tileIndex = ui->comboBox_TileGFX->currentIndex();
-    level->header.tilePal   = ui->spinBox_TilePalette->value();
-    level->tileset          = ui->spinBox_Tileset->value();
-    level->header.sprIndex  = ui->spinBox_Sprites->value();
-    level->header.sprPal    = ui->spinBox_SpritePalette->value();
+    level->header.tilePal   = this->tilePalBox->value();
+    level->tileset          = this->tileBox->value();
+    level->header.sprIndex  = this->spriteBox->value();
+    level->header.sprPal    = this->spritePalBox->value();
 
     // apply level size
     level->header.screensV = ui->spinBox_Length->value();

@@ -6,40 +6,9 @@
 #include "coursewindow.h"
 #include "ui_coursewindow.h"
 
-#include <QSpinBox>
-
 #include "level.h"
 #include "romfile.h"
-
-// TODO: spin this own to its own file if it's ever used elsewhere
-class HexSpinBox: public QSpinBox {
-public:
-    HexSpinBox(QWidget *parent = 0, uint digits = 0):
-        QSpinBox(parent) {
-        this->digits = digits;
-    }
-
-protected:
-    int valueFromText(const QString &text) const {
-        return text.toInt(0, 16);
-    }
-
-    QString textFromValue(int val) const {
-        return QString::number(val, 16).rightJustified(this->digits, QLatin1Char('0')).toUpper();
-    }
-
-    QValidator::State validate(QString &input, int &pos) const {
-        bool ok;
-        int res = input.toInt(&ok, 16);
-        if (ok && res <= this->maximum() && res >= this->minimum())
-            return QValidator::Acceptable;
-
-        return QValidator::Invalid;
-    }
-
-private:
-    uint digits;
-};
+#include "hexspinbox.h"
 
 CourseWindow::CourseWindow(QWidget *parent) :
     QDialog(parent, Qt::CustomizeWindowHint

@@ -33,7 +33,8 @@ SOURCES += \
     src/stuff.cpp \
     src/sceneitem.cpp \
     src/graphics.cpp \
-    src/propertieswindow.cpp
+    src/propertieswindow.cpp \
+    src/hexspinbox.cpp
 
 HEADERS  += \
     src/romfile.h \
@@ -48,7 +49,8 @@ HEADERS  += \
     src/coursewindow.h \
     src/stuff.h \
     src/sceneitem.h \
-    src/propertieswindow.h
+    src/propertieswindow.h \
+    src/hexspinbox.h
 
 FORMS += \
     src/mainwindow.ui \

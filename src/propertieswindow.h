@@ -9,6 +9,7 @@
 #include <QDialog>
 #include <cstdint>
 #include "level.h"
+#include "hexspinbox.h"
 
 namespace Ui {
 class PropertiesWindow;
@@ -36,6 +37,8 @@ private:
     leveldata_t *level;
     header_t header;
     uint8_t  tileset;
+
+    HexSpinBox *tileBox, *tilePalBox, *spriteBox, *spritePalBox;
 
 private slots:
     void accept();
