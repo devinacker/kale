@@ -70,6 +70,10 @@ PropertiesWindow::PropertiesWindow(QWidget *parent) :
 PropertiesWindow::~PropertiesWindow()
 {
     delete ui;
+    delete tileBox;
+    delete tilePalBox;
+    delete spriteBox;
+    delete spritePalBox;
 }
 
 void PropertiesWindow::setMaxLevelWidth(int length) {
