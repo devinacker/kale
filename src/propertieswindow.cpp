@@ -11,6 +11,7 @@
 #include "level.h"
 #include "graphics.h"
 #include "hexspinbox.h"
+#include "tileset.h"
 
 PropertiesWindow::PropertiesWindow(QWidget *parent) :
     QDialog(parent, Qt::CustomizeWindowHint
@@ -96,7 +97,7 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
     // set graphics values
     ui->comboBox_TileGFX->setCurrentIndex(level->header.tileIndex);
     this->tileBox       ->setValue(level->tileset);
-    this->tileBox       ->setMaximum(255);
+    this->tileBox       ->setMaximum(NUM_TILESETS - 1);
     this->tilePalBox    ->setValue(level->header.tilePal);
     this->tilePalBox    ->setMaximum(255);
     this->spriteBox     ->setValue(level->header.sprIndex);
