@@ -105,7 +105,7 @@ SpriteItem::SpriteItem(sprite_t *sprite) :
 
     this->setX(sprite->x * TILE_SIZE);
     this->setY(sprite->y * TILE_SIZE);
-    // TODO: actual sprite name array
+
     this->setToolTip(QString("Sprite %1").arg(spriteType(sprite->type)));
 }
 

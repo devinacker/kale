@@ -112,10 +112,8 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
 
     // set height and width values
     ui->spinBox_Length->setValue(level->header.screensV);
-    setMaxLevelWidth(level->header.screensH);
 
     ui->spinBox_Width ->setValue(level->header.screensH);
-    setMaxLevelLength(level->header.screensV);
 
     // set music value
     ui->comboBox_Music->setCurrentIndex(std::distance(musicNames.begin(),

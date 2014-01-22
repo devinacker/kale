@@ -169,6 +169,12 @@ void MainWindow::setupSignals() {
     QObject::connect(ui->action_Next_Level, SIGNAL(triggered()),
                      this, SLOT(nextLevel()));
 
+    // view menu
+    QObject::connect(ui->action_Show_Screen_Boundaries, SIGNAL(toggled(bool)),
+                     scene, SLOT(setShowBounds(bool)));
+    QObject::connect(ui->action_See_Through_Breakable_Tiles, SIGNAL(toggled(bool)),
+                     scene, SLOT(setSeeThrough(bool)));
+
     // help menu
     QObject::connect(ui->action_Contents, SIGNAL(triggered()),
                      this, SLOT(showHelp()));

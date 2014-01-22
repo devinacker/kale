@@ -6,6 +6,7 @@
 #include <QPixmap>
 #include <QPainter>
 #include <QTimer>
+#include <QFontMetrics>
 #include <algorithm>
 #include <stdexcept>
 #include <cstdlib>
@@ -19,10 +20,11 @@
 #include "sceneitem.h"
 #include "stuff.h"
 
-#define MAP_TEXT_OFFSET 8
-#define MAP_TEXT_PAD 2
+#define MAP_TEXT_PAD_H 4
+#define MAP_TEXT_PAD_V 0
 
-const QFont MapScene::infoFont("Consolas", 8);
+const QFont MapScene::infoFont("Segoe UI", 10, QFont::Bold);
+const QFontMetrics MapScene::infoFontMetrics(MapScene::infoFont);
 
 const QColor MapScene::infoColor(255, 192, 192, 192);
 const QColor MapScene::infoBackColor(255, 192, 192, 128);
@@ -46,8 +48,8 @@ MapScene::MapScene(QObject *parent, leveldata_t *currentLevel)
       stack(this),
       level(currentLevel),
       tilesetPixmap(256*16, 16),
-      animFrame(0), animTimer(this)
-
+      animFrame(0), animTimer(this),
+      showBounds(true), seeThrough(true)
 {
     QObject::connect(this, SIGNAL(edited()),
                      this, SLOT(refresh()));
@@ -547,6 +549,8 @@ void MapScene::showTileInfo(QGraphicsSceneMouseEvent *event) {
         } else {
             tileX = -1;
             tileY = -1;
+
+            emit statusMessage("");
         }
 
         // also, pass the mouseover coords to the main window
@@ -586,6 +590,22 @@ void MapScene::enableSelectExits(bool on) {
 }
 
 /*
+ *Enable displaying of screen boundaries
+ */
+void MapScene::setShowBounds(bool on) {
+    showBounds = on;
+    update();
+}
+
+/*
+ *Enable making destructible/breakable tiles translucent
+ */
+void MapScene::setSeeThrough(bool on) {
+    seeThrough = on;
+    update();
+}
+
+/*
   Remove the selection pixmap from the scene.
 */
 void MapScene::cancelSelection() {
@@ -613,8 +633,9 @@ void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
             // blend destructible tiles with the tile that they turn into
             // (TODO: did i miss any?)
             uint act = tilesets[level->tileset][tile].action;
-            if ((act >= 0x1c && act < 0x22)
-             || (act >= 0x4c && act < 0x52)) {
+            if (seeThrough
+              && ((act >= 0x1c && act < 0x22)
+              || (act >= 0x4c && act < 0x52))) {
                 tile &= 0xf7;
 
                 srcRect.moveLeft(tile * 16);
@@ -628,8 +649,6 @@ void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
 }
 
 void MapScene::drawForeground(QPainter *painter, const QRectF &rect) {
-    // TODO: draw screen boundaries
-
     // highlight tile under cursor
     if (tileX < level->header.screensH * SCREEN_WIDTH
             && tileY < level->header.screensV * SCREEN_HEIGHT
@@ -646,5 +665,32 @@ void MapScene::drawForeground(QPainter *painter, const QRectF &rect) {
         int selTop  = qMin(selY, selY + selLength + 1);
         QRect selArea(selLeft * TILE_SIZE, selTop * TILE_SIZE, abs(selWidth) * TILE_SIZE, abs(selLength) * TILE_SIZE);
         painter->fillRect(selArea, MapScene::selectionColor);
+    }
+
+    // draw screen boundaries
+    if (showBounds) for (uint y = 0; y < level->header.screensV; y++) {
+        for (uint x = 0; x < level->header.screensH; x++) {
+            painter->setPen(Qt::black);
+            uint screenX = x * SCREEN_WIDTH * TILE_SIZE;
+            uint screenY = y * SCREEN_HEIGHT * TILE_SIZE;
+
+            painter->drawRect(screenX, screenY,
+                              SCREEN_WIDTH * TILE_SIZE,
+                              SCREEN_HEIGHT * TILE_SIZE);
+            painter->drawRect(screenX + 1, screenY + 1,
+                              SCREEN_WIDTH * TILE_SIZE - 2,
+                              SCREEN_HEIGHT * TILE_SIZE - 2);
+
+            QString infoText = QString::number(y * level->header.screensH + x);
+            QRect infoRect = MapScene::infoFontMetrics.boundingRect(infoText);
+
+            painter->fillRect(screenX + 2, screenY + 2,
+                             infoRect.width() + 2 * MAP_TEXT_PAD_H, infoRect.height() + MAP_TEXT_PAD_V,
+                             MapScene::infoColor);
+            painter->setFont(MapScene::infoFont);
+            painter->drawText(screenX + 3, screenY,
+                              infoRect.width() + 2 * MAP_TEXT_PAD_H, infoRect.height() + 2 * MAP_TEXT_PAD_V,
+                              0, infoText);
+        }
     }
 }

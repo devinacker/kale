@@ -11,6 +11,7 @@
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QUndoStack>
 #include <QTimer>
+#include <QFontMetrics>
 #include <vector>
 
 #include "level.h"
@@ -25,6 +26,7 @@ private:
     static const QColor selectionColor, selectionBorder;
     static const QColor layerColor;
     static const QFont infoFont;
+    static const QFontMetrics infoFontMetrics;
 
     int tileX, tileY;
     int selX, selY, selLength, selWidth;
@@ -44,6 +46,8 @@ private:
     QPixmap tilesetPixmap;
     uint animFrame;
     QTimer animTimer;
+
+    bool showBounds, seeThrough;
 
     void copyTiles(bool cut);
     void showTileInfo(QGraphicsSceneMouseEvent *event);
@@ -77,6 +81,8 @@ public slots:
     void refresh();
     void refreshPixmap();
     void animate();
+    void setShowBounds(bool);
+    void setSeeThrough(bool);
 
 signals:
     void doubleClicked();
