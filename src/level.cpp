@@ -83,6 +83,11 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
     // get tileset from table
     level->tileset = file.readByte(mapTilesets + num);
 
+    // get "don't return on death" flag
+    // (which is the highest bit of the level pointer's bank byte)
+    level->noReturn = file.readByte(ptrMapDataB + num) & 0x80;
+
+    // get sprite data
     romaddr_t spritePtr = file.readPointer(ptrSpritesL, ptrSpritesH, ptrSpritesB, num);
     // true number of screens (this can differ in e.g. rotating tower levels)
     uint sprScreens = file.readByte(spritePtr);

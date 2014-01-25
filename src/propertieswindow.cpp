@@ -119,6 +119,9 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
     ui->comboBox_Music->setCurrentIndex(std::distance(musicNames.begin(),
                                                       musicNames.find(level->header.music)));
 
+    // set no return value
+    ui->checkBox_NoReturn->setCheckState(level->noReturn ? Qt::Checked : Qt::Unchecked);
+
     // save pointer
     this->level = level;
     // and original data, in case user cancels
@@ -129,11 +132,11 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
 }
 
 void PropertiesWindow::applySpeed(int speed) {
-    if (speed)
-        //ui->label_FrameLength->setText(QString("%1 msec").arg(speed * 16));
+    if (speed) {
+        speed = ui->slider_AnimSpeed->maximum() - speed + 1;
         ui->label_FrameLength->setText(QString("%1 frame%2").arg(speed)
                                        .arg(speed > 1 ? "s" : ""));
-    else
+    } else
         ui->label_FrameLength->setText("none");
 
     if (level) {
@@ -157,6 +160,9 @@ void PropertiesWindow::applyChange() {
 
     // apply music setting
     level->header.music = ui->comboBox_Music->itemData(ui->comboBox_Music->currentIndex()).toUInt();
+
+    // apply return flag
+    level->noReturn     = ui->checkBox_NoReturn->checkState() == Qt::Checked;
 
     emit changed();
 }

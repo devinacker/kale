@@ -12,6 +12,9 @@ struct metatile_t {
     uint8_t palette, action;
 };
 extern metatile_t tilesets[NUM_TILESETS][0x100];
+// note: these might only be valid for the first 0x1E tilesets
+// (rest of tilesets are null / not useful)
+extern uint8_t    tileSubtract[NUM_TILESETS];
 
 void loadTilesets(ROMFile &);
 

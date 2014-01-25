@@ -636,7 +636,7 @@ void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
             if (seeThrough
               && ((act >= 0x1c && act < 0x22)
               || (act >= 0x4c && act < 0x52))) {
-                tile &= 0xf7;
+                tile -= tileSubtract[level->tileset];
 
                 srcRect.moveLeft(tile * 16);
                 painter->setOpacity(0.4);

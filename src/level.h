@@ -63,6 +63,9 @@ struct leveldata_t {
     std::vector<sprite_t> sprites;
     std::vector<exit_t>   exits;
 
+    // don't return to this level after losing a life?
+    bool      noReturn;
+
     // have any of the tile data fields been changed from the original data?
     // (determined based on their position in the ROM file, also set as soon
     // as level is edited)

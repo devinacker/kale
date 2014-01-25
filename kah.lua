@@ -502,7 +502,8 @@ pages = {
 	[0x1a] = "ceiling halfslope up, bottom",
 	[0x1b] = "ceiling halfslope up, top",
 	[0x1c] = "star block",
-	-- becomes tile & 0xf7 when destroyed?
+	-- becomes tile - 0x8 when destroyed, usually
+	-- (value to subtract is stored at 12:9C5F)
 	[0x1d] = "breakable",
 	[0x1e] = "breakable with ability(?)",
 	[0x1f] = "breakable with ability(?)",
