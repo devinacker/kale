@@ -55,16 +55,16 @@ PropertiesWindow::PropertiesWindow(QWidget *parent) :
                      this, SLOT(applyChange()));
     QObject::connect(ui->slider_AnimSpeed, SIGNAL(valueChanged(int)),
                      this, SLOT(applySpeed(int)));
-    QObject::connect(ui->spinBox_Length, SIGNAL(valueChanged(int)),
+    QObject::connect(ui->spinBox_Height, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
     QObject::connect(ui->spinBox_Width, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
 
     // set up signals to handle width/length constraints
-    QObject::connect(ui->spinBox_Length, SIGNAL(valueChanged(int)),
+    QObject::connect(ui->spinBox_Height, SIGNAL(valueChanged(int)),
                      this, SLOT(setMaxLevelWidth(int)));
     QObject::connect(ui->spinBox_Width, SIGNAL(valueChanged(int)),
-                     this, SLOT(setMaxLevelLength(int)));
+                     this, SLOT(setMaxLevelHeight(int)));
 }
 
 PropertiesWindow::~PropertiesWindow()
@@ -76,12 +76,12 @@ PropertiesWindow::~PropertiesWindow()
     delete spritePalBox;
 }
 
-void PropertiesWindow::setMaxLevelWidth(int length) {
-    ui->spinBox_Width->setMaximum(16 / length);
+void PropertiesWindow::setMaxLevelWidth(int height) {
+    ui->spinBox_Width->setMaximum(16 / height);
 }
 
-void PropertiesWindow::setMaxLevelLength(int width) {
-    ui->spinBox_Length->setMaximum(16 / width);
+void PropertiesWindow::setMaxLevelHeight(int width) {
+    ui->spinBox_Height->setMaximum(16 / width);
 }
 
 void PropertiesWindow::startEdit(leveldata_t *level) {
@@ -111,7 +111,7 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
     ui->slider_AnimSpeed->setValue(level->header.animSpeed);
 
     // set height and width values
-    ui->spinBox_Length->setValue(level->header.screensV);
+    ui->spinBox_Height->setValue(level->header.screensV);
 
     ui->spinBox_Width ->setValue(level->header.screensH);
 
@@ -155,7 +155,7 @@ void PropertiesWindow::applyChange() {
     level->header.sprPal    = this->spritePalBox->value();
 
     // apply level size
-    level->header.screensV = ui->spinBox_Length->value();
+    level->header.screensV = ui->spinBox_Height->value();
     level->header.screensH = ui->spinBox_Width ->value();
 
     // apply music setting

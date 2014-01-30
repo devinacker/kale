@@ -29,7 +29,7 @@ public slots:
     void applySpeed(int);
     void applyChange();
     void setMaxLevelWidth(int);
-    void setMaxLevelLength(int);
+    void setMaxLevelHeight(int);
 
 private:
     Ui::PropertiesWindow *ui;
