@@ -1,9 +1,9 @@
-This is the future home of the Kirby's Adventure Level Editor (KALE).
+This is the home of the Kirby's Adventure Level Editor (KALE).
 
-For now, here is the Lua script for FCEUX that I've been using to play with the game. It was written for the US versions, but should also work fine with the other versions (except the Canadian one, apparently).
+Right now it really only views levels, but with fancy animation and stuff, as well as tileset/palette selection and stuff like that.
 
-The script can be used to warp through levels, teleport, edit tile behavior, display screen boundaries/layouts, and view info about doors/exits. It also dumps information about sprites/enemies into the console.
+It also includes my Lua script for FCEUX which I used to explore the game. The script can be used to warp through levels, teleport, edit tile behavior, display screen boundaries/layouts, and view info about doors/exits. It also dumps information about sprites/enemies into the console.
 
-Soon this will be a beautiful C++/Qt5 level editor just like KDCEditor. The first priority is to just make a level viewer though, just to make sure all my information about the game's level data is correct, and to come up with a nice way of handling CHR bankswitching and animation in the editor, and various other things like that.
+The first priority was just to make sure all my information about the game's level data is correct, and to come up with a nice way of handling CHR bankswitching and animation in the editor, and various other things like that. At this point I'm just about ready to implement actual editing (which is already "sort of" done just based on the stuff that's left over from my last editor). A real usable release should be coming soon.
 
 Happy 2014.
