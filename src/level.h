@@ -74,7 +74,7 @@ struct leveldata_t {
     // (set when modified, cleared when saved)
     bool      modifiedRecently;
 
-    leveldata_t() : sprites(), exits() {}
+    leveldata_t() : tiles {{0}}, sprites(), exits() {}
 
 };
 
