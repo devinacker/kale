@@ -19,5 +19,10 @@
         <file>images/icons/magnifier.png</file>
         <file>images/icons/arrow_redo.png</file>
         <file>images/icons/arrow_undo.png</file>
+        <file>images/icons/kale-doors.png</file>
+        <file>images/icons/kale-enemies.png</file>
+        <file>images/icons/kale-tiles.png</file>
+        <file>images/icons/kale-screens.png</file>
+        <file>images/icons/kale-tileblend.png</file>
     </qresource>
 </RCC>

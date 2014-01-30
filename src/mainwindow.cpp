@@ -206,12 +206,20 @@ void MainWindow::setupActions() {
     ui->toolBar->addAction(ui->action_Save_ROM);
     ui->toolBar->addSeparator();
 
-    // from edit menu
+    // from edit/level menu etc.
     ui->toolBar->addAction(ui->action_Undo);
     ui->toolBar->addAction(ui->action_Redo);
     ui->toolBar->addSeparator();
+    ui->toolBar->addAction(ui->action_Select_Tiles);
+    ui->toolBar->addAction(ui->action_Select_Sprites);
+    ui->toolBar->addAction(ui->action_Select_Exits);
     ui->toolBar->addAction(ui->action_Edit_Tiles);
     ui->toolBar->addAction(ui->action_Level_Properties);
+    ui->toolBar->addSeparator();
+
+    // from view menu
+    ui->toolBar->addAction(ui->action_Show_Screen_Boundaries);
+    ui->toolBar->addAction(ui->action_See_Through_Breakable_Tiles);
     ui->toolBar->addSeparator();
 
     // from level menu

@@ -419,6 +419,10 @@
    <property name="checked">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/icons/kale-tiles.png</normaloff>:/images/icons/kale-tiles.png</iconset>
+   </property>
    <property name="text">
     <string>Select Tiles</string>
    </property>
@@ -433,6 +437,10 @@
    <property name="checked">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/icons/kale-enemies.png</normaloff>:/images/icons/kale-enemies.png</iconset>
+   </property>
    <property name="text">
     <string>Select Sprites</string>
    </property>
@@ -443,6 +451,10 @@
   <action name="action_Select_Exits">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/icons/kale-doors.png</normaloff>:/images/icons/kale-doors.png</iconset>
    </property>
    <property name="text">
     <string>Select Exits</string>
@@ -458,6 +470,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/icons/kale-screens.png</normaloff>:/images/icons/kale-screens.png</iconset>
+   </property>
    <property name="text">
     <string>Show Screen Boundaries</string>
    </property>
@@ -468,6 +484,10 @@
    </property>
    <property name="checked">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/icons/kale-tileblend.png</normaloff>:/images/icons/kale-tileblend.png</iconset>
    </property>
    <property name="text">
     <string>See Through Breakable Tiles</string>
