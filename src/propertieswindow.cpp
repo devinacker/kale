@@ -66,8 +66,6 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
                      this, SLOT(applyChange()));
     QObject::connect(ui->slider_AnimSpeed, SIGNAL(valueChanged(int)),
                      this, SLOT(applySpeed(int)));
-    QObject::connect(ui->slider_AnimSpeed, SIGNAL(valueChanged(int)),
-                     tileView, SLOT(setAnimSpeed(int)));
     QObject::connect(ui->spinBox_Height, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
     QObject::connect(ui->spinBox_Width, SIGNAL(valueChanged(int)),
@@ -157,6 +155,8 @@ void PropertiesWindow::applySpeed(int speed) {
         level->header.animSpeed = speed;
         emit speedChanged(speed);
     }
+
+    tileView->setAnimSpeed(speed);
 }
 
 void PropertiesWindow::applyChange() {
