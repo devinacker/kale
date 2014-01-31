@@ -120,7 +120,14 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
     this->spriteBox     ->setMaximum(255);
     this->spritePalBox  ->setValue(level->header.sprPal);
     this->spritePalBox  ->setMaximum(255);
-    ui->slider_AnimSpeed->setValue(level->header.animSpeed);
+
+    // set slider initial value to the opposite of the level speed
+    // (slower speed / further right, except for zero)
+    if (level->header.animSpeed)
+        ui->slider_AnimSpeed->setValue(ui->slider_AnimSpeed->maximum()
+                                       - level->header.animSpeed + 1);
+    else
+        ui->slider_AnimSpeed->setValue(0);
 
     // set height and width values
     ui->spinBox_Height->setValue(level->header.screensV);
