@@ -146,6 +146,10 @@ void MapScene::setAnimSpeed(int speed) {
     }
 }
 
+const QPixmap* MapScene::getPixmap() const {
+    return &this->tilesetPixmap;
+}
+
 void MapScene::refreshPixmap() {
     // update CHR banks
     // TODO : generate a tile set pixmap here instead of doing lots of lookups on BG draw

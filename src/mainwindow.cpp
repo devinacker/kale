@@ -47,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     level(0),
 
     scene(new MapScene(this, &currentLevel)),
-    propWindow(new PropertiesWindow(this))
+    propWindow(new PropertiesWindow(this, scene->getPixmap()))
 {
     ui->setupUi(this);
     selectGroup->addAction(ui->action_Select_Tiles);

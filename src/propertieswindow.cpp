@@ -12,8 +12,9 @@
 #include "graphics.h"
 #include "hexspinbox.h"
 #include "tileset.h"
+#include "tilesetview.h"
 
-PropertiesWindow::PropertiesWindow(QWidget *parent) :
+PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     QDialog(parent, Qt::CustomizeWindowHint
             | Qt::WindowTitleHint
             | Qt::WindowCloseButtonHint
@@ -23,7 +24,8 @@ PropertiesWindow::PropertiesWindow(QWidget *parent) :
     tileBox(new HexSpinBox(this, 2)),
     tilePalBox(new HexSpinBox(this, 2)),
     spriteBox(new HexSpinBox(this, 2)),
-    spritePalBox(new HexSpinBox(this, 2))
+    spritePalBox(new HexSpinBox(this, 2)),
+    tileView(new TilesetView(this, tileset, 0))
 {
     ui->setupUi(this);
 
@@ -37,6 +39,9 @@ PropertiesWindow::PropertiesWindow(QWidget *parent) :
     layout->addWidget(spriteBox,    3, 2, 1, 1);
     layout->addWidget(spritePalBox, 3, 5, 1, 1);
 
+    layout = ui->mainLayout;
+    layout->addWidget(tileView, 0, 1, 1, 1);
+
     // add music names to other dropdown
     for (StringMap::const_iterator i = musicNames.begin(); i != musicNames.end(); i++) {
         ui->comboBox_Music->addItem(i->second, i->first);
@@ -45,16 +50,24 @@ PropertiesWindow::PropertiesWindow(QWidget *parent) :
     // set up signals to automatically apply changes
     QObject::connect(ui->comboBox_TileGFX, SIGNAL(currentIndexChanged(int)),
                      this, SLOT(applyChange()));
+    QObject::connect(ui->comboBox_TileGFX, SIGNAL(currentIndexChanged(int)),
+                     tileView, SLOT(update()));
     QObject::connect(this->tileBox, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
+    QObject::connect(this->tileBox, SIGNAL(valueChanged(int)),
+                     tileView, SLOT(update()));
     QObject::connect(this->tilePalBox, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
+    QObject::connect(this->tilePalBox, SIGNAL(valueChanged(int)),
+                     tileView, SLOT(update()));
     QObject::connect(this->spriteBox, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
     QObject::connect(this->spritePalBox, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
     QObject::connect(ui->slider_AnimSpeed, SIGNAL(valueChanged(int)),
                      this, SLOT(applySpeed(int)));
+    QObject::connect(ui->slider_AnimSpeed, SIGNAL(valueChanged(int)),
+                     tileView, SLOT(setAnimSpeed(int)));
     QObject::connect(ui->spinBox_Height, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
     QObject::connect(ui->spinBox_Width, SIGNAL(valueChanged(int)),
@@ -74,6 +87,7 @@ PropertiesWindow::~PropertiesWindow()
     delete tilePalBox;
     delete spriteBox;
     delete spritePalBox;
+    delete tileView;
 }
 
 void PropertiesWindow::setMaxLevelWidth(int height) {

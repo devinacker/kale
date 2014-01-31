@@ -10,6 +10,7 @@
 #include <cstdint>
 #include "level.h"
 #include "hexspinbox.h"
+#include "tilesetview.h"
 
 namespace Ui {
 class PropertiesWindow;
@@ -20,7 +21,7 @@ class PropertiesWindow : public QDialog
     Q_OBJECT
     
 public:
-    explicit PropertiesWindow(QWidget *parent = 0);
+    explicit PropertiesWindow(QWidget *parent, const QPixmap *tileset);
     ~PropertiesWindow();
 
     void startEdit(leveldata_t *level);
@@ -39,6 +40,7 @@ private:
     uint8_t  tileset;
 
     HexSpinBox *tileBox, *tilePalBox, *spriteBox, *spritePalBox;
+    TilesetView *tileView;
 
 private slots:
     void accept();

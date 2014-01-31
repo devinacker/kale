@@ -67,6 +67,8 @@ public:
     void enableSelectExits(bool);
     void cancelSelection();
 
+    const QPixmap* getPixmap() const;
+
 public slots:
     void editTiles();
     void undo();
