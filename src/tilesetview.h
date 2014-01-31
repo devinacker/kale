@@ -11,9 +11,6 @@ public:
     explicit TilesetView(QWidget *parent, const QPixmap *tiles, uint speed);
     QSize sizeHint() const;
 
-public slots:
-    void setAnimSpeed(int);
-
 protected:
     void paintEvent(QPaintEvent*);
 

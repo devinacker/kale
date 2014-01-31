@@ -8,9 +8,11 @@
 
 TilesetView::TilesetView(QWidget *parent, const QPixmap *tiles, uint speed) :
     QWidget(parent),
-    pixmap(tiles)
+    pixmap(tiles),
+    timer(this)
 {
-    this->setAnimSpeed(speed);
+    // update tileset once per frame (16ms)
+    timer.start(16);
 
     QObject::connect(&timer, SIGNAL(timeout()),
                      this, SLOT(update()));
@@ -18,18 +20,6 @@ TilesetView::TilesetView(QWidget *parent, const QPixmap *tiles, uint speed) :
 
 QSize TilesetView::sizeHint() const {
     return QSize(16 * 16, 16 * 16);
-}
-
-void TilesetView::setAnimSpeed(int speed) {
-    // set up tile animation
-    // frame length (NTSC frames -> msec)
-    uint timeout = speed * 16;
-    if (timeout) {
-        timer.start(timeout);
-    } else {
-        timer.stop();
-    }
-    this->update();
 }
 
 void TilesetView::paintEvent(QPaintEvent *event) {

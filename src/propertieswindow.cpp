@@ -155,8 +155,6 @@ void PropertiesWindow::applySpeed(int speed) {
         level->header.animSpeed = speed;
         emit speedChanged(speed);
     }
-
-    tileView->setAnimSpeed(speed);
 }
 
 void PropertiesWindow::applyChange() {
