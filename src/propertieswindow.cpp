@@ -35,9 +35,13 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     // add spinboxes
     QGridLayout *layout = ui->gridLayout;
     layout->addWidget(tileBox,      2, 2, 1, 1);
+    tileBox->setMaximum(NUM_TILESETS - 1);
     layout->addWidget(tilePalBox,   2, 5, 1, 1);
+    tilePalBox->setMaximum(255);
     layout->addWidget(spriteBox,    3, 2, 1, 1);
+    spriteBox->setMaximum(255);
     layout->addWidget(spritePalBox, 3, 5, 1, 1);
+    spritePalBox->setMaximum(255);
 
     layout = ui->mainLayout;
     layout->addWidget(tileView, 0, 1, 1, 1);
@@ -113,13 +117,9 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
     // set graphics values
     ui->comboBox_TileGFX->setCurrentIndex(level->header.tileIndex);
     this->tileBox       ->setValue(level->tileset);
-    this->tileBox       ->setMaximum(NUM_TILESETS - 1);
     this->tilePalBox    ->setValue(level->header.tilePal);
-    this->tilePalBox    ->setMaximum(255);
     this->spriteBox     ->setValue(level->header.sprIndex);
-    this->spriteBox     ->setMaximum(255);
     this->spritePalBox  ->setValue(level->header.sprPal);
-    this->spritePalBox  ->setMaximum(255);
 
     // set slider initial value to the opposite of the level speed
     // (slower speed / further right, except for zero)
