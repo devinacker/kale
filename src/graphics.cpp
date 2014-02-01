@@ -100,12 +100,11 @@ void loadCHRBanks(ROMFile& rom) {
 }
 
 // get single CHR bank with applied palette
-// (TODO: the palette thing)
 QImage getCHRBank(uint bank, uint pal) {
     if (banks) {
         QImage newBank(banks[bank % numBanks]);
 
-        // apply palette here eventually
+        // apply palette
         for (uint i = 0; i < 10; i++)
             newBank.setColor(i, nesPalette[palettes[i][pal] & 0x3F]);
 

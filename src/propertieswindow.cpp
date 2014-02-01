@@ -25,7 +25,8 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     tilePalBox(new HexSpinBox(this, 2)),
     spriteBox(new HexSpinBox(this, 2)),
     spritePalBox(new HexSpinBox(this, 2)),
-    tileView(new TilesetView(this, tileset, 0))
+    tileView(new TilesetView(this, tileset)),
+    spritesView(new SpritesView(this))
 {
     ui->setupUi(this);
 
@@ -40,11 +41,16 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     tilePalBox->setMaximum(255);
     layout->addWidget(spriteBox,    3, 2, 1, 1);
     spriteBox->setMaximum(255);
+    // sprites use two consecutive banks at once
+    spriteBox->setSingleStep(2);
     layout->addWidget(spritePalBox, 3, 5, 1, 1);
     spritePalBox->setMaximum(255);
 
-    layout = ui->mainLayout;
-    layout->addWidget(tileView, 0, 1, 1, 1);
+    // add tile & sprite views
+    layout = ui->tilesetTabLayout;
+    layout->addWidget(tileView, 0, 0, 1, 1);
+    layout = ui->spritesTabLayout;
+    layout->addWidget(spritesView, 1, 0, 1, 5);
 
     // add music names to other dropdown
     for (StringMap::const_iterator i = musicNames.begin(); i != musicNames.end(); i++) {
@@ -66,8 +72,12 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
                      tileView, SLOT(update()));
     QObject::connect(this->spriteBox, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
+    QObject::connect(this->spriteBox, SIGNAL(valueChanged(int)),
+                     this->spritesView, SLOT(setBank(int)));
     QObject::connect(this->spritePalBox, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
+    QObject::connect(this->spritePalBox, SIGNAL(valueChanged(int)),
+                     this->spritesView, SLOT(setPalette(int)));
     QObject::connect(ui->slider_AnimSpeed, SIGNAL(valueChanged(int)),
                      this, SLOT(applySpeed(int)));
     QObject::connect(ui->spinBox_Height, SIGNAL(valueChanged(int)),
@@ -80,6 +90,16 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
                      this, SLOT(setMaxLevelWidth(int)));
     QObject::connect(ui->spinBox_Width, SIGNAL(valueChanged(int)),
                      this, SLOT(setMaxLevelHeight(int)));
+
+    // and sprite color radio buttons
+    QObject::connect(ui->radioButton_Color1, SIGNAL(clicked(bool)),
+                     this, SLOT(applySpriteColor()));
+    QObject::connect(ui->radioButton_Color2, SIGNAL(clicked(bool)),
+                     this, SLOT(applySpriteColor()));
+    QObject::connect(ui->radioButton_Color3, SIGNAL(clicked(bool)),
+                     this, SLOT(applySpriteColor()));
+    QObject::connect(ui->radioButton_Color4, SIGNAL(clicked(bool)),
+                     this, SLOT(applySpriteColor()));
 }
 
 PropertiesWindow::~PropertiesWindow()
@@ -90,6 +110,7 @@ PropertiesWindow::~PropertiesWindow()
     delete spriteBox;
     delete spritePalBox;
     delete tileView;
+    delete spritesView;
 }
 
 void PropertiesWindow::setMaxLevelWidth(int height) {
@@ -184,6 +205,17 @@ void PropertiesWindow::applyChange() {
     level->noReturn     = ui->checkBox_NoReturn->checkState() == Qt::Checked;
 
     emit changed();
+}
+
+void PropertiesWindow::applySpriteColor() {
+    if (ui->radioButton_Color1->isChecked())
+        spritesView->setColor(0);
+    else if (ui->radioButton_Color2->isChecked())
+        spritesView->setColor(1);
+    else if (ui->radioButton_Color3->isChecked())
+        spritesView->setColor(2);
+    else if (ui->radioButton_Color4->isChecked())
+        spritesView->setColor(3);
 }
 
 void PropertiesWindow::accept() {
