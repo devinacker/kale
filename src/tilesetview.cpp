@@ -95,8 +95,8 @@ void SpritesView::paintEvent(QPaintEvent *event) {
 
             QRect destRect(w * 16, h * 32, 16, 16);
             QRect srcRect (tile * 8, this->colorNum * 8, 8, 8);
-            painter.drawImage(destRect, this->bank[h / 4], srcRect);
-            painter.drawImage(destRect.translated(0, 16), this->bank[h / 4],
+            painter.drawImage(destRect, this->bank[h / 2], srcRect);
+            painter.drawImage(destRect.translated(0, 16), this->bank[h / 2],
                               srcRect.translated(8, 0));
         }
     }
