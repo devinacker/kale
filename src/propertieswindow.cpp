@@ -52,6 +52,9 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     layout = ui->spritesTabLayout;
     layout->addWidget(spritesView, 1, 0, 1, 5);
 
+    // set initial tab index
+    ui->tabWidget->setCurrentIndex(0);
+
     // add music names to other dropdown
     for (StringMap::const_iterator i = musicNames.begin(); i != musicNames.end(); i++) {
         ui->comboBox_Music->addItem(i->second, i->first);
