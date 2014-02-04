@@ -48,6 +48,7 @@ private:
     QTimer animTimer;
 
     bool showBounds, seeThrough;
+    uint tileSize;
 
     void copyTiles(bool cut);
     void showTileInfo(QGraphicsSceneMouseEvent *event);
@@ -85,6 +86,7 @@ public slots:
     void animate();
     void setShowBounds(bool);
     void setSeeThrough(bool);
+    void setDoubleSize(bool);
 
 signals:
     void doubleClicked();

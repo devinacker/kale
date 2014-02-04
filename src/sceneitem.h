@@ -11,6 +11,7 @@ public:
     SceneItem();
 
     QRectF boundingRect() const;
+    void setDoubleSize(bool on);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual QColor color(bool selected);
 
@@ -20,6 +21,10 @@ public:
 protected:
     QVariant itemChange (GraphicsItemChange change, const QVariant & value);
     virtual void updateObject() = 0;
+    virtual void updateItem() = 0;
+
+    uint tileSize;
+
 };
 
 
@@ -33,6 +38,7 @@ public:
 
 protected:
     void updateObject();
+    void updateItem();
 
 private:
     exit_t *exit;
@@ -49,6 +55,7 @@ public:
 
 protected:
     void updateObject();
+    void updateItem();
 
 private:
     sprite_t *sprite;

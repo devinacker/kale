@@ -8,8 +8,8 @@
 
 #include "romfile.h"
 
-// size of on-screen metatile display (16x16 magnified x2)
-#define TILE_SIZE 32
+// size of on-screen metatile display
+#define TILE_SIZE 16
 
 extern uint8_t bankTable[][256];
 

@@ -47,9 +47,10 @@ MapScene::MapScene(QObject *parent, leveldata_t *currentLevel)
       copyWidth(0), copyLength(0),
       stack(this),
       level(currentLevel),
-      tilesetPixmap(256*16, 16),
+      tilesetPixmap(256*TILE_SIZE, TILE_SIZE),
       animFrame(0), animTimer(this),
-      showBounds(true), seeThrough(true)
+      showBounds(true), seeThrough(true),
+      tileSize(TILE_SIZE * 2)
 {
     QObject::connect(this, SIGNAL(edited()),
                      this, SLOT(refresh()));
@@ -101,7 +102,7 @@ void MapScene::refresh() {
 
     uint width = level->header.screensH * SCREEN_WIDTH;
     uint height = level->header.screensV * SCREEN_HEIGHT;
-    setSceneRect(0, 0, width * TILE_SIZE, height * TILE_SIZE);
+    setSceneRect(0, 0, width * tileSize, height * tileSize);
 
     // no width/height = don't draw anything
     if (width * height == 0) {
@@ -117,6 +118,7 @@ void MapScene::refresh() {
         SpriteItem *spr = new SpriteItem(&(*i));
         spr->setFlag(QGraphicsItem::ItemIsSelectable, selectSprites);
         spr->setFlag(QGraphicsItem::ItemIsMovable, selectSprites);
+        spr->setDoubleSize(tileSize > TILE_SIZE);
         addItem(spr);
         this->sprites.push_back(spr);
     }
@@ -126,6 +128,7 @@ void MapScene::refresh() {
         ExitItem *exit = new ExitItem(&(*i));
         exit->setFlag(QGraphicsItem::ItemIsSelectable, selectExits);
         exit->setFlag(QGraphicsItem::ItemIsMovable, selectExits);
+        exit->setDoubleSize(tileSize > TILE_SIZE);
         addItem(exit);
         this->exits.push_back(exit);
     }
@@ -450,8 +453,8 @@ void MapScene::beginSelection(QGraphicsSceneMouseEvent *event) {
 
     QPointF pos = event->scenePos();
 
-    int x = pos.x() / TILE_SIZE;
-    int y = pos.y() / TILE_SIZE;
+    int x = pos.x() / tileSize;
+    int y = pos.y() / tileSize;
 
     // ignore invalid click positions
     // (use the floating point X coord to avoid roundoff stupidness)
@@ -486,8 +489,8 @@ void MapScene::updateSelection(QGraphicsSceneMouseEvent *event) {
     if (event) {
         QPointF pos = event->scenePos();
 
-        x = pos.x() / TILE_SIZE;
-        y = pos.y() / TILE_SIZE;
+        x = pos.x() / tileSize;
+        y = pos.y() / tileSize;
 
         // ignore invalid mouseover/click positions
         // (use the floating point X coord to avoid roundoff stupidness)
@@ -532,9 +535,9 @@ void MapScene::showTileInfo(QGraphicsSceneMouseEvent *event) {
     QPointF pos = event->scenePos();
     // if hte mouse is moved onto a different tile, erase the old one
     // and draw the new one
-    if ((pos.x() / TILE_SIZE) != tileX || (pos.y() / TILE_SIZE) != tileY) {
-        tileX = pos.x() / TILE_SIZE;
-        tileY = pos.y() / TILE_SIZE;
+    if ((pos.x() / tileSize) != tileX || (pos.y() / tileSize) != tileY) {
+        tileX = pos.x() / tileSize;
+        tileY = pos.y() / tileSize;
 
         // ignore invalid mouseover positions
         // (use the floating point coords to avoid roundoff stupidness)
@@ -610,6 +613,31 @@ void MapScene::setSeeThrough(bool on) {
 }
 
 /*
+ *Enable/disable double size display (also affects all present items)
+ */
+void MapScene::setDoubleSize(bool on) {
+    if (on)
+        tileSize = TILE_SIZE * 2;
+    else
+        tileSize = TILE_SIZE;
+
+    // apply to items
+    for (std::vector<SpriteItem*>::iterator i = this->sprites.begin(); i != this->sprites.end(); i++) {
+        (*i)->setDoubleSize(on);
+    }
+
+    for (std::vector<ExitItem*>::iterator i = this->exits.begin(); i != this->exits.end(); i++) {
+        (*i)->setDoubleSize(on);
+    }
+
+    // set new size
+    uint width = level->header.screensH * SCREEN_WIDTH;
+    uint height = level->header.screensV * SCREEN_HEIGHT;
+    setSceneRect(0, 0, width * tileSize, height * tileSize);
+    this->update();
+}
+
+/*
   Remove the selection pixmap from the scene.
 */
 void MapScene::cancelSelection() {
@@ -626,11 +654,11 @@ void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
     if (rec.isNull())
         return;
 
-    for (uint y = rec.top() / TILE_SIZE; y < rec.bottom() / TILE_SIZE; y++) {
-        for (uint x = rec.left() / TILE_SIZE; x < rec.right() / TILE_SIZE; x++) {
+    for (uint y = rec.top() / tileSize; y < rec.bottom() / tileSize; y++) {
+        for (uint x = rec.left() / tileSize; x < rec.right() / tileSize; x++) {
             uint8_t tile = level->tiles[y][x];
 
-            QRect destRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            QRect destRect(x * tileSize, y * tileSize, tileSize, tileSize);
             QRect srcRect (tile * 16, 0, 16, 16);
             painter->drawPixmap(destRect, tilesetPixmap, srcRect);
 
@@ -658,7 +686,7 @@ void MapScene::drawForeground(QPainter *painter, const QRectF &rect) {
             && tileY < level->header.screensV * SCREEN_HEIGHT
             && tileX >= 0 && tileY >= 0) {
 
-        painter->fillRect(tileX * TILE_SIZE, tileY * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+        painter->fillRect(tileX * tileSize, tileY * tileSize, tileSize, tileSize,
                          MapScene::infoBackColor);
     }
 
@@ -667,7 +695,7 @@ void MapScene::drawForeground(QPainter *painter, const QRectF &rect) {
         // account for selections in either negative direction
         int selLeft = qMin(selX, selX + selWidth + 1);
         int selTop  = qMin(selY, selY + selLength + 1);
-        QRect selArea(selLeft * TILE_SIZE, selTop * TILE_SIZE, abs(selWidth) * TILE_SIZE, abs(selLength) * TILE_SIZE);
+        QRect selArea(selLeft * tileSize, selTop * tileSize, abs(selWidth) * tileSize, abs(selLength) * tileSize);
         painter->fillRect(selArea, MapScene::selectionColor);
     }
 
@@ -675,15 +703,15 @@ void MapScene::drawForeground(QPainter *painter, const QRectF &rect) {
     if (showBounds) for (uint y = 0; y < level->header.screensV; y++) {
         for (uint x = 0; x < level->header.screensH; x++) {
             painter->setPen(Qt::black);
-            uint screenX = x * SCREEN_WIDTH * TILE_SIZE;
-            uint screenY = y * SCREEN_HEIGHT * TILE_SIZE;
+            uint screenX = x * SCREEN_WIDTH * tileSize;
+            uint screenY = y * SCREEN_HEIGHT * tileSize;
 
             painter->drawRect(screenX, screenY,
-                              SCREEN_WIDTH * TILE_SIZE,
-                              SCREEN_HEIGHT * TILE_SIZE);
+                              SCREEN_WIDTH * tileSize,
+                              SCREEN_HEIGHT * tileSize);
             painter->drawRect(screenX + 1, screenY + 1,
-                              SCREEN_WIDTH * TILE_SIZE - 2,
-                              SCREEN_HEIGHT * TILE_SIZE - 2);
+                              SCREEN_WIDTH * tileSize - 2,
+                              SCREEN_HEIGHT * tileSize - 2);
 
             QString infoText = QString::number(y * level->header.screensH + x);
             QRect infoRect = MapScene::infoFontMetrics.boundingRect(infoText);

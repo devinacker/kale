@@ -126,6 +126,7 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
+    <addaction name="action_Double_Size"/>
     <addaction name="action_Show_Screen_Boundaries"/>
     <addaction name="action_See_Through_Breakable_Tiles"/>
    </widget>
@@ -513,6 +514,17 @@
    </property>
    <property name="text">
     <string>Show Exits</string>
+   </property>
+  </action>
+  <action name="action_Double_Size">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Double Size</string>
    </property>
   </action>
  </widget>

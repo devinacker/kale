@@ -170,6 +170,8 @@ void MainWindow::setupSignals() {
                      this, SLOT(nextLevel()));
 
     // view menu
+    QObject::connect(ui->action_Double_Size, SIGNAL(toggled(bool)),
+                     scene, SLOT(setDoubleSize(bool)));
     QObject::connect(ui->action_Show_Screen_Boundaries, SIGNAL(toggled(bool)),
                      scene, SLOT(setShowBounds(bool)));
     QObject::connect(ui->action_See_Through_Breakable_Tiles, SIGNAL(toggled(bool)),
