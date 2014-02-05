@@ -30,13 +30,12 @@ public:
 public slots:
     void setBank(int);
     void setPalette(int);
-    void setColor(int);
 
 protected:
     void paintEvent(QPaintEvent*);
 
 private:
-    uint bankNum, palNum, colorNum;
+    uint bankNum, palNum;
     QImage bank[2];
 
     void updateBank();

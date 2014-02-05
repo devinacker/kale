@@ -50,7 +50,7 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     layout = ui->tilesetTabLayout;
     layout->addWidget(tileView, 0, 0, 1, 1);
     layout = ui->spritesTabLayout;
-    layout->addWidget(spritesView, 1, 0, 1, 5);
+    layout->addWidget(spritesView, 0, 0, 1, 1);
 
     // set initial tab index
     ui->tabWidget->setCurrentIndex(0);
@@ -93,12 +93,6 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
                      this, SLOT(setMaxLevelWidth(int)));
     QObject::connect(ui->spinBox_Width, SIGNAL(valueChanged(int)),
                      this, SLOT(setMaxLevelHeight(int)));
-
-    // and sprite color radio buttons
-    QObject::connect(ui->radioButton_Color1, SIGNAL(clicked(bool)),
-                     this, SLOT(applySpriteColor()));
-    QObject::connect(ui->radioButton_Color2, SIGNAL(clicked(bool)),
-                     this, SLOT(applySpriteColor()));
 }
 
 PropertiesWindow::~PropertiesWindow()
@@ -204,13 +198,6 @@ void PropertiesWindow::applyChange() {
     level->noReturn     = ui->checkBox_NoReturn->checkState() == Qt::Checked;
 
     emit changed();
-}
-
-void PropertiesWindow::applySpriteColor() {
-    if (ui->radioButton_Color1->isChecked())
-        spritesView->setColor(0);
-    else if (ui->radioButton_Color2->isChecked())
-        spritesView->setColor(1);
 }
 
 void PropertiesWindow::accept() {

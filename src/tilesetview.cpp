@@ -45,7 +45,7 @@ void TilesetView::paintEvent(QPaintEvent *event) {
 
 SpritesView::SpritesView(QWidget *parent):
     QWidget(parent),
-    bankNum(0), palNum(0), colorNum(0)
+    bankNum(0), palNum(0)
 {
     updateBank();
 }
@@ -62,7 +62,7 @@ void SpritesView::updateBank() {
  *  instead of using radio buttons)
  */
 QSize SpritesView::sizeHint() const {
-    return QSize(16 * 16, 16 * 8);
+    return QSize(16 * 16, 16 * 16);
 }
 
 void SpritesView::setBank(int num) {
@@ -75,11 +75,6 @@ void SpritesView::setPalette(int num) {
     updateBank();
 }
 
-void SpritesView::setColor(int num) {
-    this->colorNum = num;
-    this->update();
-}
-
 /*
  * Draw a CHR bank of sprites arranging them into 16x16 blocks
  */
@@ -87,17 +82,23 @@ void SpritesView::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     QRect rect = event->rect();
 
-    for (int h = rect.top() / 32; h <= rect.bottom() / 32; h++) {
+    for (int h = rect.top() / 32; h <= rect.bottom() / 32 / 2; h++) {
         for (int w = rect.left() / TILE_SIZE; w <= rect.right() / TILE_SIZE; w++) {
             // rows 0+2 show even numbered tiles, rows 1+3 show odd numbered tiles
             // so that they are arranged correctly into 16x16 sprites
             uint tile = ((h % 2) * 32) + (w * 2);
 
             QRect destRect(w * TILE_SIZE, h * TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
-            QRect srcRect (tile * 8, this->colorNum * 8, 8, 8);
+            QRect srcRect (tile * 8, 0, 8, 8);
+            // first color
             painter.drawImage(destRect, this->bank[h / 2], srcRect);
             painter.drawImage(destRect.translated(0, 16), this->bank[h / 2],
                               srcRect.translated(8, 0));
+            // second color
+            painter.drawImage(destRect.translated(0, 16*8), this->bank[h / 2],
+                              srcRect.translated(0, 8));
+            painter.drawImage(destRect.translated(0, 16*9), this->bank[h / 2],
+                              srcRect.translated(8, 8));
         }
     }
 }

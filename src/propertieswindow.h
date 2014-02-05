@@ -29,7 +29,6 @@ public:
 public slots:
     void applySpeed(int);
     void applyChange();
-    void applySpriteColor();
     void setMaxLevelWidth(int);
     void setMaxLevelHeight(int);
 

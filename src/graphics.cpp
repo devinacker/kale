@@ -130,7 +130,6 @@ QImage getCHRSpriteBank(uint bank, uint pal) {
 
         // apply palette
         for (uint i = 0; i < 6; i++) {
-            uint test = sprPalettes[pal][i];
             newBank.setColor(i + 1, nesPalette[sprPalettes[pal][i] & 0x3F]);
         }
 
