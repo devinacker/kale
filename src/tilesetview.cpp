@@ -45,14 +45,14 @@ void TilesetView::paintEvent(QPaintEvent *event) {
 
 SpritesView::SpritesView(QWidget *parent):
     QWidget(parent),
-    bankNum(0), palNum(0), colorNum(3)
+    bankNum(0), palNum(0), colorNum(0)
 {
     updateBank();
 }
 
 void SpritesView::updateBank() {
-    this->bank[0] = getCHRBank(bankNum, palNum);
-    this->bank[1] = getCHRBank(bankNum + 1, palNum);
+    this->bank[0] = getCHRSpriteBank(bankNum, palNum);
+    this->bank[1] = getCHRSpriteBank(bankNum + 1, palNum);
     this->update();
 }
 

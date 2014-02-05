@@ -6,8 +6,9 @@ QImage *banks = 0;
 uint numBanks = 0;
 uint8_t bankTable[3][256];
 
-const romaddr_t bankLists = {0x05, 0xB418};
-const romaddr_t palAddr   = {0x00, 0x8000};
+const romaddr_t bankLists  = {0x05, 0xB418};
+const romaddr_t palAddr    = {0x00, 0x8000};
+const romaddr_t sprPalAddr = {0x12, 0x8E55};
 
 // from "ntsc.pal", should be pretty accurate
 const QRgb nesPalette[] = {
@@ -81,6 +82,7 @@ const QRgb nesPalette[] = {
 };
 
 uint8_t palettes[10][256];
+uint8_t sprPalettes[50][6];
 
 void loadCHRBanks(ROMFile& rom) {
     if (banks)
@@ -95,8 +97,13 @@ void loadCHRBanks(ROMFile& rom) {
     rom.readData(bankLists + 256, 256, &bankTable[1][0]);
     rom.readData(bankLists + 512, 256, &bankTable[2][0]);
 
+    // background palettes
     for (uint i = 0; i < 10; i++)
         rom.readData(palAddr + 256*i, 256, &palettes[i][0]);
+
+    // sprite palettes
+    for (uint i = 0; i < 50; i++)
+        rom.readData(sprPalAddr + 6*i, 6, &sprPalettes[i][0]);
 }
 
 // get single CHR bank with applied palette
@@ -112,6 +119,22 @@ QImage getCHRBank(uint bank, uint pal) {
         newBank.setColor(10, nesPalette[0x37]);
         newBank.setColor(11, nesPalette[0x27]);
         newBank.setColor(12, nesPalette[0x07]);
+
+        return newBank;
+    } else return QImage();
+}
+
+QImage getCHRSpriteBank(uint bank, uint pal) {
+    if (banks) {
+        QImage newBank(banks[bank % numBanks]);
+
+        // apply palette
+        for (uint i = 0; i < 6; i++) {
+            uint test = sprPalettes[pal][i];
+            newBank.setColor(i + 1, nesPalette[sprPalettes[pal][i] & 0x3F]);
+        }
+
+        // TODO: transparent mask?
 
         return newBank;
     } else return QImage();

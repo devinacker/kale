@@ -44,7 +44,7 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     // sprites use two consecutive banks at once
     spriteBox->setSingleStep(2);
     layout->addWidget(spritePalBox, 3, 5, 1, 1);
-    spritePalBox->setMaximum(255);
+    spritePalBox->setMaximum(49);
 
     // add tile & sprite views
     layout = ui->tilesetTabLayout;
@@ -98,10 +98,6 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     QObject::connect(ui->radioButton_Color1, SIGNAL(clicked(bool)),
                      this, SLOT(applySpriteColor()));
     QObject::connect(ui->radioButton_Color2, SIGNAL(clicked(bool)),
-                     this, SLOT(applySpriteColor()));
-    QObject::connect(ui->radioButton_Color3, SIGNAL(clicked(bool)),
-                     this, SLOT(applySpriteColor()));
-    QObject::connect(ui->radioButton_Color4, SIGNAL(clicked(bool)),
                      this, SLOT(applySpriteColor()));
 }
 
@@ -215,10 +211,6 @@ void PropertiesWindow::applySpriteColor() {
         spritesView->setColor(0);
     else if (ui->radioButton_Color2->isChecked())
         spritesView->setColor(1);
-    else if (ui->radioButton_Color3->isChecked())
-        spritesView->setColor(2);
-    else if (ui->radioButton_Color4->isChecked())
-        spritesView->setColor(3);
 }
 
 void PropertiesWindow::accept() {
