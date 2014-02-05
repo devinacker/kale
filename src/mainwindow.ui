@@ -523,6 +523,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/icons/page_white_magnify.png</normaloff>:/images/icons/page_white_magnify.png</iconset>
+   </property>
    <property name="text">
     <string>Double Size</string>
    </property>

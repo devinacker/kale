@@ -220,6 +220,7 @@ void MainWindow::setupActions() {
     ui->toolBar->addSeparator();
 
     // from view menu
+    ui->toolBar->addAction(ui->action_Double_Size);
     ui->toolBar->addAction(ui->action_Show_Screen_Boundaries);
     ui->toolBar->addAction(ui->action_See_Through_Breakable_Tiles);
     ui->toolBar->addSeparator();

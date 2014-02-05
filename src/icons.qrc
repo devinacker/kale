@@ -24,5 +24,6 @@
         <file>images/icons/kale-tiles.png</file>
         <file>images/icons/kale-screens.png</file>
         <file>images/icons/kale-tileblend.png</file>
+        <file>images/icons/page_white_magnify.png</file>
     </qresource>
 </RCC>
