@@ -74,9 +74,11 @@ QVariant SceneItem::itemChange(GraphicsItemChange change, const QVariant& value)
         newPos.setX(round(newPos.x() / tileSize) * tileSize);
         newPos.setY(round(newPos.y() / tileSize) * tileSize);
 
-        // TODO: update the position of the sprite/exit (or whatever) based on the new position
-
         return newPos;
+    } else if (change == QGraphicsItem::ItemPositionHasChanged) {
+        // update the position of the sprite/exit (or whatever) based on the new position
+        this->updateObject();
+        return value;
     }
 
     return QGraphicsItem::itemChange(change, value);
@@ -89,7 +91,6 @@ ExitItem::ExitItem(exit_t *exit):
 
     this->updateItem();
 
-    // TODO: exit type strings
     this->setToolTip(QString("Exit to level %1 (screen %2, %3, %4)\nType %5")
                      .arg(QString::number(exit->dest, 16).rightJustified(3, QLatin1Char('0')).toUpper())
                      .arg(QString::number(exit->destScreen, 16).toUpper())
@@ -111,8 +112,7 @@ void ExitItem::updateObject() {
 }
 
 void ExitItem::updateItem() {
-    this->setX(exit->x * tileSize);
-    this->setY(exit->y * tileSize);
+    this->setPos(exit->x * tileSize, exit->y * tileSize);
 }
 
 SpriteItem::SpriteItem(sprite_t *sprite) :
@@ -138,6 +138,5 @@ void SpriteItem::updateObject() {
 }
 
 void SpriteItem::updateItem() {
-    this->setX(sprite->x * tileSize);
-    this->setY(sprite->y * tileSize);
+    this->setPos(sprite->x * tileSize, sprite->y * tileSize);
 }
