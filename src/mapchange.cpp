@@ -29,7 +29,7 @@ MapChange::~MapChange() {
     delete[] after;
 }
 
-void MapChange::undo() const {
+void MapChange::undo() {
     // restore to the region's pre-edit state
     if (level) {
         for (uint row = 0; row < this->l; row++)

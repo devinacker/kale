@@ -52,8 +52,12 @@ MapScene::MapScene(QObject *parent, leveldata_t *currentLevel)
       showBounds(true), seeThrough(true),
       tileSize(TILE_SIZE * 2)
 {
+    /*
     QObject::connect(this, SIGNAL(edited()),
                      this, SLOT(refresh()));
+    */
+    QObject::connect(this, SIGNAL(edited()),
+                     this, SLOT(update()));
     QObject::connect(&animTimer, SIGNAL(timeout()),
                      this, SLOT(animate()));
 }
@@ -355,7 +359,6 @@ void MapScene::copyTiles(bool cut = false) {
     // if there is no selection, don't do anything
     if (selWidth == 0 || selLength == 0) return;
 
-    /*
     MapChange *edit;
     if (cut) {
         edit = new MapChange(level, selX, selY, selWidth, selLength);
@@ -367,7 +370,7 @@ void MapScene::copyTiles(bool cut = false) {
         for (int j = 0; j < selWidth; j++) {
             copyBuffer[i][j] = level->tiles[selY + i][selX + j];
             if (cut)
-                level->tiles[selY + i][selX + j] = noTile;
+                level->tiles[selY + i][selX + j] = 0;
         }
     }
 
@@ -379,14 +382,11 @@ void MapScene::copyTiles(bool cut = false) {
         emit edited();
     }
 
-    updateSelection();
     emit statusMessage(QString("%1 (%2, %3) to (%4, %5)")
                        .arg(cut ? "Cut" : "Copied")
                        .arg(selX).arg(selY)
                        .arg(selX + selWidth - 1)
                        .arg(selY + selLength - 1));
-    */
-    qDebug("MapScene::copyTiles not implemented");
 }
 
 void MapScene::paste() {
@@ -394,7 +394,6 @@ void MapScene::paste() {
     if (selWidth == 0 || selLength == 0
             || copyWidth == 0 || copyLength == 0) return;
 
-    /*
     MapChange *edit = new MapChange(level, selX, selY, copyWidth, copyLength);
     edit->setText("paste");
 
@@ -407,42 +406,36 @@ void MapScene::paste() {
 
     stack.push(edit);
     emit edited();
-    updateSelection();
 
     emit statusMessage(QString("Pasted (%1, %2) to (%3, %4)")
                        .arg(selX).arg(selY)
                        .arg(selX + copyWidth - 1)
                        .arg(selY + copyLength - 1));
-    */
 
-    qDebug("MapScene::paste not implemented");
 }
 
 void MapScene::deleteTiles() {
     // if there is no selection, don't do anything
     if (selWidth == 0 || selLength == 0) return;
 
-    /*
     MapChange *edit = new MapChange(level, selX, selY, selWidth, selLength);
     edit->setText("delete");
 
     // otherwise, delete stuff
     for (int i = 0; i < selLength && selY + i < 64; i++) {
         for (int j = 0; j < selWidth && selX + j < 64; j++) {
-            level->tiles[selY + i][selX + j] = noTile;
+            level->tiles[selY + i][selX + j] = 0;
         }
     }
 
     stack.push(edit);
     emit edited();
-    updateSelection();
 
     emit statusMessage(QString("Deleted (%1, %2) to (%3, %4)")
                        .arg(selX).arg(selY)
                        .arg(selX + selWidth - 1)
                        .arg(selY + selLength - 1));
-    */
-    qDebug("MapScene::delete not implemented");
+
 }
 
 /*

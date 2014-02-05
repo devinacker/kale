@@ -18,7 +18,7 @@ public:
                        QUndoCommand *parent = 0);
     ~MapChange();
 
-    void undo() const;
+    void undo();
     void redo();
     void setText(const QString &text);
 
