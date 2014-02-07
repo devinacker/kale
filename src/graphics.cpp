@@ -85,9 +85,6 @@ uint8_t palettes[10][256];
 uint8_t sprPalettes[50][6];
 
 void loadCHRBanks(ROMFile& rom) {
-    if (banks)
-        delete[] banks;
-
     numBanks = rom.getNumCHRBanks();
     banks = new QImage[numBanks];
     for (uint i = 0; i < numBanks; i++)
@@ -104,6 +101,10 @@ void loadCHRBanks(ROMFile& rom) {
     // sprite palettes
     for (uint i = 0; i < 50; i++)
         rom.readData(sprPalAddr + 6*i, 6, &sprPalettes[i][0]);
+}
+
+void freeCHRBanks() {
+    delete[] banks;
 }
 
 // get single CHR bank with applied palette

@@ -14,6 +14,7 @@
 extern uint8_t bankTable[][256];
 
 void loadCHRBanks(ROMFile& rom);
+void freeCHRBanks();
 QImage getCHRBank(uint bank, uint pal);
 QImage getCHRSpriteBank(uint bank, uint pal);
 

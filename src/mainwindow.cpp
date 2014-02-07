@@ -505,6 +505,8 @@ int MainWindow::closeFile() {
         levels[i] = NULL;
     }
 
+    freeCHRBanks();
+
     // clear level displays
     currentLevel.header.screensH = 0;
     currentLevel.header.screensV = 0;

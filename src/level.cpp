@@ -56,7 +56,6 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
     // TODO: "error reading level, attempt to continue?"
     if (result == 0) return NULL;
 
-    //leveldata_t *level = (leveldata_t*)malloc(sizeof(leveldata_t));
     leveldata_t *level;
     try {
         level = new leveldata_t;

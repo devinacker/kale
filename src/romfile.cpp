@@ -60,6 +60,9 @@ bool ROMFile::openROM(OpenMode flags) {
     if (!this->open(flags))
         return false;
 
+    numPRGBanks = 0;
+    numCHRBanks = 0;
+
     // get size of PRG/CHR banks
     this->seek(4);
     this->read((char*)&numPRGBanks, 1);
