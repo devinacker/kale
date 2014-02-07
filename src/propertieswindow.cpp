@@ -30,9 +30,6 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
 {
     ui->setupUi(this);
 
-    // prevent window resizing
-    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
-
     // add spinboxes
     QGridLayout *layout = ui->gridLayout;
     layout->addWidget(tileBox,      2, 2, 1, 1);

@@ -35,7 +35,8 @@ SOURCES += \
     src/graphics.cpp \
     src/propertieswindow.cpp \
     src/hexspinbox.cpp \
-    src/tilesetview.cpp
+    src/tilesetview.cpp \
+    src/tileeditwindow.cpp
 
 HEADERS  += \
     src/romfile.h \
@@ -52,12 +53,14 @@ HEADERS  += \
     src/sceneitem.h \
     src/propertieswindow.h \
     src/hexspinbox.h \
-    src/tilesetview.h
+    src/tilesetview.h \
+    src/tileeditwindow.h
 
 FORMS += \
     src/mainwindow.ui \
     src/coursewindow.ui \
-    src/propertieswindow.ui
+    src/propertieswindow.ui \
+    src/tileeditwindow.ui
 
 RESOURCES += \
     src/icons.qrc

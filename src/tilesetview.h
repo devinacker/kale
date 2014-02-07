@@ -10,13 +10,24 @@ class TilesetView : public QWidget
 public:
     explicit TilesetView(QWidget *parent, const QPixmap *tiles);
     QSize sizeHint() const;
+    void setMouseEnabled(bool);
 
 protected:
     void paintEvent(QPaintEvent*);
+    void mouseDoubleClickEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *);
 
 private:
+    static const QColor infoColor;
+
     const QPixmap* pixmap;
     QTimer timer;
+    bool mouseEnabled;
+    int currTile;
+
+signals:
+    void tileHovered(int);
+    void tileSelected(int);
 
 };
 

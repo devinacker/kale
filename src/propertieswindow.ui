@@ -24,7 +24,7 @@
   </property>
   <layout class="QGridLayout" name="mainLayout">
    <property name="sizeConstraint">
-    <enum>QLayout::SetDefaultConstraint</enum>
+    <enum>QLayout::SetFixedSize</enum>
    </property>
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox_Level">

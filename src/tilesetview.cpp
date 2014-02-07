@@ -7,12 +7,16 @@
 #include <QPainter>
 #include <QPaintEvent>
 
+const QColor TilesetView::infoColor(255, 192, 192, 128);
+
 TilesetView::TilesetView(QWidget *parent, const QPixmap *tiles) :
     QWidget(parent),
     pixmap(tiles),
-    timer(this)
+    timer(this),
+    currTile(-1)
 {
-    setFixedSize(this->sizeHint());
+    this->setFixedSize(sizeHint());
+    this->setMouseEnabled(false);
 
     // update tileset once per frame (16ms)
     timer.start(16);
@@ -31,22 +35,53 @@ void TilesetView::paintEvent(QPaintEvent *event) {
     QRect rect = event->rect();
 
     uint tile = 0;
-    for (int h = rect.top() / TILE_SIZE; h <= rect.bottom() / TILE_SIZE; h++) {
-        for (int w = rect.left() / TILE_SIZE; w <= rect.right() / TILE_SIZE; w++) {
+    for (int h = rect.top() / TILE_SIZE; tile < 256 && h <= rect.bottom() / TILE_SIZE; h++) {
+        for (int w = rect.left() / TILE_SIZE; tile < 256 && w <= rect.right() / TILE_SIZE; w++) {
             QRect destRect(w * TILE_SIZE, h * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             QRect srcRect (tile * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE);
             painter.drawPixmap(destRect, *pixmap, srcRect);
 
-            if (++tile >= 256) return;
+            tile++;
         }
     }
 
+    if (currTile >= 0)
+        painter.fillRect((currTile % 16) * TILE_SIZE, (currTile / 16) * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                         TilesetView::infoColor);
+}
+
+void TilesetView::setMouseEnabled(bool on) {
+    this->mouseEnabled = on;
+    this->setMouseTracking(on);
+}
+
+void TilesetView::mouseMoveEvent(QMouseEvent *event) {
+    if (this->mouseEnabled) {
+        QPoint pos = event->pos();
+        int newTile;
+        if (this->rect().contains(pos)) {
+            newTile = (pos.y() / TILE_SIZE * 16) + (pos.x() / TILE_SIZE);
+        } else {
+            newTile = -1;
+        }
+
+        if (newTile != currTile) {
+            currTile = newTile;
+            emit tileHovered(currTile);
+        }
+    }
+}
+
+void TilesetView::mouseDoubleClickEvent(QMouseEvent *event) {
+    if (this->mouseEnabled)
+        emit tileSelected(currTile);
 }
 
 SpritesView::SpritesView(QWidget *parent):
     QWidget(parent),
     bankNum(0), palNum(0)
 {
+    this->setFixedSize(sizeHint());
     updateBank();
 }
 

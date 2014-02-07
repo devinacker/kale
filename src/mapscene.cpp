@@ -19,6 +19,7 @@
 #include "tileset.h"
 #include "sceneitem.h"
 #include "stuff.h"
+#include "tileeditwindow.h"
 
 #define MAP_TEXT_PAD_H 4
 #define MAP_TEXT_PAD_V 0
@@ -69,20 +70,17 @@ void MapScene::editTiles() {
     if (selWidth == 0 || selLength == 0)
         return;
 
-    /*
     MapChange *edit = new MapChange(level, selX, selY, selWidth, selLength);
 
     // send the level and selection info to a new tile edit window instance
-    TileEditWindow win;
-    if (win.startEdit(level, QRect(selX, selY, selWidth, selLength)))
+    TileEditWindow win(NULL, level, QRect(selX, selY, selWidth, selLength), &tilesetPixmap);
+    if (win.exec())
         stack.push(edit);
     else delete edit;
 
     // redraw the map scene with the new properties
     emit edited();
-    updateSelection();
-    */
-    qDebug("MapScene::editTiles() not implemented");
+
 }
 
 /*
