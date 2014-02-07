@@ -7,7 +7,7 @@
 #include <QPainter>
 #include <QPaintEvent>
 
-const QColor TilesetView::infoColor(255, 192, 192, 128);
+const QColor TilesetView::infoColor(255, 192, 192, 192);
 
 TilesetView::TilesetView(QWidget *parent, const QPixmap *tiles) :
     QWidget(parent),
