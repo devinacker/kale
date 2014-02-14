@@ -117,23 +117,30 @@ void SpritesView::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     QRect rect = event->rect();
 
-    for (int h = rect.top() / 32; h <= rect.bottom() / 32 / 2; h++) {
-        for (int w = rect.left() / TILE_SIZE; w <= rect.right() / TILE_SIZE; w++) {
-            // rows 0+2 show even numbered tiles, rows 1+3 show odd numbered tiles
-            // so that they are arranged correctly into 16x16 sprites
+    for (int h = rect.top() / (TILE_SIZE * 2); h <= rect.bottom() / (TILE_SIZE * 2) / 2; h++) {
+        for (int w = rect.left() / (TILE_SIZE * 2); w <= rect.right() / (TILE_SIZE * 2); w++) {
+            // get the first tile of each sprite
             uint tile = ((h % 2) * 32) + (w * 2);
 
-            QRect destRect(w * TILE_SIZE, h * TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+            QRect destRect(w * TILE_SIZE * 2, h * TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
             QRect srcRect (tile * 8, 0, 8, 8);
             // first color
             painter.drawImage(destRect, this->bank[h / 2], srcRect);
             painter.drawImage(destRect.translated(0, 16), this->bank[h / 2],
                               srcRect.translated(8, 0));
+            painter.drawImage(destRect.translated(16, 0), this->bank[h / 2],
+                              srcRect.translated(8 * 16, 0));
+            painter.drawImage(destRect.translated(16, 16), this->bank[h / 2],
+                              srcRect.translated(8 * 17, 0));
             // second color
-            painter.drawImage(destRect.translated(0, 16*8), this->bank[h / 2],
+            painter.drawImage(destRect.translated(0, 16 * 8), this->bank[h / 2],
                               srcRect.translated(0, 8));
-            painter.drawImage(destRect.translated(0, 16*9), this->bank[h / 2],
+            painter.drawImage(destRect.translated(0, 16 * 9), this->bank[h / 2],
                               srcRect.translated(8, 8));
+            painter.drawImage(destRect.translated(16, 16 * 8), this->bank[h / 2],
+                              srcRect.translated(8 * 16, 8));
+            painter.drawImage(destRect.translated(16, 16 * 9), this->bank[h / 2],
+                              srcRect.translated(8 * 17, 8));
         }
     }
 }
