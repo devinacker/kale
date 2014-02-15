@@ -312,6 +312,11 @@ bool MapScene::isClean() const {
     return stack.isClean();
 }
 
+void MapScene::pushChange(QUndoCommand *change) {
+    stack.push(change);
+    emit edited();
+}
+
 void MapScene::undo() {
     if (stack.canUndo()) {
         emit statusMessage(QString("Undoing ").append(stack.undoText()));
@@ -376,8 +381,7 @@ void MapScene::copyTiles(bool cut = false) {
     copyLength = selLength;
 
     if (cut) {
-        stack.push(edit);
-        emit edited();
+        pushChange(edit);
     }
 
     emit statusMessage(QString("%1 (%2, %3) to (%4, %5)")
@@ -402,8 +406,7 @@ void MapScene::paste() {
         }
     }
 
-    stack.push(edit);
-    emit edited();
+    pushChange(edit);
 
     emit statusMessage(QString("Pasted (%1, %2) to (%3, %4)")
                        .arg(selX).arg(selY)
@@ -426,8 +429,7 @@ void MapScene::deleteTiles() {
         }
     }
 
-    stack.push(edit);
-    emit edited();
+    pushChange(edit);
 
     emit statusMessage(QString("Deleted (%1, %2) to (%3, %4)")
                        .arg(selX).arg(selY)

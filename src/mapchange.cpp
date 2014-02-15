@@ -62,3 +62,25 @@ void MapChange::setText(const QString &text) {
                           .append(" from (%1, %2) to (%3, %4)")
                           .arg(x).arg(y).arg(x + w - 1).arg(y + l - 1));
 }
+
+SpriteChange::SpriteChange(SpriteItem *item, sprite_t *sprite, sprite_t before,
+                           QUndoCommand *parent):
+    QUndoCommand(parent),
+    item(item),
+    sprite(sprite),
+    before(before)
+{
+    this->after = *sprite;
+
+    this->setText("sprite edit");
+}
+
+void SpriteChange::undo() {
+    *sprite = before;
+    item->updateItem();
+}
+
+void SpriteChange::redo() {
+    *sprite = after;
+    item->updateItem();
+}

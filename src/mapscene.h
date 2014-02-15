@@ -62,6 +62,7 @@ public:
     bool canUndo() const;
     bool canRedo() const;
     bool isClean() const;
+    void pushChange(QUndoCommand*);
 
     void enableSelectTiles(bool);
     void enableSelectSprites(bool);

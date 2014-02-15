@@ -9,6 +9,7 @@
 #include <QUndoCommand>
 
 #include "level.h"
+#include "sceneitem.h"
 
 class MapChange : public QUndoCommand
 {
@@ -28,5 +29,22 @@ private:
     uint *before, *after;
     bool first;
 };
+
+class SpriteChange : public QUndoCommand
+{
+public:
+    explicit SpriteChange(SpriteItem *item, sprite_t *sprite,
+                          sprite_t before,
+                          QUndoCommand *parent = 0);
+
+    void undo();
+    void redo();
+
+private:
+    SpriteItem *item;
+    sprite_t *sprite;
+    sprite_t before, after;
+};
+
 
 #endif // MAPCHANGE_H

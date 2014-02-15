@@ -14,7 +14,9 @@
 #include "level.h"
 #include "graphics.h"
 #include "stuff.h"
+#include "mapscene.h"
 #include "sceneitem.h"
+#include "mapchange.h"
 #include "spriteeditwindow.h"
 
 // TODO: better colors
@@ -84,6 +86,8 @@ QVariant SceneItem::itemChange(GraphicsItemChange change, const QVariant& value)
         return newPos;
     } else if (change == QGraphicsItem::ItemPositionHasChanged) {
         // update the position of the sprite/exit (or whatever) based on the new position
+
+        // TODO: generate undo/redo actions for movement somehow
         this->updateObject();
         return value;
     }
@@ -150,9 +154,15 @@ void SpriteItem::updateItem() {
 }
 
 void SpriteItem::editItem() {
+    sprite_t before = *sprite;
+
     SpriteEditWindow win(NULL, this->sprite);
-    // TODO: generate undo/redo action
-    win.exec();
+    if (win.exec()) {
+        MapScene *scene = dynamic_cast<MapScene*>(this->scene());
+        if (scene) {
+            scene->pushChange(new SpriteChange(this, sprite, before));
+        }
+    }
 
     updateItem();
 }
