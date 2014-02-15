@@ -1,8 +1,8 @@
 before initial release:
 
-- exit edit dialog
 - load CHR bank tables from correct place in PAL vers.
 - saving!!!
+- generate undo/redo actions when moving sprites/exits
 - verify tile/sprite IDs
 
 later:
