@@ -65,7 +65,9 @@ QVariant SceneItem::itemChange(GraphicsItemChange change, const QVariant& value)
     if (scene() && change == QGraphicsItem::ItemPositionChange) {
         QPointF newPos = value.toPointF();
         // rect is adjusted so that items cannot be placed one tile to the right/bottom
-        QRectF rect = scene()->sceneRect().adjusted(0, 0, -tileSize, -tileSize);
+        int adjust = -tileSize;
+        QRectF rect = scene()->sceneRect().adjusted(0, 0, adjust, adjust);
+
         if (!rect.contains(newPos)) {
             // Keep the item inside the scene rect.
             newPos.setX(qMin(rect.right(), qMax(newPos.x(), rect.left())));
