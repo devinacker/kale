@@ -18,6 +18,7 @@
 #include "sceneitem.h"
 #include "mapchange.h"
 #include "spriteeditwindow.h"
+#include "exiteditwindow.h"
 
 // TODO: better colors
 const QBrush SceneItem::strokeColor(Qt::black);
@@ -126,7 +127,19 @@ void ExitItem::updateItem() {
                      .arg(exitType(exit->type)));
 }
 
-void ExitItem::editItem() {}
+void ExitItem::editItem() {
+    exit_t before = *exit;
+
+    ExitEditWindow win(NULL, this->exit);
+    if (win.exec()) {
+        MapScene *scene = dynamic_cast<MapScene*>(this->scene());
+        if (scene) {
+            scene->pushChange(new ExitChange(this, exit, before));
+        }
+    }
+
+    updateItem();
+}
 
 SpriteItem::SpriteItem(sprite_t *sprite) :
     SceneItem()

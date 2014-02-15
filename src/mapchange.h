@@ -46,5 +46,21 @@ private:
     sprite_t before, after;
 };
 
+class ExitChange : public QUndoCommand
+{
+public:
+    explicit ExitChange(ExitItem *item, exit_t *exit,
+                        exit_t before,
+                        QUndoCommand *parent = 0);
+
+    void undo();
+    void redo();
+
+private:
+    ExitItem *item;
+    exit_t *exit;
+    exit_t before, after;
+};
+
 
 #endif // MAPCHANGE_H

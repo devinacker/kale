@@ -84,3 +84,25 @@ void SpriteChange::redo() {
     *sprite = after;
     item->updateItem();
 }
+
+ExitChange::ExitChange(ExitItem *item, exit_t *exit, exit_t before,
+                       QUndoCommand *parent):
+    QUndoCommand(parent),
+    item(item),
+    exit(exit),
+    before(before)
+{
+    this->after = *exit;
+
+    this->setText("exit edit");
+}
+
+void ExitChange::undo() {
+    *exit = before;
+    item->updateItem();
+}
+
+void ExitChange::redo() {
+    *exit = after;
+    item->updateItem();
+}
