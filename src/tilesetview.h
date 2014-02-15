@@ -14,7 +14,7 @@ public:
 
 protected:
     void paintEvent(QPaintEvent*);
-    void mouseDoubleClickEvent(QMouseEvent *);
+    void mousePressEvent(QMouseEvent *);
     void mouseMoveEvent(QMouseEvent *);
 
 private:

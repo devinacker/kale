@@ -72,7 +72,7 @@ void TilesetView::mouseMoveEvent(QMouseEvent *event) {
     }
 }
 
-void TilesetView::mouseDoubleClickEvent(QMouseEvent *event) {
+void TilesetView::mousePressEvent(QMouseEvent *event) {
     if (this->mouseEnabled)
         emit tileSelected(currTile);
 }
