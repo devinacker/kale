@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>Level Properties</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+    <normaloff>:/images/icons/wand.png</normaloff>:/images/icons/wand.png</iconset>
+  </property>
   <property name="modal">
    <bool>true</bool>
   </property>
@@ -395,7 +399,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
