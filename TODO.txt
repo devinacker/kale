@@ -1,0 +1,12 @@
+before initial release:
+
+- sprite/exit edit dialogs
+- load CHR bank tables from correct place in PAL vers.
+- saving!!!
+- verify tile/sprite IDs
+
+later:
+
+- dreamtool level importing
+- tileset & palette editing
+- info about warp star anim., boss level #s, etc. (ask Reimu)

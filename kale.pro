@@ -66,4 +66,5 @@ RESOURCES += \
     src/icons.qrc
 
 OTHER_FILES += \
-    src/windows.rc
+    src/windows.rc \
+    TODO.txt
