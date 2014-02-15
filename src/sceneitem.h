@@ -20,8 +20,10 @@ public:
 
 protected:
     QVariant itemChange (GraphicsItemChange change, const QVariant & value);
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     virtual void updateObject() = 0;
     virtual void updateItem() = 0;
+    virtual void editItem() = 0;
 
     uint tileSize;
 
@@ -39,6 +41,7 @@ public:
 protected:
     void updateObject();
     void updateItem();
+    void editItem();
 
 private:
     exit_t *exit;
@@ -56,6 +59,7 @@ public:
 protected:
     void updateObject();
     void updateItem();
+    void editItem();
 
 private:
     sprite_t *sprite;

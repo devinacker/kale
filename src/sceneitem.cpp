@@ -15,6 +15,7 @@
 #include "graphics.h"
 #include "stuff.h"
 #include "sceneitem.h"
+#include "spriteeditwindow.h"
 
 // TODO: better colors
 const QBrush SceneItem::strokeColor(Qt::black);
@@ -50,6 +51,10 @@ QColor SceneItem::color(bool selected) {
         return SceneItem::selectedColor;
 
     return SceneItem::fillColor;
+}
+
+void SceneItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+    this->editItem();
 }
 
 void SceneItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
@@ -93,12 +98,6 @@ ExitItem::ExitItem(exit_t *exit):
 
     this->updateItem();
 
-    this->setToolTip(QString("Exit to level %1 (screen %2, %3, %4)\nType %5")
-                     .arg(QString::number(exit->dest, 16).rightJustified(3, QLatin1Char('0')).toUpper())
-                     .arg(QString::number(exit->destScreen, 16).toUpper())
-                     .arg(exit->destX).arg(exit->destY)
-                     .arg(exitType(exit->type)));
-
 }
 
 QColor ExitItem::color(bool selected) {
@@ -115,7 +114,15 @@ void ExitItem::updateObject() {
 
 void ExitItem::updateItem() {
     this->setPos(exit->x * tileSize, exit->y * tileSize);
+
+    this->setToolTip(QString("Exit to level %1 (screen %2, %3, %4)\nType %5")
+                     .arg(QString::number(exit->dest, 16).rightJustified(3, QLatin1Char('0')).toUpper())
+                     .arg(QString::number(exit->destScreen, 16).toUpper())
+                     .arg(exit->destX).arg(exit->destY)
+                     .arg(exitType(exit->type)));
 }
+
+void ExitItem::editItem() {}
 
 SpriteItem::SpriteItem(sprite_t *sprite) :
     SceneItem()
@@ -123,8 +130,6 @@ SpriteItem::SpriteItem(sprite_t *sprite) :
     this->sprite = sprite;
 
     this->updateItem();
-
-    this->setToolTip(QString("Sprite %1").arg(spriteType(sprite->type)));
 }
 
 QColor SpriteItem::color(bool selected) {
@@ -141,4 +146,13 @@ void SpriteItem::updateObject() {
 
 void SpriteItem::updateItem() {
     this->setPos(sprite->x * tileSize, sprite->y * tileSize);
+    this->setToolTip(QString("Sprite %1").arg(spriteType(sprite->type)));
+}
+
+void SpriteItem::editItem() {
+    SpriteEditWindow win(NULL, this->sprite);
+    // TODO: generate undo/redo action
+    win.exec();
+
+    updateItem();
 }
