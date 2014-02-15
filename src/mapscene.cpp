@@ -51,7 +51,7 @@ MapScene::MapScene(QObject *parent, leveldata_t *currentLevel)
       tilesetPixmap(256*TILE_SIZE, TILE_SIZE),
       animFrame(0), animTimer(this),
       showBounds(true), seeThrough(true),
-      tileSize(TILE_SIZE * 2)
+      tileSize(TILE_SIZE)
 {
     /*
     QObject::connect(this, SIGNAL(edited()),
