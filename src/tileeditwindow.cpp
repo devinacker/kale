@@ -43,8 +43,8 @@ void TileEditWindow::setTileLabel(int tile) {
 
 void TileEditWindow::accept(int tile) {
     if (tile >= 0) {
-        for (uint x = area.left(); x <= area.right(); x++)
-            for (uint y = area.top(); y <= area.bottom(); y++)
+        for (int x = area.left(); x <= area.right(); x++)
+            for (int y = area.top(); y <= area.bottom(); y++)
                 level->tiles[y][x] = tile;
     }
 
