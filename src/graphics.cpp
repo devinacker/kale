@@ -6,7 +6,11 @@ QImage *banks = 0;
 uint numBanks = 0;
 uint8_t bankTable[3][256];
 
-const romaddr_t bankLists  = {0x05, 0xB418};
+const romaddr_t bankListPtr[3] = {{0x13, 0xA6A9},
+                                  {0x13, 0xA6AE},
+                                  {0x13, 0xA6B3}};
+const uint      bankListBank   = 0x05;
+
 const romaddr_t palAddr    = {0x00, 0x8000};
 const romaddr_t sprPalAddr = {0x12, 0x8E55};
 
@@ -89,6 +93,9 @@ void loadCHRBanks(ROMFile& rom) {
     banks = new QImage[numBanks];
     for (uint i = 0; i < numBanks; i++)
         banks[i] = rom.readCHRBank(i);
+
+    romaddr_t bankLists = {bankListBank, 0};
+    rom.readData(bankListPtr[0], 2, &bankLists.addr);
 
     rom.readData(bankLists,       256, &bankTable[0][0]);
     rom.readData(bankLists + 256, 256, &bankTable[1][0]);
