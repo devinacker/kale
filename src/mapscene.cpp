@@ -213,21 +213,46 @@ void MapScene::animate() {
 */
 void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     // if the level is not being displayed, don't do anything
-    if (!isActive()) return;
-
-    // different selection type: try passing the event somewhere else
-    if (!selectTiles) {
-        QGraphicsScene::mousePressEvent(event);
+    // (or if the click is outside of the scene)
+    if (!isActive() || !sceneRect().contains(event->scenePos())) return;
 
     // left button: start or continue selection
     // right button: cancel selection
-    } else if (event->buttons() & Qt::LeftButton) {
-        beginSelection(event);
-        event->accept();
+    if (event->buttons() & Qt::LeftButton) {
+        if (selectTiles) {
+            beginSelection(event);
+            event->accept();
+        } else {
+            // different selection type: try passing the event somewhere else
+            QGraphicsScene::mousePressEvent(event);
+        }
 
     } else if (event->buttons() & Qt::RightButton) {
-        cancelSelection();
-        event->accept();
+        if (selectTiles) {
+            cancelSelection();
+            event->accept();
+        } else if (selectSprites) {
+            sprite_t sprite;
+            sprite.x = tileX; sprite.y = tileY; sprite.type = 0;
+            level->sprites.push_back(sprite);
+            // TODO: simpler scene item refresh
+            level->modified = true;
+            level->modifiedRecently = true;
+            emit edited();
+            refresh();
+        } else if (selectExits) {
+            exit_t exit;
+            exit.x = tileX; exit.y = tileY;
+            exit.dest = 0; exit.destScreen = 0;
+            exit.destX = 0; exit.destY = 0;
+            exit.type = 0;
+            level->exits.push_back(exit);
+            // TODO: simpler scene item refresh
+            level->modified = true;
+            level->modifiedRecently = true;
+            emit edited();
+            refresh();
+        }
     }
     update();
 }
