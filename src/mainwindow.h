@@ -61,9 +61,6 @@ protected slots:
 
     // display text on the statusbar
     void status(const QString &msg);
-
-    // debug menu crap
-    void dumpLevel() const;
     
     // toolbar updates
     void setOpenFileActions(bool val);

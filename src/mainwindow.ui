@@ -94,10 +94,6 @@
      <string>&amp;Level</string>
     </property>
     <addaction name="action_Save_Level"/>
-    <addaction name="action_Save_Level_to_Image"/>
-    <addaction name="separator"/>
-    <addaction name="action_Load_Course_from_File"/>
-    <addaction name="action_Save_Course_to_File"/>
     <addaction name="separator"/>
     <addaction name="action_Select_Tiles"/>
     <addaction name="action_Select_Sprites"/>
@@ -116,12 +112,6 @@
     <addaction name="action_Contents"/>
     <addaction name="action_About"/>
    </widget>
-   <widget class="QMenu" name="menuDebug">
-    <property name="title">
-     <string>Debug</string>
-    </property>
-    <addaction name="action_Dump_Level"/>
-   </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>&amp;View</string>
@@ -135,7 +125,6 @@
    <addaction name="menuLevel"/>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
-   <addaction name="menuDebug"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="toolBar">

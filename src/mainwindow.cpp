@@ -146,12 +146,12 @@ void MainWindow::setupSignals() {
     QObject::connect(ui->action_Save_Level_to_Image, SIGNAL(triggered()),
                      previewWin, SLOT(savePreview()));
     */
-
+    /*
     QObject::connect(ui->action_Load_Course_from_File, SIGNAL(triggered()),
                      this, SLOT(loadCourseFromFile()));
     QObject::connect(ui->action_Save_Course_to_File, SIGNAL(triggered()),
                      this, SLOT(saveCourseToFile()));
-
+    */
     QObject::connect(ui->action_Select_Tiles, SIGNAL(toggled(bool)),
                      this, SLOT(enableSelectTiles(bool)));
     QObject::connect(ui->action_Select_Sprites, SIGNAL(toggled(bool)),
@@ -182,11 +182,6 @@ void MainWindow::setupSignals() {
                      this, SLOT(showHelp()));
     QObject::connect(ui->action_About, SIGNAL(triggered()),
                      this, SLOT(showAbout()));
-
-
-    // debug menu
-    QObject::connect(ui->action_Dump_Level, SIGNAL(triggered()),
-                     this, SLOT(dumpLevel()));
 
     // other window-related stuff
     // receive status bar messages from scene
@@ -689,8 +684,4 @@ QMessageBox::StandardButton MainWindow::checkSaveROM() {
     }
 
     return button;
-}
-
-void MainWindow::dumpLevel() const {
-
 }
