@@ -128,14 +128,9 @@ void ExitItem::updateItem() {
 }
 
 void ExitItem::editItem() {
-    exit_t before = *exit;
-
     ExitEditWindow win(NULL, this->exit);
     if (win.exec()) {
-        MapScene *scene = dynamic_cast<MapScene*>(this->scene());
-        if (scene) {
-            scene->pushChange(new ExitChange(this, exit, before));
-        }
+        // TODO: redo item undo/redo
     }
 
     updateItem();
@@ -167,14 +162,9 @@ void SpriteItem::updateItem() {
 }
 
 void SpriteItem::editItem() {
-    sprite_t before = *sprite;
-
     SpriteEditWindow win(NULL, this->sprite);
     if (win.exec()) {
-        MapScene *scene = dynamic_cast<MapScene*>(this->scene());
-        if (scene) {
-            scene->pushChange(new SpriteChange(this, sprite, before));
-        }
+        // TODO: redo item undo/redo
     }
 
     updateItem();

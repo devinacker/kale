@@ -18,13 +18,12 @@ public:
     static const QBrush strokeColor;
     static const QColor fillColor, selectedColor;
 
-    virtual void editItem() = 0;
-
 protected:
     QVariant itemChange (GraphicsItemChange change, const QVariant & value);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     virtual void updateObject() = 0;
     virtual void updateItem() = 0;
+    virtual void editItem() = 0;
 
     uint tileSize;
 
@@ -39,10 +38,9 @@ public:
     static const QColor fillColor;
     QColor color(bool selected);
 
-    void updateItem();
-
 protected:
     void updateObject();
+    void updateItem();
     void editItem();
 
 private:
@@ -58,10 +56,9 @@ public:
     static const QColor fillColor;
     QColor color(bool selected);
 
-    void updateItem();
-
 protected:
     void updateObject();
+    void updateItem();
     void editItem();
 
 private:
