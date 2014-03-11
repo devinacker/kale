@@ -148,7 +148,7 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
         exit.destScreen = byte & 0xF;
 
         // byte 4: dest coordinates
-        byte = file.readByte(thisExit + 1);
+        byte = file.readByte(thisExit + 4);
         exit.destX = byte >> 4;
         exit.destY = byte & 0xF;
 
