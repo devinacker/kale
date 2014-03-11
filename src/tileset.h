@@ -16,6 +16,8 @@ extern metatile_t tilesets[NUM_TILESETS][0x100];
 // (rest of tilesets are null / not useful)
 extern uint8_t    tileSubtract[NUM_TILESETS];
 
-void loadTilesets(ROMFile &);
+void      loadTilesets(ROMFile &);
+DataChunk packTileset(uint num);
+void      saveTileset(ROMFile& file, const DataChunk &chunk, romaddr_t addr);
 
 #endif // TILESET_H

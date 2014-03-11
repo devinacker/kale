@@ -36,7 +36,7 @@ ROMFile::version_e ROMFile::getVersion() const {
   returns -1.
 */
 uint ROMFile::toOffset(romaddr_t address) const {
-    uint offset = (address.addr % BANK_SIZE) + (address.bank * BANK_SIZE)
+    uint offset = (address.addr % BANK_SIZE) + ((address.bank & 0x7F) * BANK_SIZE)
                   + HEADER_SIZE;
 
     return offset;
@@ -159,7 +159,7 @@ size_t ROMFile::readFromShortPointer(romaddr_t addrL, romaddr_t addrH, uint bank
 
   Returns the next available address to write data to.
 */
-uint ROMFile::writeData(romaddr_t addr, uint size, void *buffer) {
+uint ROMFile::writeData(romaddr_t addr, uint size, const void *buffer) {
     uint offset = toOffset(addr);
     uint spaceLeft = BANK_SIZE - (addr.addr % BANK_SIZE);
 
@@ -190,14 +190,26 @@ uint ROMFile::writeInt32(romaddr_t addr, uint32_t data) {
 }
 
 /*
-  Writes data to an offset in a file, and then writes the 24-bit SNES pointer
+  Writes data to an offset in a file, and then writes the 24-bit pointer
   to that data into a second offset.
 
   TODO: rework pointers
 */
-uint ROMFile::writeToPointer(romaddr_t pointer, romaddr_t addr,
-                            uint size, void *buffer) {
-    return 0;
+uint ROMFile::writeToPointer(romaddr_t ptrL, romaddr_t ptrH, romaddr_t ptrB, romaddr_t addr,
+                            uint size, const void *buffer, uint offset) {
+    writeByte(ptrL + offset, addr.addr & 0xFF);
+    writeByte(ptrH + offset, addr.addr >> 8);
+    writeByte(ptrB + offset, addr.bank);
+
+    return writeData(addr, size, buffer);
+}
+
+uint ROMFile::writeToShortPointer(romaddr_t ptrL, romaddr_t ptrH, romaddr_t addr,
+                            uint size, const void *buffer, uint offset) {
+    writeByte(ptrL + offset, addr.addr & 0xFF);
+    writeByte(ptrH + offset, addr.addr >> 8);
+
+    return writeData(addr, size, buffer);
 }
 
 /*

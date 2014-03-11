@@ -237,10 +237,6 @@ void MainWindow::getSettings() {
     // display friendly message
     status(tr("Welcome to KALE, version %1.")
            .arg(INFO_VERS));
-
-#ifdef QT_NO_DEBUG
-    ui->menuDebug->menuAction()->setVisible(settings->value("MainWindow/debug", false).toBool());
-#endif
 }
 
 void MainWindow::saveSettings() {
@@ -424,27 +420,78 @@ void MainWindow::saveFile() {
     setEditActions(false);
     saving = true;
 
-    // save levels to ROM
-    /*
-    int addr = newDataAddress[rom.getVersion()];
+    std::vector<DataChunk> chunks;
 
-    for (int i = 0; i < NUM_LEVELS[game]; i++) {
-        if (levels[i]->modified) {
-            addr = saveLevel(rom, i, levels[i], addr);
+    // TODO: force event updates while this shit is happening
 
-            status(tr("Saved level %1-%2").arg((i / 8) + 1).arg((i % 8) + 1));
-            QCoreApplication::processEvents();
+    // pack level and sprite data
+    for (uint i = 0; i < NUM_LEVELS; i++) {
+        chunks.push_back(packLevel(levels[i], i));
+        chunks.push_back(packSprites(levels[i], i));
+    }
+    // pack tilesets
+    for (uint i = 0; i < NUM_TILESETS; i++) {
+        chunks.push_back(packTileset(i));
+    }
+    // dummy-ish entry representing all three CHR bank tables consecutively
+    // (they must be stored in the same PRG bank, and the uncompressed data is already
+    //  stored elsewhere)
+    chunks.push_back(DataChunk(NULL, 0x300, DataChunk::banks, 0));
+
+    // sort packed chunks
+    std::sort(chunks.begin(), chunks.end());
+
+    romaddr_t nextAddr = {0x00, 0x0A00};
+
+    while (chunks.size()) {
+        // find biggest chunk that will fit in the current ROM bank
+        uint space = BANK_SIZE - (nextAddr.addr % BANK_SIZE);
+
+        for (std::vector<DataChunk>::iterator i = chunks.end() - 1; i >= chunks.begin(); i--) {
+            // TODO: panic if i->size > BANK_SIZE
+
+            if (space >= i->size) {
+                DataChunk chunk = *i;
+                chunks.erase(i);
+
+                switch (chunk.type) {
+                case DataChunk::level:
+                    // save level data
+                    saveLevel(rom, chunk, levels[chunk.num], nextAddr);
+                    break;
+                case DataChunk::enemy:
+                    // save enemy/sprite data
+                    saveSprites(rom, chunk, nextAddr);
+                    break;
+                case DataChunk::tileset:
+                    // save tileset data
+                    saveTileset(rom, chunk, nextAddr);
+                    break;
+                case DataChunk::banks:
+                    saveBankTables(rom, nextAddr);
+                    break;
+                }
+
+                nextAddr.addr += chunk.size;
+                // will the smallest available next chunk still fit in this bank?
+                // (TODO: error if we run out of space in the entire ROM)
+                if (space < chunk.size + chunks.front().size) {
+                    nextAddr.bank++;
+                    nextAddr.addr = 0;
+                }
+
+                break;
+            }
         }
     }
 
-    // Pad the current ROM bank to 32kb to make sure it is
-    // mapped correctly
-    int spaceLeft = BANK_SIZE - (addr % BANK_SIZE);
+    // save all level exits (in level order instead of by size so pointers can be
+    // calculated correctly)
+    // TODO: error if too many exits
+    for (uint i = 0; i < NUM_LEVELS; i++) {
+        saveExits(rom, levels[i], i);
+    }
 
-    if (spaceLeft)
-        rom.writeByte(addr + spaceLeft - 1, 0);
-
-    */
     status(tr("Saved %1").arg(fileName));
     updateTitle();
 
@@ -597,10 +644,6 @@ void MainWindow::showAbout() {
 */
 
 void MainWindow::setLevel(uint level) {
-    // loadLevel only returns null so don't do this yet
-    //qDebug("MainWindow::setLevel not implemented");
-    //return;
-
     if (level > NUM_LEVELS || !fileOpen)
         return;
 

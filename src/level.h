@@ -17,9 +17,6 @@
 // the last one seems to be bogus
 #define NUM_LEVELS 0x147
 
-// location of where to write new level data
-extern const uint newDataAddress[];
-
 /*
   The level header.
 */
@@ -36,6 +33,10 @@ struct header_t {
 struct sprite_t {
     uint8_t type;
     uint x, y;
+    // used only for sorting sprites by screen number when saving back to ROM
+    uint8_t screen;
+    bool operator< (const sprite_t &other) const { return screen < other.screen; }
+
 };
 
 struct exit_t {
@@ -56,7 +57,7 @@ struct leveldata_t {
     // and each screen is 16x12 tiles.
     uint8_t   tiles[16 * SCREEN_HEIGHT][16 * SCREEN_WIDTH];
 
-    // tileset number (calculated based on pointer)
+    // tileset number
     uint8_t   tileset;
 
     // containers for other data
@@ -82,6 +83,10 @@ struct leveldata_t {
   Functions for loading/saving level data
 */
 leveldata_t*  loadLevel(ROMFile& file, uint num);
-romaddr_t saveLevel(ROMFile& file, uint num, leveldata_t *level, romaddr_t offset);
+DataChunk     packLevel  (const leveldata_t *level, uint num);
+DataChunk     packSprites(const leveldata_t *level, uint num);
+void          saveLevel(ROMFile& file, const DataChunk &chunk, const leveldata_t *level, romaddr_t offset);
+void          saveExits(ROMFile& file, const leveldata_t *level, uint num);
+void          saveSprites(ROMFile& file, const DataChunk& chunk, romaddr_t addr);
 
 #endif // LEVEL_H

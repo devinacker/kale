@@ -9,7 +9,8 @@ uint8_t bankTable[3][256];
 const romaddr_t bankListPtr[3] = {{0x13, 0xA6A9},
                                   {0x13, 0xA6AE},
                                   {0x13, 0xA6B3}};
-const uint      bankListBank   = 0x05;
+//const uint      bankListBank   = 0x05;
+const romaddr_t bankListBank   = {0x13, 0xA691};
 
 const romaddr_t palAddr    = {0x00, 0x8000};
 const romaddr_t sprPalAddr = {0x12, 0x8E55};
@@ -94,7 +95,7 @@ void loadCHRBanks(ROMFile& rom) {
     for (uint i = 0; i < numBanks; i++)
         banks[i] = rom.readCHRBank(i);
 
-    romaddr_t bankLists = {bankListBank, 0};
+    romaddr_t bankLists = {rom.readByte(bankListBank), 0};
     rom.readData(bankListPtr[0], 2, &bankLists.addr);
 
     rom.readData(bankLists,       256, &bankTable[0][0]);
@@ -145,4 +146,21 @@ QImage getCHRSpriteBank(uint bank, uint pal) {
 
         return newBank;
     } else return QImage();
+}
+
+void saveBankTables(ROMFile& file, romaddr_t addr) {
+    // bank table pointers mapped to 0x8000-0x9FFF
+    addr.addr %= BANK_SIZE;
+    addr.addr += 0x8000;
+
+    fprintf(stderr, "saving CHR tables to %02X:%04X\n", addr.bank, addr.addr);
+
+    // write bank byte
+    file.writeByte(bankListBank, addr.bank);
+
+    // write three tables and the pointers to them
+    for (uint i = 0; i < 3; i++) {
+        file.writeInt16(bankListPtr[i], addr.addr + (i * 0x100));
+        file.writeData(addr + (i * 0x100), 0x100, bankTable[i]);
+    }
 }

@@ -17,5 +17,6 @@ void loadCHRBanks(ROMFile& rom);
 void freeCHRBanks();
 QImage getCHRBank(uint bank, uint pal);
 QImage getCHRSpriteBank(uint bank, uint pal);
+void saveBankTables(ROMFile& file, romaddr_t addr);
 
 #endif // GRAPHICS_H

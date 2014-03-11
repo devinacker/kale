@@ -11,6 +11,7 @@
 #include "romfile.h"
 #include "level.h"
 
+#include <algorithm>
 #include <cstring>
 #include <cstdlib>
 #include <cstdint>
@@ -23,8 +24,6 @@
 #include <QCoreApplication>
 
 #define MAP_DATA_SIZE 0xCDA
-
-//using namespace stuff;
 
 //Locations of chunk data in ROM (using CPU addressing.)
 //currently assumes table locations are constant in all versions,
@@ -47,7 +46,7 @@ const uint      ptrExitsB   = 0x12;
 */
 leveldata_t* loadLevel (ROMFile& file, uint num) {
     //invalid data should at least be able to decompress fully
-    uint8_t  buf[65536] = {0};
+    uint8_t  buf[DATA_SIZE] = {0};
     header_t *header  = (header_t*)buf + 0;
     uint8_t  *screens = buf + 8;
     uint8_t  *tiles   = buf + 0xDA;
@@ -163,10 +162,160 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
 }
 
 /*
-  Save a level back to the ROM. Returns the next available ROM address
-  to write level data to.
-*/
-romaddr_t saveLevel(ROMFile& file, uint num, leveldata_t *level, romaddr_t addr) {
+ * Returns a compressed data chunk based on level data (tile map only).
+ * This is inserted into the big list of data chunks and then
+ * later passed back to saveLevel in order to save it to the ROM
+ * (and add it to the pointer table).
+ */
+DataChunk packLevel(const leveldata_t *level, uint num) {
+    uint8_t buf[MAP_DATA_SIZE] = {0};
+    header_t *header  = (header_t*)buf + 0;
+    uint8_t  *screens = buf + 8;
+    uint8_t  *tiles   = buf + 0xDA;
 
-    return addr;
+    *header = level->header;
+
+    uint numScreens = level->header.screensV * level->header.screensH;
+
+    for (uint i = 0; i < numScreens; i++) {
+        // screen index
+        screens[i] = i;
+
+        // write tile data for screen
+        uint8_t *screen = tiles + (SCREEN_HEIGHT * SCREEN_WIDTH * i);
+        uint h = i % header->screensH;
+        uint v = i / header->screensH;
+        for (uint y = 0; y < SCREEN_HEIGHT; y++) {
+            memcpy(screen + (y * SCREEN_WIDTH),
+                   &level->tiles[v * SCREEN_HEIGHT + y][h * SCREEN_WIDTH], SCREEN_WIDTH);
+        }
+    }
+
+    // pack and return
+    return DataChunk(buf, 0xDA + (SCREEN_HEIGHT * SCREEN_WIDTH * numScreens),
+                     DataChunk::level, num);
+}
+
+DataChunk packSprites(const leveldata_t *level, uint num) {
+    uint8_t buf[DATA_SIZE] = {0};
+
+    uint numScreens = level->header.screensH * level->header.screensV;
+    uint numSprites = level->sprites.size();
+
+    uint8_t  *screens   = buf + 2;
+    uint8_t  *positions = screens + numScreens;
+    uint8_t  *types     = positions + numSprites;
+
+    // write screen count bytes
+    buf[0] = numScreens;
+    buf[1] = level->header.screensV;
+
+    // sort sprites by screen
+    std::vector<sprite_t> sprites(level->sprites);
+
+    for (uint i = 0; i < numSprites; i++) {
+        sprite_t *sprite = &sprites[i];
+
+        // which screen is this sprite on?
+        sprite->screen = (sprite->y / SCREEN_HEIGHT * level->header.screensH)
+                       + (sprite->x / SCREEN_WIDTH);
+    }
+
+    std::sort(sprites.begin(), sprites.end());
+
+    uint lastScreen = 0;
+
+    for (uint i = 0; i < numSprites; i++) {
+        sprite_t sprite = sprites[i];
+
+        // update sprites-per-screen counts
+        if (sprite.screen != lastScreen) {
+            for (uint j = lastScreen; j < numScreens; j++)
+                screens[j] = i;
+
+            lastScreen = sprite.screen;
+        }
+
+        // sprite position and type
+        positions[i] = ((sprite.x % SCREEN_WIDTH) << 4) + (sprite.y % SCREEN_HEIGHT);
+        types[i]     = sprite.type;
+    }
+
+    // pack and return
+    return DataChunk(buf, 2 + numScreens + numSprites + numSprites,
+                     DataChunk::enemy, num);
+}
+
+/*
+  Save a level back to the ROM and update the pointer table.
+  Takes both a compressed data chunk for the tilemap (used to sort by size beforehand)
+  and a pointer to the editor's own level struct for saving exits and other stuff.
+*/
+void saveLevel(ROMFile& file, const DataChunk &chunk, const leveldata_t *level, romaddr_t addr) {
+    // level data banks mapped to A000-BFFF
+    addr.addr %= BANK_SIZE;
+    addr.addr += 0xA000;
+    if (level->noReturn) addr.bank |= 0x80;
+
+    fprintf(stderr, "saving level 0x%03X to %02X:%04X\n", chunk.num, addr.bank, addr.addr);
+
+    // save compressed data chunk, update pointer table
+    uint num = chunk.num;
+    file.writeToPointer(ptrMapDataL, ptrMapDataH, ptrMapDataB, addr, chunk.size, chunk.data, num);
+
+    // write tileset number
+    file.writeByte(mapTilesets + num, level->tileset);
+
+}
+
+void saveExits(ROMFile& file, const leveldata_t *level, uint num) {
+    romaddr_t addr = file.readShortPointer(ptrExitsL, ptrExitsH, ptrExitsB, num);
+
+    fprintf(stderr, "saving exits 0x%03X to %02X:%04X\n", num, addr.bank, addr.addr);
+
+    for (std::vector<exit_t>::const_iterator i = level->exits.begin(); i < level->exits.end(); i++) {
+        exit_t exit = *i;
+        uint8_t bytes[5];
+
+        // byte 0: upper 4 = exit type & 0xF, lower 4 = screen exit is on
+        bytes[0] = exit.type << 4;
+        // calculate screen number
+        bytes[0] |= (exit.y / SCREEN_HEIGHT * level->header.screensH)
+                  + (exit.x / SCREEN_WIDTH);
+
+        // byte 1: upper 4 = x, lower 4 = y
+        bytes[1] = ((exit.x % SCREEN_WIDTH) << 4) | (exit.y % SCREEN_HEIGHT);
+
+        // byte 2: level number lsb
+        bytes[2] = exit.dest & 0xFF;
+
+        // byte 3: upper bit = level number msbit, rest of upper = exit type & 0x70,
+        //         lower = destination screen number
+        bytes[3] = (exit.type & 0x70) | exit.destScreen;
+        if (exit.dest >= 0x100)
+            bytes[3] |= 0x80;
+
+        // byte 4: destination x/y
+        bytes[4] = (exit.destX << 4) | exit.destY;
+
+        file.writeData(addr, 5, bytes);
+
+        addr.addr += 5;
+    }
+
+    // write pointer for NEXT level
+    file.writeByte(ptrExitsL + num + 1, addr.addr & 0xFF);
+    file.writeByte(ptrExitsH + num + 1, addr.addr >> 8);
+}
+
+void saveSprites(ROMFile& file, const DataChunk& chunk, romaddr_t addr) {
+    // level data banks mapped to A000-BFFF
+    addr.addr %= BANK_SIZE;
+    addr.addr += 0xA000;
+
+    fprintf(stderr, "saving sprites 0x%03X to %02X:%04X\n", chunk.num, addr.bank, addr.addr);
+
+    // save compressed data chunk, update pointer table
+    uint num = chunk.num;
+    file.writeToPointer(ptrSpritesL, ptrSpritesH, ptrSpritesB, addr, chunk.size, chunk.data, num);
 }

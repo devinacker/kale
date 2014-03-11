@@ -1,7 +1,9 @@
 before initial release:
 
+- double click (instead of right-click) to insert sprites/exits?
 - saving!!!
 - generate undo/redo actions when moving sprites/exits
+- copying/pasting/deleting sprites and exits
 - verify tile/sprite IDs
 
 later:
