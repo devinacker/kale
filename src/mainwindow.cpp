@@ -421,35 +421,79 @@ void MainWindow::saveFile() {
     saving = true;
 
     std::vector<DataChunk> chunks;
+    romaddr_t nextAddr = {0x00, 0x0A00};
+    const uint lastBank = 0x12;
 
-    // TODO: force event updates while this shit is happening
+    // TODO: keep track of total size, exit count, etc. to avoid overflow
+    // 0x12 banks available, first one has the first 0xA00 bytes used by palettes)
+    const uint freeSpace = (BANK_SIZE * lastBank) - nextAddr.addr;
+    uint usedSpace = 0;
 
     // pack level and sprite data
     for (uint i = 0; i < NUM_LEVELS; i++) {
         chunks.push_back(packLevel(levels[i], i));
+        usedSpace += chunks.back().size;
+
         chunks.push_back(packSprites(levels[i], i));
+        usedSpace += chunks.back().size;
+
+        QCoreApplication::processEvents();
     }
     // pack tilesets
     for (uint i = 0; i < NUM_TILESETS; i++) {
         chunks.push_back(packTileset(i));
+        usedSpace += chunks.back().size;
+
+        QCoreApplication::processEvents();
     }
     // dummy-ish entry representing all three CHR bank tables consecutively
     // (they must be stored in the same PRG bank, and the uncompressed data is already
     //  stored elsewhere)
     chunks.push_back(DataChunk(NULL, 0x300, DataChunk::banks, 0));
+    usedSpace += chunks.back().size;
+
+    // panic if there's too much space
+    if (usedSpace > freeSpace) {
+        QMessageBox::critical(this, tr("Error saving file"),
+                              tr("Not enough free space in ROM (%1 bytes available, %2 bytes used).")
+                              .arg(freeSpace).arg(usedSpace),
+                              QMessageBox::Ok);
+
+        rom.close();
+
+        // re-enable editing
+        setEditActions(true);
+        saving = false;
+
+        return;
+    }
 
     // sort packed chunks
     std::sort(chunks.begin(), chunks.end());
 
-    romaddr_t nextAddr = {0x00, 0x0A00};
+    // panic if something is bigger than it can/should be
+    if (chunks.back().size > BANK_SIZE) {
+        DataChunk& chunk = chunks.back();
+
+        QMessageBox::critical(this, tr("Error saving file"),
+                              tr("Something exceeded 0x2000 bytes somehow (type %1, num %2, size %3).")
+                              .arg(chunk.type).arg(chunk.num).arg(chunk.size),
+                              QMessageBox::Ok);
+
+        rom.close();
+
+        // re-enable editing
+        setEditActions(true);
+        saving = false;
+
+        return;
+    }
 
     while (chunks.size()) {
         // find biggest chunk that will fit in the current ROM bank
         uint space = BANK_SIZE - (nextAddr.addr % BANK_SIZE);
 
         for (std::vector<DataChunk>::iterator i = chunks.end() - 1; i >= chunks.begin(); i--) {
-            // TODO: panic if i->size > BANK_SIZE
-
             if (space >= i->size) {
                 DataChunk chunk = *i;
                 chunks.erase(i);
@@ -474,7 +518,6 @@ void MainWindow::saveFile() {
 
                 nextAddr.addr += chunk.size;
                 // will the smallest available next chunk still fit in this bank?
-                // (TODO: error if we run out of space in the entire ROM)
                 if (space < chunk.size + chunks.front().size) {
                     nextAddr.bank++;
                     nextAddr.addr = 0;
@@ -483,6 +526,8 @@ void MainWindow::saveFile() {
                 break;
             }
         }
+
+        QCoreApplication::processEvents();
     }
 
     // save all level exits (in level order instead of by size so pointers can be
@@ -493,7 +538,6 @@ void MainWindow::saveFile() {
     }
 
     status(tr("Saved %1").arg(fileName));
-    updateTitle();
 
     unsaved = false;
     rom.close();
@@ -523,6 +567,7 @@ void MainWindow::saveFileAs() {
         // set file name to new one, then save file
         fileName = newFileName;
         rom.setFileName(fileName);
+        updateTitle();
         saveFile();
     }
 }

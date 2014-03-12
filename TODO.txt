@@ -1,13 +1,15 @@
 before initial release:
 
 - double click (instead of right-click) to insert sprites/exits?
-- saving!!!
-- generate undo/redo actions when moving sprites/exits
-- copying/pasting/deleting sprites and exits
+- don't save too many exits (need to find out max. amount)
+- delete sprites/exits
 - verify tile/sprite IDs
 
 later:
 
+- limits on sprite/exit counts per level (based on memory allocated for them by the game)
+- generate undo/redo actions when moving sprites/exits
+- copying/pasting sprites and exits
 - level import/export
 - dreamtool level importing
 - tileset & palette editing
