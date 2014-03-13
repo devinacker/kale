@@ -103,14 +103,14 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
         // number of sprites on this screen
         numSprites = file.readByte(spriteCounts + i);
         while (sprNum < numSprites) {            
-            sprite_t sprite;
+            sprite_t *sprite = new sprite_t;
 
-            sprite.type = file.readByte(spriteTypes + sprNum);
-            uint8_t pos = file.readByte(spritePos + sprNum);
+            sprite->type = file.readByte(spriteTypes + sprNum);
+            uint8_t pos  = file.readByte(spritePos + sprNum);
 
             // calculate normal x/y positions
-            sprite.x = (i % header->screensH * SCREEN_WIDTH) + (pos >> 4);
-            sprite.y = (i / header->screensH * SCREEN_HEIGHT) + (pos & 0xF);
+            sprite->x = (i % header->screensH * SCREEN_WIDTH) + (pos >> 4);
+            sprite->y = (i / header->screensH * SCREEN_HEIGHT) + (pos & 0xF);
 
             level->sprites.push_back(sprite);
             sprNum++;
@@ -123,34 +123,34 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
     // the game subtracts consecutive pointers to calculate # of exits in current level
     uint numExits = (nextExits.addr - exits.addr) / 5;
     for (uint i = 0; i < numExits; i++) {
-        exit_t exit;
+        exit_t *exit = new exit_t;
         romaddr_t thisExit = exits + (i * 5);
         uint8_t byte;
 
         // byte 0: exit type / screen
         byte = file.readByte(thisExit);
         uint screen = byte & 0xF;
-        exit.type = byte >> 4;
+        exit->type = byte >> 4;
 
         // byte 1: coordinates
         byte = file.readByte(thisExit + 1);
-        exit.x = (screen % header->screensH * SCREEN_WIDTH) + (byte >> 4);
-        exit.y = (screen / header->screensH * SCREEN_HEIGHT) + (byte & 0xF);
+        exit->x = (screen % header->screensH * SCREEN_WIDTH) + (byte >> 4);
+        exit->y = (screen / header->screensH * SCREEN_HEIGHT) + (byte & 0xF);
 
         // byte 2: LSB of destination
-        exit.dest = file.readByte(thisExit + 2);
+        exit->dest = file.readByte(thisExit + 2);
 
         // byte 3: MSB of destination / type / dest screen
         byte = file.readByte(thisExit + 3);
         if (byte & 0x80)
-            exit.dest |= 0x100;
-        exit.type |= (byte & 0x70);
-        exit.destScreen = byte & 0xF;
+            exit->dest |= 0x100;
+        exit->type |= (byte & 0x70);
+        exit->destScreen = byte & 0xF;
 
         // byte 4: dest coordinates
         byte = file.readByte(thisExit + 4);
-        exit.destX = byte >> 4;
-        exit.destY = byte & 0xF;
+        exit->destX = byte >> 4;
+        exit->destY = byte & 0xF;
 
         level->exits.push_back(exit);
     }
@@ -211,10 +211,10 @@ DataChunk packSprites(const leveldata_t *level, uint num) {
     buf[1] = level->header.screensV;
 
     // sort sprites by screen
-    std::vector<sprite_t> sprites(level->sprites);
+    std::vector<sprite_t*> sprites(level->sprites);
 
     for (uint i = 0; i < numSprites; i++) {
-        sprite_t *sprite = &sprites[i];
+        sprite_t *sprite = sprites[i];
 
         // which screen is this sprite on?
         sprite->screen = (sprite->y / SCREEN_HEIGHT * level->header.screensH)
@@ -226,17 +226,17 @@ DataChunk packSprites(const leveldata_t *level, uint num) {
     uint lastScreen = 0;
 
     for (uint i = 0; i < numSprites; i++) {
-        sprite_t sprite = sprites[i];
+        sprite_t *sprite = sprites[i];
 
         // update sprites-per-screen counts
-        if (sprite.screen != lastScreen) {
+        if (sprite->screen != lastScreen) {
             screens[lastScreen] = i;
-            lastScreen = sprite.screen;
+            lastScreen = sprite->screen;
         }
 
         // sprite position and type
-        positions[i] = ((sprite.x % SCREEN_WIDTH) << 4) + (sprite.y % SCREEN_HEIGHT);
-        types[i]     = sprite.type;
+        positions[i] = ((sprite->x % SCREEN_WIDTH) << 4) + (sprite->y % SCREEN_HEIGHT);
+        types[i]     = sprite->type;
     }
     screens[numScreens - 1] = numSprites;
 
@@ -272,30 +272,30 @@ void saveExits(ROMFile& file, const leveldata_t *level, uint num) {
 
     fprintf(stderr, "saving exits 0x%03X to %02X:%04X\n", num, addr.bank, addr.addr);
 
-    for (std::vector<exit_t>::const_iterator i = level->exits.begin(); i < level->exits.end(); i++) {
-        exit_t exit = *i;
+    for (std::vector<exit_t*>::const_iterator i = level->exits.begin(); i < level->exits.end(); i++) {
+        exit_t *exit = *i;
         uint8_t bytes[5];
 
         // byte 0: upper 4 = exit type & 0xF, lower 4 = screen exit is on
-        bytes[0] = exit.type << 4;
+        bytes[0] = exit->type << 4;
         // calculate screen number
-        bytes[0] |= (exit.y / SCREEN_HEIGHT * level->header.screensH)
-                  + (exit.x / SCREEN_WIDTH);
+        bytes[0] |= (exit->y / SCREEN_HEIGHT * level->header.screensH)
+                  + (exit->x / SCREEN_WIDTH);
 
         // byte 1: upper 4 = x, lower 4 = y
-        bytes[1] = ((exit.x % SCREEN_WIDTH) << 4) | (exit.y % SCREEN_HEIGHT);
+        bytes[1] = ((exit->x % SCREEN_WIDTH) << 4) | (exit->y % SCREEN_HEIGHT);
 
         // byte 2: level number lsb
-        bytes[2] = exit.dest & 0xFF;
+        bytes[2] = exit->dest & 0xFF;
 
         // byte 3: upper bit = level number msbit, rest of upper = exit type & 0x70,
         //         lower = destination screen number
-        bytes[3] = (exit.type & 0x70) | exit.destScreen;
-        if (exit.dest >= 0x100)
+        bytes[3] = (exit->type & 0x70) | exit->destScreen;
+        if (exit->dest >= 0x100)
             bytes[3] |= 0x80;
 
         // byte 4: destination x/y
-        bytes[4] = (exit.destX << 4) | exit.destY;
+        bytes[4] = (exit->destX << 4) | exit->destY;
 
         file.writeData(addr, 5, bytes);
 

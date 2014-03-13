@@ -116,8 +116,8 @@ void MapScene::refresh() {
     refreshPixmap();
 
     // add sprites
-    for (std::vector<sprite_t>::iterator i = level->sprites.begin(); i != level->sprites.end(); i++) {
-        SpriteItem *spr = new SpriteItem(&(*i));
+    for (std::vector<sprite_t*>::iterator i = level->sprites.begin(); i != level->sprites.end(); i++) {
+        SpriteItem *spr = new SpriteItem(*i);
         spr->setFlag(QGraphicsItem::ItemIsSelectable, selectSprites);
         spr->setFlag(QGraphicsItem::ItemIsMovable, selectSprites);
         spr->setDoubleSize(tileSize > TILE_SIZE);
@@ -126,8 +126,8 @@ void MapScene::refresh() {
     }
 
     // add exits
-    for (std::vector<exit_t>::iterator i = level->exits.begin(); i != level->exits.end(); i++) {
-        ExitItem *exit = new ExitItem(&(*i));
+    for (std::vector<exit_t*>::iterator i = level->exits.begin(); i != level->exits.end(); i++) {
+        ExitItem *exit = new ExitItem(*i);
         exit->setFlag(QGraphicsItem::ItemIsSelectable, selectExits);
         exit->setFlag(QGraphicsItem::ItemIsMovable, selectExits);
         exit->setDoubleSize(tileSize > TILE_SIZE);
@@ -232,8 +232,8 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
             cancelSelection();
             event->accept();
         } else if (selectSprites) {
-            sprite_t sprite;
-            sprite.x = tileX; sprite.y = tileY; sprite.type = 0;
+            sprite_t* sprite = new sprite_t;
+            sprite->x = tileX; sprite->y = tileY; sprite->type = 0;
             level->sprites.push_back(sprite);
             // TODO: simpler scene item refresh
             level->modified = true;
@@ -241,11 +241,11 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
             emit edited();
             refresh();
         } else if (selectExits) {
-            exit_t exit;
-            exit.x = tileX; exit.y = tileY;
-            exit.dest = 0; exit.destScreen = 0;
-            exit.destX = 0; exit.destY = 0;
-            exit.type = 0;
+            exit_t* exit = new exit_t;
+            exit->x = tileX; exit->y = tileY;
+            exit->dest = 0; exit->destScreen = 0;
+            exit->destX = 0; exit->destY = 0;
+            exit->type = 0;
             level->exits.push_back(exit);
             // TODO: simpler scene item refresh
             level->modified = true;

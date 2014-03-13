@@ -113,6 +113,7 @@ void loadCHRBanks(ROMFile& rom) {
 
 void freeCHRBanks() {
     delete[] banks;
+    banks = 0;
 }
 
 // get single CHR bank with applied palette
