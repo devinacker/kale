@@ -211,14 +211,16 @@ DataChunk packSprites(const leveldata_t *level, uint num) {
     buf[1] = level->header.screensV;
 
     // sort sprites by screen
-    std::vector<sprite_t*> sprites(level->sprites);
+    std::vector<sprite_t> sprites;
 
     for (uint i = 0; i < numSprites; i++) {
-        sprite_t *sprite = sprites[i];
+        sprite_t sprite = *(level->sprites[i]);
 
         // which screen is this sprite on?
-        sprite->screen = (sprite->y / SCREEN_HEIGHT * level->header.screensH)
-                       + (sprite->x / SCREEN_WIDTH);
+        sprite.screen = (sprite.y / SCREEN_HEIGHT * level->header.screensH)
+                      + (sprite.x / SCREEN_WIDTH);
+
+        sprites.push_back(sprite);
     }
 
     std::sort(sprites.begin(), sprites.end());
@@ -226,17 +228,19 @@ DataChunk packSprites(const leveldata_t *level, uint num) {
     uint lastScreen = 0;
 
     for (uint i = 0; i < numSprites; i++) {
-        sprite_t *sprite = sprites[i];
+        sprite_t sprite = sprites[i];
 
         // update sprites-per-screen counts
-        if (sprite->screen != lastScreen) {
-            screens[lastScreen] = i;
-            lastScreen = sprite->screen;
+        if (sprite.screen != lastScreen) {
+            for (uint j = lastScreen; j < sprite.screen; j++)
+                screens[j] = i;
+
+            lastScreen = sprite.screen;
         }
 
         // sprite position and type
-        positions[i] = ((sprite->x % SCREEN_WIDTH) << 4) + (sprite->y % SCREEN_HEIGHT);
-        types[i]     = sprite->type;
+        positions[i] = ((sprite.x % SCREEN_WIDTH) << 4) + (sprite.y % SCREEN_HEIGHT);
+        types[i]     = sprite.type;
     }
     screens[numScreens - 1] = numSprites;
 
