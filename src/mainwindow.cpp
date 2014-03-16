@@ -698,6 +698,24 @@ void MainWindow::setLevel(uint level) {
     this->level = level;
     currentLevel = *(levels[level]);
 
+    // make deep copies of sprite and exit stuff
+    currentLevel.exits.clear();
+    currentLevel.sprites.clear();
+    for (std::vector<exit_t*>::const_iterator i = levels[level]->exits.begin();
+         i < levels[level]->exits.end(); i++) {
+
+        exit_t *exit = new exit_t;
+        *exit = *(*i);
+        currentLevel.exits.push_back(exit);
+    }
+    for (std::vector<sprite_t*>::const_iterator i = levels[level]->sprites.begin();
+         i < levels[level]->sprites.end(); i++) {
+
+        sprite_t *sprite = new sprite_t;
+        *sprite = *(*i);
+        currentLevel.sprites.push_back(sprite);
+    }
+
     // update button enabled states
     setLevelChangeActions(true);
 
@@ -722,7 +740,39 @@ void MainWindow::saveCurrentLevel() {
     currentLevel.modifiedRecently = false;
     unsaved = true;
 
-    *(levels[level]) = currentLevel;
+    leveldata_t *thisLevel = levels[level];
+
+    // delete old level's sprites & exits
+    for (std::vector<exit_t*>::const_iterator i = thisLevel->exits.begin();
+         i < thisLevel->exits.end(); i++) {
+
+        delete *i;
+    }
+    for (std::vector<sprite_t*>::const_iterator i = thisLevel->sprites.begin();
+         i < thisLevel->sprites.end(); i++) {
+
+        delete *i;
+    }
+
+    *thisLevel = currentLevel;
+
+    // deep copy new sprites and exits
+    thisLevel->exits.clear();
+    thisLevel->sprites.clear();
+    for (std::vector<exit_t*>::const_iterator i = currentLevel.exits.begin();
+         i < currentLevel.exits.end(); i++) {
+
+        exit_t *exit = new exit_t;
+        *exit = *(*i);
+        thisLevel->exits.push_back(exit);
+    }
+    for (std::vector<sprite_t*>::const_iterator i = currentLevel.sprites.begin();
+         i < currentLevel.sprites.end(); i++) {
+
+        sprite_t *sprite = new sprite_t;
+        *sprite = *(*i);
+        thisLevel->sprites.push_back(sprite);
+    }
 
     status(tr("Level saved."));
 }
