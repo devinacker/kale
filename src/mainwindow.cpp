@@ -785,8 +785,15 @@ void MainWindow::saveCurrentLevel() {
 */
 QMessageBox::StandardButton MainWindow::checkSaveLevel() {
     // if the level has not been recently modified, don't do anything
-    if (!fileOpen || currentLevel.modifiedRecently == false)
+    if (!fileOpen || !currentLevel.header.screensH)
         return QMessageBox::No;
+
+    // TODO: i'm temporarily modifying this so that "unsaved" levels get saved anyway
+    // since sprite/exit changes don't create a dirty state yet
+    if (!currentLevel.modifiedRecently) {
+        saveCurrentLevel();
+        return QMessageBox::Yes;
+    }
 
     QMessageBox::StandardButton button =
             QMessageBox::question(this, tr("Save Level"),
