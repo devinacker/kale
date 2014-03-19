@@ -733,7 +733,7 @@ void MainWindow::setLevel(uint level) {
 }
 
 void MainWindow::saveCurrentLevel() {
-    if (!fileOpen || currentLevel.modifiedRecently == false)
+    if (!fileOpen)
         return;
 
     scene->setClean();

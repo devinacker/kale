@@ -197,7 +197,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Save Level...</string>
+    <string>Save Level</string>
    </property>
   </action>
   <action name="action_Save_Course_to_File">
