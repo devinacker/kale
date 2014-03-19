@@ -108,6 +108,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>spinBox_Screen</tabstop>
+  <tabstop>spinBox_X</tabstop>
+  <tabstop>spinBox_Y</tabstop>
+  <tabstop>comboBox_Type</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>

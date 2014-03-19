@@ -399,6 +399,16 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>comboBox_TileGFX</tabstop>
+  <tabstop>slider_AnimSpeed</tabstop>
+  <tabstop>spinBox_Width</tabstop>
+  <tabstop>spinBox_Height</tabstop>
+  <tabstop>comboBox_Music</tabstop>
+  <tabstop>checkBox_NoReturn</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>

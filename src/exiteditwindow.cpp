@@ -18,6 +18,7 @@ ExitEditWindow::ExitEditWindow(QWidget *parent, exit_t *exit) :
 
     this->spinBox_Level->setMaximum(NUM_LEVELS - 1);
     ui->gridLayout->addWidget(spinBox_Level, 0, 1, 1, 1);
+    QWidget::setTabOrder(this->spinBox_Level, ui->spinBox_Screen);
 
     for (StringMap::const_iterator i = exitTypes.begin(); i != exitTypes.end(); i++) {
             ui->comboBox_Type->addItem(i->second, i->first);

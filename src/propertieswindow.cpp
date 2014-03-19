@@ -34,14 +34,18 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     QGridLayout *layout = ui->gridLayout;
     layout->addWidget(tileBox,      2, 2, 1, 1);
     tileBox->setMaximum(NUM_TILESETS - 1);
+    QWidget::setTabOrder(ui->slider_AnimSpeed, tileBox);
     layout->addWidget(tilePalBox,   2, 5, 1, 1);
     tilePalBox->setMaximum(255);
+    QWidget::setTabOrder(tileBox, tilePalBox);
     layout->addWidget(spriteBox,    3, 2, 1, 1);
     spriteBox->setMaximum(255);
     // sprites use two consecutive banks at once
     spriteBox->setSingleStep(2);
+    QWidget::setTabOrder(tilePalBox, spriteBox);
     layout->addWidget(spritePalBox, 3, 5, 1, 1);
     spritePalBox->setMaximum(49);
+    QWidget::setTabOrder(spriteBox, spritePalBox);
 
     // add tile & sprite views
     layout = ui->tilesetTabLayout;
