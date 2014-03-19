@@ -15,7 +15,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cstdint>
-#include <vector>
+#include <list>
 #include <iostream>
 #include <stdexcept>
 
@@ -211,10 +211,12 @@ DataChunk packSprites(const leveldata_t *level, uint num) {
     buf[1] = level->header.screensV;
 
     // sort sprites by screen
-    std::vector<sprite_t> sprites;
+    std::list<sprite_t> sprites;
 
-    for (uint i = 0; i < numSprites; i++) {
-        sprite_t sprite = *(level->sprites[i]);
+    for (std::list<sprite_t*>::const_iterator i = level->sprites.begin();
+         i != level->sprites.end(); i++) {
+
+        sprite_t sprite = *(*i);
 
         // which screen is this sprite on?
         sprite.screen = (sprite.y / SCREEN_HEIGHT * level->header.screensH)
@@ -223,24 +225,27 @@ DataChunk packSprites(const leveldata_t *level, uint num) {
         sprites.push_back(sprite);
     }
 
-    std::sort(sprites.begin(), sprites.end());
+    sprites.sort();
 
     uint lastScreen = 0;
 
-    for (uint i = 0; i < numSprites; i++) {
-        sprite_t sprite = sprites[i];
+    uint sprNum = 0;
+    for (std::list<sprite_t>::const_iterator i = sprites.begin(); i != sprites.end(); i++) {
+        sprite_t sprite = *i;
 
         // update sprites-per-screen counts
         if (sprite.screen != lastScreen) {
             for (uint j = lastScreen; j < sprite.screen; j++)
-                screens[j] = i;
+                screens[j] = sprNum;
 
             lastScreen = sprite.screen;
         }
 
         // sprite position and type
-        positions[i] = ((sprite.x % SCREEN_WIDTH) << 4) + (sprite.y % SCREEN_HEIGHT);
-        types[i]     = sprite.type;
+        positions[sprNum] = ((sprite.x % SCREEN_WIDTH) << 4) + (sprite.y % SCREEN_HEIGHT);
+        types[sprNum]     = sprite.type;
+
+        sprNum++;
     }
     screens[numScreens - 1] = numSprites;
 
@@ -276,7 +281,7 @@ void saveExits(ROMFile& file, const leveldata_t *level, uint num) {
 
     fprintf(stderr, "saving exits 0x%03X to %02X:%04X\n", num, addr.bank, addr.addr);
 
-    for (std::vector<exit_t*>::const_iterator i = level->exits.begin(); i < level->exits.end(); i++) {
+    for (std::list<exit_t*>::const_iterator i = level->exits.begin(); i != level->exits.end(); i++) {
         exit_t *exit = *i;
         uint8_t bytes[5];
 

@@ -18,7 +18,6 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 
@@ -130,7 +129,7 @@ void MainWindow::setupSignals() {
     QObject::connect(ui->action_Paste, SIGNAL(triggered()),
                      scene, SLOT(paste()));
     QObject::connect(ui->action_Delete, SIGNAL(triggered()),
-                     scene, SLOT(deleteTiles()));
+                     scene, SLOT(deleteStuff()));
     QObject::connect(ui->action_Edit_Tiles, SIGNAL(triggered()),
                      scene, SLOT(editTiles()));
 
@@ -420,7 +419,7 @@ void MainWindow::saveFile() {
     setEditActions(false);
     saving = true;
 
-    std::vector<DataChunk> chunks;
+    std::list<DataChunk> chunks;
     romaddr_t nextAddr = {0x00, 0x0A00};
     const uint lastBank = 0x12;
 
@@ -469,7 +468,7 @@ void MainWindow::saveFile() {
     }
 
     // sort packed chunks
-    std::sort(chunks.begin(), chunks.end());
+    chunks.sort();
 
     // panic if something is bigger than it can/should be
     if (chunks.back().size > BANK_SIZE) {
@@ -493,10 +492,10 @@ void MainWindow::saveFile() {
         // find biggest chunk that will fit in the current ROM bank
         uint space = BANK_SIZE - (nextAddr.addr % BANK_SIZE);
 
-        for (std::vector<DataChunk>::iterator i = chunks.end() - 1; i >= chunks.begin(); i--) {
+        for (std::list<DataChunk>::reverse_iterator i = chunks.rbegin(); i != chunks.rend(); i++) {
             if (space >= i->size) {
                 DataChunk chunk = *i;
-                chunks.erase(i);
+                chunks.erase((++i).base());
 
                 switch (chunk.type) {
                 case DataChunk::level:
@@ -626,6 +625,7 @@ void MainWindow::saveCourseToFile() {
 
 void MainWindow::enableSelectTiles(bool on) {
     scene->enableSelectTiles(on);
+    scene->update();
     ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
 }
 
@@ -701,15 +701,15 @@ void MainWindow::setLevel(uint level) {
     // make deep copies of sprite and exit stuff
     currentLevel.exits.clear();
     currentLevel.sprites.clear();
-    for (std::vector<exit_t*>::const_iterator i = levels[level]->exits.begin();
-         i < levels[level]->exits.end(); i++) {
+    for (std::list<exit_t*>::const_iterator i = levels[level]->exits.begin();
+         i != levels[level]->exits.end(); i++) {
 
         exit_t *exit = new exit_t;
         *exit = *(*i);
         currentLevel.exits.push_back(exit);
     }
-    for (std::vector<sprite_t*>::const_iterator i = levels[level]->sprites.begin();
-         i < levels[level]->sprites.end(); i++) {
+    for (std::list<sprite_t*>::const_iterator i = levels[level]->sprites.begin();
+         i != levels[level]->sprites.end(); i++) {
 
         sprite_t *sprite = new sprite_t;
         *sprite = *(*i);
@@ -743,13 +743,13 @@ void MainWindow::saveCurrentLevel() {
     leveldata_t *thisLevel = levels[level];
 
     // delete old level's sprites & exits
-    for (std::vector<exit_t*>::const_iterator i = thisLevel->exits.begin();
-         i < thisLevel->exits.end(); i++) {
+    for (std::list<exit_t*>::const_iterator i = thisLevel->exits.begin();
+         i != thisLevel->exits.end(); i++) {
 
         delete *i;
     }
-    for (std::vector<sprite_t*>::const_iterator i = thisLevel->sprites.begin();
-         i < thisLevel->sprites.end(); i++) {
+    for (std::list<sprite_t*>::const_iterator i = thisLevel->sprites.begin();
+         i != thisLevel->sprites.end(); i++) {
 
         delete *i;
     }
@@ -759,15 +759,15 @@ void MainWindow::saveCurrentLevel() {
     // deep copy new sprites and exits
     thisLevel->exits.clear();
     thisLevel->sprites.clear();
-    for (std::vector<exit_t*>::const_iterator i = currentLevel.exits.begin();
-         i < currentLevel.exits.end(); i++) {
+    for (std::list<exit_t*>::const_iterator i = currentLevel.exits.begin();
+         i != currentLevel.exits.end(); i++) {
 
         exit_t *exit = new exit_t;
         *exit = *(*i);
         thisLevel->exits.push_back(exit);
     }
-    for (std::vector<sprite_t*>::const_iterator i = currentLevel.sprites.begin();
-         i < currentLevel.sprites.end(); i++) {
+    for (std::list<sprite_t*>::const_iterator i = currentLevel.sprites.begin();
+         i != currentLevel.sprites.end(); i++) {
 
         sprite_t *sprite = new sprite_t;
         *sprite = *(*i);

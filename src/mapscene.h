@@ -12,7 +12,7 @@
 #include <QtWidgets/QUndoStack>
 #include <QTimer>
 #include <QFontMetrics>
-#include <vector>
+#include <list>
 
 #include "level.h"
 #include "sceneitem.h"
@@ -33,8 +33,8 @@ private:
     bool selecting;
     bool selectTiles, selectSprites, selectExits;
 
-    std::vector<SpriteItem*> sprites;
-    std::vector<ExitItem*>   exits;
+    std::list<SpriteItem*> sprites;
+    std::list<ExitItem*>   exits;
 
     uint copyBuffer[64][64];
     uint copyWidth, copyLength;
@@ -51,6 +51,8 @@ private:
     uint tileSize;
 
     void copyTiles(bool cut);
+    void deleteTiles();
+    void deleteItems();
     void showTileInfo(QGraphicsSceneMouseEvent *event);
     void beginSelection(QGraphicsSceneMouseEvent *event);
     void updateSelection(QGraphicsSceneMouseEvent *event = NULL);
@@ -80,7 +82,7 @@ public slots:
     void cut();
     void copy();
     void paste();
-    void deleteTiles();
+    void deleteStuff();
     void setAnimSpeed(int);
     void refresh();
     void refreshPixmap();

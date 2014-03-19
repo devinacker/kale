@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <cstdlib>
-#include <vector>
+#include <list>
 #include "level.h"
 #include "mainwindow.h"
 #include "mapscene.h"
@@ -116,7 +116,7 @@ void MapScene::refresh() {
     refreshPixmap();
 
     // add sprites
-    for (std::vector<sprite_t*>::iterator i = level->sprites.begin(); i != level->sprites.end(); i++) {
+    for (std::list<sprite_t*>::iterator i = level->sprites.begin(); i != level->sprites.end(); i++) {
         SpriteItem *spr = new SpriteItem(*i);
         spr->setFlag(QGraphicsItem::ItemIsSelectable, selectSprites);
         spr->setFlag(QGraphicsItem::ItemIsMovable, selectSprites);
@@ -126,7 +126,7 @@ void MapScene::refresh() {
     }
 
     // add exits
-    for (std::vector<exit_t*>::iterator i = level->exits.begin(); i != level->exits.end(); i++) {
+    for (std::list<exit_t*>::iterator i = level->exits.begin(); i != level->exits.end(); i++) {
         ExitItem *exit = new ExitItem(*i);
         exit->setFlag(QGraphicsItem::ItemIsSelectable, selectExits);
         exit->setFlag(QGraphicsItem::ItemIsMovable, selectExits);
@@ -440,6 +440,13 @@ void MapScene::paste() {
 
 }
 
+void MapScene::deleteStuff() {
+    if (selectTiles)
+        deleteTiles();
+    else
+        deleteItems();
+}
+
 void MapScene::deleteTiles() {
     // if there is no selection, don't do anything
     if (selWidth == 0 || selLength == 0) return;
@@ -461,6 +468,42 @@ void MapScene::deleteTiles() {
                        .arg(selX + selWidth - 1)
                        .arg(selY + selLength - 1));
 
+}
+
+/*
+ *remove scene items
+ */
+void MapScene::deleteItems() {
+    QList<QGraphicsItem*> items = this->selectedItems();
+
+    // iterate and delete
+    // TODO: generate an undo/redo action
+    for (QList<QGraphicsItem*>::iterator i = items.begin(); i != items.end(); i++) {
+        this->removeItem(*i);
+
+        if (selectSprites) {
+            SpriteItem *item = dynamic_cast<SpriteItem*>(*i);
+
+            this->sprites.remove(item);
+            this->level->sprites.remove(item->sprite);
+
+            delete item->sprite;
+            delete item;
+
+        } else if (selectExits) {
+            ExitItem *item = dynamic_cast<ExitItem*>(*i);
+
+            this->exits.remove(item);
+            this->level->exits.remove(item->exit);
+
+            delete item->exit;
+            delete item;
+        }
+
+        level->modified = true;
+        level->modifiedRecently = true;
+    }
+    emit edited();
 }
 
 /*
@@ -599,7 +642,7 @@ void MapScene::enableSelectTiles(bool on) {
 void MapScene::enableSelectSprites(bool on) {
     this->selectSprites = on;
     cancelSelection();
-    for (std::vector<SpriteItem*>::iterator i = this->sprites.begin(); i != this->sprites.end(); i++) {
+    for (std::list<SpriteItem*>::iterator i = this->sprites.begin(); i != this->sprites.end(); i++) {
         (*i)->setFlag(QGraphicsItem::ItemIsSelectable, on);
         (*i)->setFlag(QGraphicsItem::ItemIsMovable, on);
     }
@@ -608,7 +651,7 @@ void MapScene::enableSelectSprites(bool on) {
 void MapScene::enableSelectExits(bool on) {
     this->selectExits = on;
     cancelSelection();
-    for (std::vector<ExitItem*>::iterator i = this->exits.begin(); i != this->exits.end(); i++) {
+    for (std::list<ExitItem*>::iterator i = this->exits.begin(); i != this->exits.end(); i++) {
         (*i)->setFlag(QGraphicsItem::ItemIsSelectable, on);
         (*i)->setFlag(QGraphicsItem::ItemIsMovable, on);
     }
@@ -640,11 +683,11 @@ void MapScene::setDoubleSize(bool on) {
         tileSize = TILE_SIZE;
 
     // apply to items
-    for (std::vector<SpriteItem*>::iterator i = this->sprites.begin(); i != this->sprites.end(); i++) {
+    for (std::list<SpriteItem*>::iterator i = this->sprites.begin(); i != this->sprites.end(); i++) {
         (*i)->setDoubleSize(on);
     }
 
-    for (std::vector<ExitItem*>::iterator i = this->exits.begin(); i != this->exits.end(); i++) {
+    for (std::list<ExitItem*>::iterator i = this->exits.begin(); i != this->exits.end(); i++) {
         (*i)->setDoubleSize(on);
     }
 

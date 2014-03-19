@@ -8,7 +8,7 @@
 
 #include "romfile.h"
 #include <cstdint>
-#include <vector>
+#include <list>
 
 #define SCREEN_WIDTH  16
 #define SCREEN_HEIGHT 12
@@ -61,8 +61,8 @@ struct leveldata_t {
     uint8_t   tileset;
 
     // containers for other data
-    std::vector<sprite_t*> sprites;
-    std::vector<exit_t*>   exits;
+    std::list<sprite_t*> sprites;
+    std::list<exit_t*>   exits;
 
     // don't return to this level after losing a life?
     bool      noReturn;
@@ -78,10 +78,10 @@ struct leveldata_t {
     leveldata_t() : tiles {{0}}, sprites(), exits() {}
     ~leveldata_t() {
         // cleanup sprites/exits
-        for (std::vector<sprite_t*>::iterator i = sprites.begin(); i < sprites.end(); i++)
+        for (std::list<sprite_t*>::iterator i = sprites.begin(); i != sprites.end(); i++)
             delete *i;
 
-        for (std::vector<exit_t*>::iterator i = exits.begin(); i < exits.end(); i++)
+        for (std::list<exit_t*>::iterator i = exits.begin(); i != exits.end(); i++)
             delete *i;
     }
 

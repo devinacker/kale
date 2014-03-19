@@ -38,13 +38,12 @@ public:
     static const QColor fillColor;
     QColor color(bool selected);
 
+    exit_t *exit;
+
 protected:
     void updateObject();
     void updateItem();
     void editItem();
-
-private:
-    exit_t *exit;
 
 };
 
@@ -56,13 +55,13 @@ public:
     static const QColor fillColor;
     QColor color(bool selected);
 
+    sprite_t *sprite;
+
 protected:
     void updateObject();
     void updateItem();
     void editItem();
 
-private:
-    sprite_t *sprite;
 };
 
 #endif // SCENEITEM_H
