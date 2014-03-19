@@ -265,8 +265,6 @@ void saveLevel(ROMFile& file, const DataChunk &chunk, const leveldata_t *level, 
     addr.addr += 0xA000;
     if (level->noReturn) addr.bank |= 0x80;
 
-    fprintf(stderr, "saving level 0x%03X to %02X:%04X\n", chunk.num, addr.bank, addr.addr);
-
     // save compressed data chunk, update pointer table
     uint num = chunk.num;
     file.writeToPointer(ptrMapDataL, ptrMapDataH, ptrMapDataB, addr, chunk.size, chunk.data, num);
@@ -278,8 +276,6 @@ void saveLevel(ROMFile& file, const DataChunk &chunk, const leveldata_t *level, 
 
 void saveExits(ROMFile& file, const leveldata_t *level, uint num) {
     romaddr_t addr = file.readShortPointer(ptrExitsL, ptrExitsH, ptrExitsB, num);
-
-    fprintf(stderr, "saving exits 0x%03X to %02X:%04X\n", num, addr.bank, addr.addr);
 
     for (std::list<exit_t*>::const_iterator i = level->exits.begin(); i != level->exits.end(); i++) {
         exit_t *exit = *i;
@@ -320,8 +316,6 @@ void saveSprites(ROMFile& file, const DataChunk& chunk, romaddr_t addr) {
     // level data banks mapped to A000-BFFF
     addr.addr %= BANK_SIZE;
     addr.addr += 0xA000;
-
-    fprintf(stderr, "saving sprites 0x%03X to %02X:%04X\n", chunk.num, addr.bank, addr.addr);
 
     // save compressed data chunk, update pointer table
     uint num = chunk.num;

@@ -54,8 +54,6 @@ void saveTileset(ROMFile& file, const DataChunk &chunk, romaddr_t addr) {
     addr.addr %= BANK_SIZE;
     addr.addr += 0xA000;
 
-    fprintf(stderr, "saving tileset 0x%02X to %02X:%04X\n", chunk.num, addr.bank, addr.addr);
-
     // save compressed data chunk, update pointer table
     uint num = chunk.num;
     file.writeToPointer(ptrTilesetL, ptrTilesetH, ptrTilesetB, addr, chunk.size, chunk.data, num);

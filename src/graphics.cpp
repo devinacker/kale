@@ -154,8 +154,6 @@ void saveBankTables(ROMFile& file, romaddr_t addr) {
     addr.addr %= BANK_SIZE;
     addr.addr += 0x8000;
 
-    fprintf(stderr, "saving CHR tables to %02X:%04X\n", addr.bank, addr.addr);
-
     // write bank byte
     file.writeByte(bankListBank, addr.bank);
 

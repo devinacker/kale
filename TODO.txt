@@ -1,7 +1,6 @@
 before initial release:
 
 - don't save too many exits (need to find out max. amount)
-- delete sprites/exits
 - write a crappy readme
 
 later:
