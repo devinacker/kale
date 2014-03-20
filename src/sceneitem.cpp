@@ -57,7 +57,8 @@ QColor SceneItem::color(bool selected) {
 }
 
 void SceneItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
-    this->editItem();
+    if (event->button() == Qt::LeftButton)
+        this->editItem();
 }
 
 void SceneItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {

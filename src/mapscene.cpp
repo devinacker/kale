@@ -233,25 +233,26 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
             event->accept();
         } else if (selectSprites) {
             sprite_t* sprite = new sprite_t;
-            sprite->x = tileX; sprite->y = tileY; sprite->type = 0;
+            memset(sprite, 0, sizeof(sprite_t));
+            sprite->x = tileX; sprite->y = tileY;
             level->sprites.push_back(sprite);
             // TODO: simpler scene item refresh
             level->modified = true;
             level->modifiedRecently = true;
             emit edited();
             refresh();
+            event->accept();
         } else if (selectExits) {
             exit_t* exit = new exit_t;
+            memset(exit, 0, sizeof(exit_t));
             exit->x = tileX; exit->y = tileY;
-            exit->dest = 0; exit->destScreen = 0;
-            exit->destX = 0; exit->destY = 0;
-            exit->type = 0;
             level->exits.push_back(exit);
             // TODO: simpler scene item refresh
             level->modified = true;
             level->modifiedRecently = true;
             emit edited();
             refresh();
+            event->accept();
         }
     }
     update();
