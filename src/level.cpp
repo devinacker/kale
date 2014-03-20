@@ -227,19 +227,13 @@ DataChunk packSprites(const leveldata_t *level, uint num) {
 
     sprites.sort();
 
-    uint lastScreen = 0;
-
     uint sprNum = 0;
     for (std::list<sprite_t>::const_iterator i = sprites.begin(); i != sprites.end(); i++) {
         sprite_t sprite = *i;
 
         // update sprites-per-screen counts
-        if (sprite.screen != lastScreen) {
-            for (uint j = lastScreen; j < sprite.screen; j++)
-                screens[j] = sprNum;
-
-            lastScreen = sprite.screen;
-        }
+        for (uint j = sprite.screen; j < numScreens; j++)
+            screens[j]++;
 
         // sprite position and type
         positions[sprNum] = ((sprite.x % SCREEN_WIDTH) << 4) + (sprite.y % SCREEN_HEIGHT);
@@ -247,7 +241,6 @@ DataChunk packSprites(const leveldata_t *level, uint num) {
 
         sprNum++;
     }
-    screens[numScreens - 1] = numSprites;
 
     // pack and return
     return DataChunk(buf, 2 + numScreens + numSprites + numSprites,
