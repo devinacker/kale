@@ -96,19 +96,19 @@ void loadCHRBanks(ROMFile& rom) {
         banks[i] = rom.readCHRBank(i);
 
     romaddr_t bankLists = {rom.readByte(bankListBank), 0};
-    rom.readData(bankListPtr[0], 2, &bankLists.addr);
+    rom.readBytes(bankListPtr[0], 2, &bankLists.addr);
 
-    rom.readData(bankLists,       256, &bankTable[0][0]);
-    rom.readData(bankLists + 256, 256, &bankTable[1][0]);
-    rom.readData(bankLists + 512, 256, &bankTable[2][0]);
+    rom.readBytes(bankLists,       256, &bankTable[0][0]);
+    rom.readBytes(bankLists + 256, 256, &bankTable[1][0]);
+    rom.readBytes(bankLists + 512, 256, &bankTable[2][0]);
 
     // background palettes
     for (uint i = 0; i < 10; i++)
-        rom.readData(palAddr + 256*i, 256, &palettes[i][0]);
+        rom.readBytes(palAddr + 256*i, 256, &palettes[i][0]);
 
     // sprite palettes
     for (uint i = 0; i < 50; i++)
-        rom.readData(sprPalAddr + 6*i, 6, &sprPalettes[i][0]);
+        rom.readBytes(sprPalAddr + 6*i, 6, &sprPalettes[i][0]);
 }
 
 void freeCHRBanks() {
@@ -160,6 +160,6 @@ void saveBankTables(ROMFile& file, romaddr_t addr) {
     // write three tables and the pointers to them
     for (uint i = 0; i < 3; i++) {
         file.writeInt16(bankListPtr[i], addr.addr + (i * 0x100));
-        file.writeData(addr + (i * 0x100), 0x100, bankTable[i]);
+        file.writeBytes(addr + (i * 0x100), 0x100, bankTable[i]);
     }
 }

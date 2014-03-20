@@ -43,7 +43,7 @@ public:
 
     uint toOffset(romaddr_t addr) const;
 
-    size_t       readData(romaddr_t addr, uint size, void *buffer);
+    size_t       readBytes(romaddr_t addr, uint size, void *buffer);
     uint8_t      readByte(romaddr_t addr);
     uint16_t     readInt16(romaddr_t addr);
     uint32_t     readInt32(romaddr_t addr);
@@ -53,7 +53,7 @@ public:
                                  uint size, void *buffer, uint offset = 0);
     size_t       readFromShortPointer(romaddr_t addrL, romaddr_t addrH, uint bank,
                                       uint size, void *buffer, uint offset = 0);
-    uint writeData(romaddr_t addr, uint size, const void *buffer);
+    uint writeBytes(romaddr_t addr, uint size, const void *buffer);
     uint writeByte(romaddr_t addr, uint8_t data);
     uint writeInt16(romaddr_t addr, uint16_t data);
     uint writeInt32(romaddr_t addr, uint32_t data);

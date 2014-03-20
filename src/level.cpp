@@ -302,7 +302,7 @@ void saveExits(ROMFile& file, const leveldata_t *level, uint num) {
         // byte 4: destination x/y
         bytes[4] = (exit->destX << 4) | exit->destY;
 
-        file.writeData(addr, 5, bytes);
+        file.writeBytes(addr, 5, bytes);
 
         addr.addr += 5;
     }

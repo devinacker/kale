@@ -84,7 +84,7 @@ bool ROMFile::openROM(OpenMode flags) {
   Returns the size of the data read from the file, or 0 if the read was
   unsuccessful.
 */
-size_t ROMFile::readData(romaddr_t addr, uint size, void *buffer) {
+size_t ROMFile::readBytes(romaddr_t addr, uint size, void *buffer) {
     if (!size) {
         char packed[DATA_SIZE];
         this->seek(toOffset(addr));
@@ -98,19 +98,19 @@ size_t ROMFile::readData(romaddr_t addr, uint size, void *buffer) {
 
 uint8_t ROMFile::readByte(romaddr_t addr) {
     uint8_t data;
-    readData(addr, 1, &data);
+    readBytes(addr, 1, &data);
     return data;
 }
 
 uint16_t ROMFile::readInt16(romaddr_t addr) {
     uint16_t data;
-    readData(addr, 2, &data);
+    readBytes(addr, 2, &data);
     return data;
 }
 
 uint32_t ROMFile::readInt32(romaddr_t addr) {
     uint32_t data;
-    readData(addr, 2, &data);
+    readBytes(addr, 2, &data);
     return data;
 }
 
@@ -138,7 +138,7 @@ size_t ROMFile::readFromPointer(romaddr_t addrL, romaddr_t addrH, romaddr_t addr
     memset(buffer, 0, 0x10000);
     romaddr_t addr = readPointer(addrL, addrH, addrB, offset);
     if (addr.addr)
-        return this->readData(addr, size, buffer);
+        return this->readBytes(addr, size, buffer);
 
     return 0;
 }
@@ -147,7 +147,7 @@ size_t ROMFile::readFromShortPointer(romaddr_t addrL, romaddr_t addrH, uint bank
     memset(buffer, 0, 0x10000);
     romaddr_t addr = readShortPointer(addrL, addrH, bank, offset);
     if (addr.addr)
-        return this->readData(addr, size, buffer);
+        return this->readBytes(addr, size, buffer);
 
     return 0;
 }
@@ -159,7 +159,7 @@ size_t ROMFile::readFromShortPointer(romaddr_t addrL, romaddr_t addrH, uint bank
 
   Returns the next available address to write data to.
 */
-uint ROMFile::writeData(romaddr_t addr, uint size, const void *buffer) {
+uint ROMFile::writeBytes(romaddr_t addr, uint size, const void *buffer) {
     uint offset = toOffset(addr);
     uint spaceLeft = BANK_SIZE - (addr.addr % BANK_SIZE);
 
@@ -178,15 +178,15 @@ uint ROMFile::writeData(romaddr_t addr, uint size, const void *buffer) {
 }
 
 uint ROMFile::writeByte(romaddr_t addr, uint8_t data) {
-    return writeData(addr, 1, &data);
+    return writeBytes(addr, 1, &data);
 }
 
 uint ROMFile::writeInt16(romaddr_t addr, uint16_t data) {
-    return writeData(addr, 2, &data);
+    return writeBytes(addr, 2, &data);
 }
 
 uint ROMFile::writeInt32(romaddr_t addr, uint32_t data) {
-    return writeData(addr, 4, &data);
+    return writeBytes(addr, 4, &data);
 }
 
 /*
@@ -201,7 +201,7 @@ uint ROMFile::writeToPointer(romaddr_t ptrL, romaddr_t ptrH, romaddr_t ptrB, rom
     writeByte(ptrH + offset, addr.addr >> 8);
     writeByte(ptrB + offset, addr.bank);
 
-    return writeData(addr, size, buffer);
+    return writeBytes(addr, size, buffer);
 }
 
 uint ROMFile::writeToShortPointer(romaddr_t ptrL, romaddr_t ptrH, romaddr_t addr,
@@ -209,7 +209,7 @@ uint ROMFile::writeToShortPointer(romaddr_t ptrL, romaddr_t ptrH, romaddr_t addr
     writeByte(ptrL + offset, addr.addr & 0xFF);
     writeByte(ptrH + offset, addr.addr >> 8);
 
-    return writeData(addr, size, buffer);
+    return writeBytes(addr, size, buffer);
 }
 
 /*
