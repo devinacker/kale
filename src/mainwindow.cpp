@@ -690,10 +690,8 @@ void MainWindow::nextLevel() {
   Help menu item slots
 */
 void MainWindow::showHelp() const {
-    /*
     QDesktopServices::openUrl(QUrl(QCoreApplication::applicationDirPath()
-                                   + "/docs/index.htm"));
-    */
+                                   + "/README.txt"));
 }
 
 void MainWindow::showAbout() {
