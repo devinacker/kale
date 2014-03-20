@@ -422,6 +422,28 @@ void MainWindow::saveFile() {
     std::list<DataChunk> chunks;
     romaddr_t nextAddr = {0x00, 0x0A00};
     const uint lastBank = 0x12;
+    // calculated from amount of space between first door and the tile subtraction table
+    const uint maxExits = 0x20F;
+
+    // check number of total exits and panic if there are too many
+    uint numExits = 0;
+    for (uint i = 0; i < NUM_LEVELS; i++) {
+        numExits += levels[i]->exits.size();
+    }
+    if (numExits > maxExits) {
+        QMessageBox::critical(this, tr("Error saving file"),
+                              tr("Not enough available exits in ROM (%1 exits available, %2 exits used).")
+                              .arg(maxExits).arg(numExits),
+                              QMessageBox::Ok);
+
+        rom.close();
+
+        // re-enable editing
+        setEditActions(true);
+        saving = false;
+
+        return;
+    }
 
     // TODO: keep track of total size, exit count, etc. to avoid overflow
     // 0x12 banks available, first one has the first 0xA00 bytes used by palettes)
