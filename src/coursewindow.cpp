@@ -33,7 +33,6 @@ CourseWindow::~CourseWindow()
     delete spinBox;
 }
 
-// TODO: subclass spinbox and show value in hex
 int CourseWindow::select(uint level) {
     spinBox->setValue(level);
 

@@ -20,14 +20,9 @@
 #include "compress.h"
 
 ROMFile::ROMFile() : QFile(),
-    version(kirby_jp),
     numPRGBanks(0),
     numCHRBanks(0)
 {}
-
-ROMFile::version_e ROMFile::getVersion() const {
-    return version;
-}
 
 /*
   Converts a LoROM address to a file offset.
@@ -192,8 +187,6 @@ uint ROMFile::writeInt32(romaddr_t addr, uint32_t data) {
 /*
   Writes data to an offset in a file, and then writes the 24-bit pointer
   to that data into a second offset.
-
-  TODO: rework pointers
 */
 uint ROMFile::writeToPointer(romaddr_t ptrL, romaddr_t ptrH, romaddr_t ptrB, romaddr_t addr,
                             uint size, const void *buffer, uint offset) {

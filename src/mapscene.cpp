@@ -157,7 +157,6 @@ const QPixmap* MapScene::getPixmap() const {
 
 void MapScene::refreshPixmap() {
     // update CHR banks
-    // TODO : generate a tile set pixmap here instead of doing lots of lookups on BG draw
     uint chr = level->header.tileIndex;
     uint pal = level->header.tilePal;
     QImage gfxBanks[4] = {

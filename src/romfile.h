@@ -28,16 +28,10 @@ struct romaddr_t {
 class ROMFile: public QFile {
 public:
 
-    //TODO: these
-    enum version_e {
-        kirby_jp  = 0
-    };
-
     ROMFile();
 
     bool         openROM(OpenMode flags);
 
-    version_e getVersion() const;
     uint getNumPRGBanks() const;
     uint getNumCHRBanks() const;
 
@@ -64,7 +58,7 @@ public:
 
     QImage readCHRBank(uint bank);
 private:
-    version_e version;
+
     uint numPRGBanks, numCHRBanks;
 };
 

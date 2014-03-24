@@ -48,7 +48,7 @@ struct exit_t {
 /*
   Definition for level data.
   Currently consists of tile and obstacle data and flags, as well as modified state
-  (both overall and for the current session), tileset #, and (TODO) sprites/exits.
+  (both overall and for the current session), tileset #, and sprites/exits.
 */
 struct leveldata_t {
     header_t  header;

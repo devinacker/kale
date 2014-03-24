@@ -363,7 +363,6 @@ void MainWindow::openFile() {
                 }
             }
 
-            // TODO: load graphics
             loadCHRBanks(rom);
             loadTilesets(rom);
 
@@ -445,7 +444,6 @@ void MainWindow::saveFile() {
         return;
     }
 
-    // TODO: keep track of total size, exit count, etc. to avoid overflow
     // 0x12 banks available, first one has the first 0xA00 bytes used by palettes)
     const uint freeSpace = (BANK_SIZE * lastBank) - nextAddr.addr;
     uint usedSpace = 0;
@@ -516,8 +514,7 @@ void MainWindow::saveFile() {
 
         for (std::list<DataChunk>::reverse_iterator i = chunks.rbegin(); i != chunks.rend(); i++) {
             if (space >= i->size) {
-                DataChunk chunk = *i;
-                chunks.erase((++i).base());
+                DataChunk& chunk = *i;
 
                 switch (chunk.type) {
                 case DataChunk::level:
@@ -544,6 +541,7 @@ void MainWindow::saveFile() {
                     nextAddr.addr = 0;
                 }
 
+                chunks.erase((++i).base());
                 break;
             }
         }
@@ -553,7 +551,6 @@ void MainWindow::saveFile() {
 
     // save all level exits (in level order instead of by size so pointers can be
     // calculated correctly)
-    // TODO: error if too many exits
     for (uint i = 0; i < NUM_LEVELS; i++) {
         saveExits(rom, levels[i], i);
     }
@@ -652,14 +649,12 @@ void MainWindow::enableSelectTiles(bool on) {
 }
 
 void MainWindow::enableSelectSprites(bool on) {
-    // TODO: enable sprite selection
     scene->enableSelectSprites(on);
     if (on)
         ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 }
 
 void MainWindow::enableSelectExits(bool on) {
-    // TODO: enable exit selection
     scene->enableSelectExits(on);
     if (on)
         ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
