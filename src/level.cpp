@@ -110,7 +110,12 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
 
             // calculate normal x/y positions
             sprite->x = (i % header->screensH * SCREEN_WIDTH) + (pos >> 4);
-            sprite->y = (i / header->screensH * SCREEN_HEIGHT) + (pos & 0xF);
+            // for some stupid reason, HAL designed the sprite data so that
+            // sprite coords / screen positions are based on screens being
+            // 16 tiles tall instead of 12. changing this should put sprites
+            // in the correct place all the time on vertical levels.
+            // (fixes issue #2)
+            sprite->y = (i / header->screensH * (SCREEN_HEIGHT + 4)) + (pos & 0xF);
 
             level->sprites.push_back(sprite);
             sprNum++;
@@ -219,7 +224,8 @@ DataChunk packSprites(const leveldata_t *level, uint num) {
         sprite_t sprite = *(*i);
 
         // which screen is this sprite on?
-        sprite.screen = (sprite.y / SCREEN_HEIGHT * level->header.screensH)
+        // (treat screens as 16 tiles tall instead of 12 - fixes issue #2)
+        sprite.screen = (sprite.y / (SCREEN_HEIGHT + 4) * level->header.screensH)
                       + (sprite.x / SCREEN_WIDTH);
 
         sprites.push_back(sprite);
@@ -236,7 +242,7 @@ DataChunk packSprites(const leveldata_t *level, uint num) {
             screens[j]++;
 
         // sprite position and type
-        positions[sprNum] = ((sprite.x % SCREEN_WIDTH) << 4) + (sprite.y % SCREEN_HEIGHT);
+        positions[sprNum] = ((sprite.x % SCREEN_WIDTH) << 4) + (sprite.y % (SCREEN_HEIGHT + 4));
         types[sprNum]     = sprite.type;
 
         sprNum++;
