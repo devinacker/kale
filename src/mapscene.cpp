@@ -728,7 +728,11 @@ void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
             uint act = tilesets[level->tileset][tile].action;
             if (seeThrough
               && ((act >= 0x1c && act < 0x22)
-              || (act >= 0x4c && act < 0x52))) {
+               || act == 0x25
+               || (act >= 0x4c && act < 0x52)
+               || act == 0x55
+               || (act >= 0x6f && act < 0x75)
+               || act == 0x76 || act == 0x77)) {
                 tile -= tileSubtract[level->tileset];
 
                 srcRect.moveLeft(tile * 16);
