@@ -1,0 +1,10 @@
+v0.81 [2014-03-26]
+- fixed saved sprite data occasionally being incorrect
+- fixed some sprite positions being wrong when a level was more than one screen tall
+  (due to the game treating sprite position data as if screens were 16 tiles tall,
+   instead of the usual 12)
+  (thanks to Reimu for pointing out both of the above)
+- destroyable block translucency now affects more types when enabled
+  
+v0.80 [2014-03-20]
+- initial release
