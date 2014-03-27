@@ -17,7 +17,8 @@ QString HexSpinBox::textFromValue(int val) const {
 QValidator::State HexSpinBox::validate(QString &input, int &pos) const {
     bool ok;
     int res = input.toInt(&ok, 16);
-    if (ok && res <= this->maximum() && res >= this->minimum())
+    if ((ok && res <= this->maximum() && res >= this->minimum())
+            || input.isEmpty())
         return QValidator::Acceptable;
 
     return QValidator::Invalid;
