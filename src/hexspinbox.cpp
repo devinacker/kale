@@ -1,6 +1,6 @@
 #include "hexspinbox.h"
 
-HexSpinBox::HexSpinBox(QWidget *parent = 0, uint digits = 0):
+HexSpinBox::HexSpinBox(QWidget *parent, uint digits = 0):
     QSpinBox(parent) {
 
     this->digits = digits;
