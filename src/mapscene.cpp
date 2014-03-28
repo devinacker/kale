@@ -682,6 +682,11 @@ void MapScene::setDoubleSize(bool on) {
     else
         tileSize = TILE_SIZE;
 
+    // set new size
+    uint width = level->header.screensH * SCREEN_WIDTH;
+    uint height = level->header.screensV * SCREEN_HEIGHT;
+    setSceneRect(0, 0, width * tileSize, height * tileSize);
+
     // apply to items
     for (std::list<SpriteItem*>::iterator i = this->sprites.begin(); i != this->sprites.end(); i++) {
         (*i)->setDoubleSize(on);
@@ -691,10 +696,6 @@ void MapScene::setDoubleSize(bool on) {
         (*i)->setDoubleSize(on);
     }
 
-    // set new size
-    uint width = level->header.screensH * SCREEN_WIDTH;
-    uint height = level->header.screensV * SCREEN_HEIGHT;
-    setSceneRect(0, 0, width * tileSize, height * tileSize);
     this->update();
 }
 
