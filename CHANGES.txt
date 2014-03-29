@@ -1,3 +1,7 @@
+v0.82 [2014-03-29]
+- fixed double size mode leaving sprites/exits in the wrong place
+  (thanks Darkdata)
+
 v0.81 [2014-03-26]
 - fixed saved sprite data occasionally being incorrect
 - fixed some sprite positions being wrong when a level was more than one screen tall

@@ -74,4 +74,6 @@ RESOURCES += \
 
 OTHER_FILES += \
     src/windows.rc \
-    TODO.txt
+    TODO.txt \
+    CHANGES.txt \
+    README.txt
