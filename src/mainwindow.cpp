@@ -422,7 +422,7 @@ void MainWindow::saveFile() {
     romaddr_t nextAddr = {0x00, 0x0A00};
     const uint lastBank = 0x12;
     // calculated from amount of space between first door and the tile subtraction table
-    const uint maxExits = 0x20F;
+    const uint maxExits = 0x203;
 
     // check number of total exits and panic if there are too many
     uint numExits = 0;
