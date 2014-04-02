@@ -73,8 +73,10 @@ void TilesetView::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void TilesetView::mousePressEvent(QMouseEvent *event) {
-    if (this->mouseEnabled)
+    if (this->mouseEnabled && currTile >= 0) {
+        event->accept();
         emit tileSelected(currTile);
+    }
 }
 
 SpritesView::SpritesView(QWidget *parent):

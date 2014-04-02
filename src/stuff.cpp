@@ -372,7 +372,7 @@ const StringMap spriteTypes ({
      {0xaa, "AA: Twizzy (fast jump up)"},
      {0xab, "AB: Twizzy (hovering)"},
 
-     {0xac, "AC: Coconut (fast right)"},
+     {0xac, "AC: Nut bomb (fast right)"},
 
      // AD-AF unused
      {0xb0, "B0: Mr. Frosty (slow)"},
