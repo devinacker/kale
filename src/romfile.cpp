@@ -3,7 +3,7 @@
   Contains functions for loading and saving data to/from a ROM file.
 
   Automatically detects valid game ROMs and allows reading/writing by CPU addresses, automatically
-  adjusting for a 512-byte copier header if necessary.
+  adjusting for a 10-byte iNES header.
 
   This code is released under the terms of the MIT license.
   See COPYING.txt for details.
@@ -25,7 +25,7 @@ ROMFile::ROMFile() : QFile(),
 {}
 
 /*
-  Converts a LoROM address to a file offset.
+  Converts a MMC3 address to a file offset.
 
   Returns the corresponding file offset if successful, otherwise
   returns -1.
@@ -45,7 +45,7 @@ uint ROMFile::getNumCHRBanks() const {
 }
 
 /*
-  Opens the file and also verifies that it is one of the ROMS supported
+  Opens the file and also verifies that it is one of the ROMs supported
   by the editor; displays a dialog and returns false on failure.
 
   TODO: actually implement version checking if need be
@@ -230,7 +230,7 @@ QImage ROMFile::readCHRBank(uint bank) {
             uchar plane1 = chr[tile*16 + line + 8];
             for (uint col = 0; col < 8; col++) {
                 uint idx = tile * 8 + col;
-                //uchar color = ((plane0 >> col) & 1) + ((plane1 >> col) & 1) * 2;
+
                 uchar color = ((plane0 >> (7 - col)) & 1) + ((plane1 >> (7 - col)) & 1) * 2;
                 if (color) {
                     lines[0][idx] = color;

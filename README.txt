@@ -5,6 +5,8 @@ This is an extremely temporary readme.
 
 KALE is a level editor for the NES game Kirby's Adventure. It supports all known versions of the ROM and supports most level editing functionality.
 
+Disclaimer: This is an incomplete tool based on incomplete information. As always, please back up your ROMs before using this program. If something bad happens to your files, please let me know so I can try to find and fix what went wrong.
+
 The "Level" menu (or the equivalent toolbar buttons) can be used to switch between editing tiles, sprites (red boxes) and exits (blue boxes). In all three modes, click and drag to select, double click to edit, and press the Delete key (or Edit>Delete) to remove stuff. The usual menu items or shortcut keys can be used to cut/copy/paste tiles as well (which will be extended to sprites and tiles as well later on). Right-clicking when in sprite or exit mode will place a new one at the current cursor location.
 
 Note: Currently, moving or editing sprites and exits doesn't result in a "dirty" editing state, and so changes to either one will be saved automatically when changing levels if no other changes were made. Actions involving sprites or exits currently aren't added to the undo/redo stack (this will be changed eventually).

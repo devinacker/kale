@@ -66,7 +66,7 @@ typedef struct {
 	uint16_t offset;
 	UT_hash_handle hh;
 } tuple_t;
-// turn 3 bytes into a single integer for quicker hashing/searching
+// turn 4 bytes into a single integer for quicker hashing/searching
 #define COMBINE(w, x, y, z) ((w << 24) | (x << 16) | (y << 8) | z)
 
 uint8_t    rotate (uint8_t);
@@ -465,8 +465,8 @@ backref_t ref_search (uint8_t *start, uint8_t *current, uint32_t insize, int fas
 	// see if this byte pair exists elsewhere, then start searching.
 	currbytes = COMBINE(current[3], current[2], current[1], current[0]);
 	HASH_FIND_INT(offsets, &currbytes, tuple);
-	// add 2 to offset since we're starting at the end of the 3 byte sequence here
-	if (tuple) for (uint8_t *pos = start + tuple->offset + 2; pos < current; pos++) {
+	// add 3 to offset since we're starting at the end of the 4 byte sequence here
+	if (tuple) for (uint8_t *pos = start + tuple->offset + 3; pos < current; pos++) {
 		// now repeat the check but go backwards
 		for (size = 0; size <= LONG_RUN_SIZE && current + size < start + insize; size++)
 			if (start[pos - start - size] != current[size]) break;
