@@ -1,7 +1,6 @@
 later:
 
 - change "level" to "room" to avoid confusion with actual, complete stages
-- add "boss level" to exit edit window when appropriate exit type selected
 - double click (instead of right-click) to insert sprites/exits?
 - generate undo/redo actions when moving sprites/exits
 - copying/pasting sprites and exits

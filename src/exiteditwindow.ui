@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>315</width>
-    <height>108</height>
+    <width>304</width>
+    <height>112</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,6 +24,13 @@
     <normaloff>:/images/icons/kale-doors.png</normaloff>:/images/icons/kale-doors.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="4">
+    <widget class="QLabel" name="label_X">
+     <property name="text">
+      <string>X</string>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QLabel" name="label_Level">
      <property name="text">
@@ -38,7 +45,7 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="8">
+   <item row="4" column="0" colspan="8">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -48,38 +55,10 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="4">
-    <widget class="QLabel" name="label_X">
-     <property name="text">
-      <string>X</string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="7">
     <widget class="QSpinBox" name="spinBox_Y">
      <property name="maximum">
       <number>11</number>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="3">
-    <widget class="QSpinBox" name="spinBox_Screen">
-     <property name="maximum">
-      <number>15</number>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="5">
-    <widget class="QSpinBox" name="spinBox_X">
-     <property name="maximum">
-      <number>15</number>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="6">
-    <widget class="QLabel" name="label_Y">
-     <property name="text">
-      <string>Y</string>
      </property>
     </widget>
    </item>
@@ -96,6 +75,30 @@
      </property>
     </spacer>
    </item>
+   <item row="0" column="3">
+    <widget class="QSpinBox" name="spinBox_Screen">
+     <property name="maximum">
+      <number>15</number>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="6">
+    <widget class="QLabel" name="label_Y">
+     <property name="text">
+      <string>Y</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="5">
+    <widget class="QSpinBox" name="spinBox_X">
+     <property name="maximum">
+      <number>15</number>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" colspan="7">
+    <widget class="QComboBox" name="comboBox_Type"/>
+   </item>
    <item row="1" column="0">
     <widget class="QLabel" name="label_Type">
      <property name="text">
@@ -103,8 +106,74 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1" colspan="7">
-    <widget class="QComboBox" name="comboBox_Type"/>
+   <item row="2" column="0" colspan="3">
+    <widget class="QLabel" name="label_BossStuff">
+     <property name="text">
+      <string>Boss Room (levels 000-007)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="4">
+    <widget class="QLabel" name="label_BossX">
+     <property name="text">
+      <string>X</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_BossLevel">
+     <property name="text">
+      <string>Level</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QLabel" name="label_BossScreen">
+     <property name="text">
+      <string>Screen</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="7">
+    <widget class="QSpinBox" name="spinBox_BossY">
+     <property name="maximum">
+      <number>11</number>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <spacer name="horizontalSpacer2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="3" column="3">
+    <widget class="QSpinBox" name="spinBox_BossScreen">
+     <property name="maximum">
+      <number>15</number>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="6">
+    <widget class="QLabel" name="label_BossY">
+     <property name="text">
+      <string>Y</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="5">
+    <widget class="QSpinBox" name="spinBox_BossX">
+     <property name="maximum">
+      <number>15</number>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

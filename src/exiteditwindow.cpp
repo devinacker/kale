@@ -12,6 +12,7 @@ ExitEditWindow::ExitEditWindow(QWidget *parent, exit_t *exit) :
             | Qt::MSWindowsFixedSizeDialogHint),
     ui(new Ui::ExitEditWindow),
     spinBox_Level(new HexSpinBox(this, 3)),
+    spinBox_BossLevel(new HexSpinBox(this, 3)),
     exit(exit)
 {
     ui->setupUi(this);
@@ -19,6 +20,13 @@ ExitEditWindow::ExitEditWindow(QWidget *parent, exit_t *exit) :
     this->spinBox_Level->setMaximum(NUM_LEVELS - 1);
     ui->gridLayout->addWidget(spinBox_Level, 0, 1, 1, 1);
     QWidget::setTabOrder(this->spinBox_Level, ui->spinBox_Screen);
+
+    this->spinBox_BossLevel->setMaximum(NUM_LEVELS - 1);
+    ui->gridLayout->addWidget(spinBox_BossLevel, 3, 1, 1, 1);
+    QWidget::setTabOrder(this->spinBox_BossLevel, ui->comboBox_Type);
+
+    QObject::connect(ui->comboBox_Type, SIGNAL(currentIndexChanged(int)),
+                     this, SLOT(enableBossInfo(int)));
 
     for (StringMap::const_iterator i = exitTypes.begin(); i != exitTypes.end(); i++) {
             ui->comboBox_Type->addItem(i->second, i->first);
@@ -30,11 +38,33 @@ ExitEditWindow::ExitEditWindow(QWidget *parent, exit_t *exit) :
     ui->spinBox_Y->setValue(exit->destY);
     ui->comboBox_Type->setCurrentIndex(std::distance(exitTypes.begin(),
                                                      exitTypes.find(exit->type)));
+
+    this->spinBox_BossLevel->setValue(exit->bossLevel);
+    ui->spinBox_BossScreen->setValue(exit->bossScreen);
+    ui->spinBox_BossX->setValue(exit->bossX);
+    ui->spinBox_BossY->setValue(exit->bossY);
 }
 
 ExitEditWindow::~ExitEditWindow()
 {
     delete ui;
+    delete spinBox_Level;
+    delete spinBox_BossLevel;
+}
+
+void ExitEditWindow::enableBossInfo(int index) {
+    uint type = ui->comboBox_Type->itemData(index).toUInt();
+    bool boss = type == 0x1F;
+
+    ui->label_BossStuff->setEnabled(boss);
+    ui->label_BossLevel->setEnabled(boss);
+    this->spinBox_BossLevel->setEnabled(boss);
+    ui->label_BossScreen->setEnabled(boss);
+    ui->spinBox_BossScreen->setEnabled(boss);
+    ui->label_BossX->setEnabled(boss);
+    ui->spinBox_BossX->setEnabled(boss);
+    ui->label_BossY->setEnabled(boss);
+    ui->spinBox_BossY->setEnabled(boss);
 }
 
 void ExitEditWindow::accept() {
@@ -43,6 +73,11 @@ void ExitEditWindow::accept() {
     this->exit->destX = ui->spinBox_X->value();
     this->exit->destY = ui->spinBox_Y->value();
     this->exit->type = ui->comboBox_Type->itemData(ui->comboBox_Type->currentIndex()).toUInt();
+
+    this->exit->bossLevel = this->spinBox_BossLevel->value();
+    this->exit->bossScreen = ui->spinBox_BossScreen->value();
+    this->exit->bossX = ui->spinBox_BossX->value();
+    this->exit->bossY = ui->spinBox_BossY->value();
 
     QDialog::accept();
 }

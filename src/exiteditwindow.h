@@ -17,12 +17,15 @@ public:
     explicit ExitEditWindow(QWidget *parent, exit_t *exit);
     ~ExitEditWindow();
 
+public slots:
+    void enableBossInfo(int);
+
 protected:
     void accept();
 
 private:
     Ui::ExitEditWindow *ui;
-    HexSpinBox *spinBox_Level;
+    HexSpinBox *spinBox_Level, *spinBox_BossLevel;
 
     exit_t *exit;
 };

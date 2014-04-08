@@ -43,6 +43,7 @@ struct exit_t {
     uint8_t type;
     uint x, y;
     uint dest, destScreen, destX, destY;
+    uint bossLevel, bossScreen, bossX, bossY;
 };
 
 /*

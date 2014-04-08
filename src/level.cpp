@@ -39,6 +39,7 @@ const romaddr_t ptrSpritesB = {0x12, 0x8a80};
 const romaddr_t ptrExitsL   = {0x12, 0x8f82};
 const romaddr_t ptrExitsH   = {0x12, 0x90cb};
 const uint      ptrExitsB   = 0x12;
+const romaddr_t bossExits   = {0x12, 0x9c4a};
 
 /*
   Load a level by number. Returns pointer to the level data as a struct.
@@ -156,6 +157,26 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
         byte = file.readByte(thisExit + 4);
         exit->destX = byte >> 4;
         exit->destY = byte & 0xF;
+
+        // if this is a "next level/boss" door, get that info too
+        if (num < 8 && exit->type == 0x1F) {
+            exit->bossLevel = file.readByte(bossExits + (num * 3));
+
+            byte = file.readByte(bossExits + (num * 3) + 1);
+            if (byte & 0x80)
+                exit->bossLevel |= 0x100;
+
+            exit->bossScreen = byte & 0xF;
+
+            byte = file.readByte(bossExits + (num * 3) + 2);
+            exit->bossX = byte >> 4;
+            exit->bossY = byte & 0xF;
+        } else {
+            exit->bossLevel = 0;
+            exit->bossScreen = 0;
+            exit->bossX = 0;
+            exit->bossY = 0;
+        }
 
         level->exits.push_back(exit);
     }
@@ -304,6 +325,19 @@ void saveExits(ROMFile& file, const leveldata_t *level, uint num) {
         file.writeBytes(addr, 5, bytes);
 
         addr.addr += 5;
+
+        // if this is a "next level/boss" door, save that info
+        if (num < 8 && exit->type == 0x1F) {
+            bytes[0] = exit->bossLevel & 0xFF;
+
+            bytes[1] = exit->bossScreen;
+            if (exit->bossLevel >= 0x100)
+                bytes[1] |= 0x80;
+
+            bytes[2] = (exit->bossX << 4) | exit->bossY;
+
+            file.writeBytes(bossExits + (num * 3), 3, bytes);
+        }
     }
 
     // write pointer for NEXT level
