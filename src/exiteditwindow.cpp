@@ -20,10 +20,17 @@ ExitEditWindow::ExitEditWindow(QWidget *parent, exit_t *exit) :
     this->spinBox_Level->setMaximum(NUM_LEVELS - 1);
     ui->gridLayout->addWidget(spinBox_Level, 0, 1, 1, 1);
     QWidget::setTabOrder(this->spinBox_Level, ui->spinBox_Screen);
+    QWidget::setTabOrder(ui->spinBox_Screen, ui->spinBox_X);
+    QWidget::setTabOrder(ui->spinBox_X, ui->spinBox_Y);
+    QWidget::setTabOrder(ui->spinBox_Y, ui->comboBox_Type);
+    QWidget::setTabOrder(ui->comboBox_Type, this->spinBox_BossLevel);
 
     this->spinBox_BossLevel->setMaximum(NUM_LEVELS - 1);
     ui->gridLayout->addWidget(spinBox_BossLevel, 3, 1, 1, 1);
-    QWidget::setTabOrder(this->spinBox_BossLevel, ui->comboBox_Type);
+    QWidget::setTabOrder(this->spinBox_BossLevel, ui->spinBox_BossScreen);
+    QWidget::setTabOrder(ui->spinBox_BossScreen, ui->spinBox_BossX);
+    QWidget::setTabOrder(ui->spinBox_BossX, ui->spinBox_BossY);
+    QWidget::setTabOrder(ui->spinBox_BossY, ui->buttonBox);
 
     QObject::connect(ui->comboBox_Type, SIGNAL(currentIndexChanged(int)),
                      this, SLOT(enableBossInfo(int)));

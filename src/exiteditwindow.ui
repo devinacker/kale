@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>304</width>
-    <height>112</height>
+    <height>138</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="icons.qrc">
-    <normaloff>:/images/icons/kale-doors.png</normaloff>:/images/icons/kale-doors.png</iconset>
+    <normaloff>:/images/icons/kale-doors-new.png</normaloff>:/images/icons/kale-doors-new.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="4">
@@ -182,6 +182,9 @@
   <tabstop>spinBox_X</tabstop>
   <tabstop>spinBox_Y</tabstop>
   <tabstop>comboBox_Type</tabstop>
+  <tabstop>spinBox_BossScreen</tabstop>
+  <tabstop>spinBox_BossX</tabstop>
+  <tabstop>spinBox_BossY</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
