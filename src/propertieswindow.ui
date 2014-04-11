@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="icons.qrc">
-    <normaloff>:/images/icons/wand.png</normaloff>:/images/icons/wand.png</iconset>
+    <normaloff>:/images/icons/kale-roomheader.png</normaloff>:/images/icons/kale-roomheader.png</iconset>
   </property>
   <property name="modal">
    <bool>true</bool>

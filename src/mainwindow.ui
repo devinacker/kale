@@ -61,7 +61,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -338,7 +338,7 @@
   <action name="action_Level_Properties">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/images/icons/wand.png</normaloff>:/images/icons/wand.png</iconset>
+     <normaloff>:/images/icons/kale-roomheader.png</normaloff>:/images/icons/kale-roomheader.png</iconset>
    </property>
    <property name="text">
     <string>Level Properties</string>
@@ -444,7 +444,7 @@
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/images/icons/kale-doors.png</normaloff>:/images/icons/kale-doors.png</iconset>
+     <normaloff>:/images/icons/kale-doors-new.png</normaloff>:/images/icons/kale-doors-new.png</iconset>
    </property>
    <property name="text">
     <string>Select Exits</string>
