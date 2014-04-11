@@ -192,16 +192,18 @@ void PropertiesWindow::applyChange() {
     level->header.screensV = ui->spinBox_Height->value();
     level->header.screensH = ui->spinBox_Width ->value();
 
+    emit changed();
+}
+
+void PropertiesWindow::accept() {
+    // level graphics and size settings have already been applied by applyChange slot
+
     // apply music setting
     level->header.music = ui->comboBox_Music->itemData(ui->comboBox_Music->currentIndex()).toUInt();
 
     // apply return flag
     level->noReturn     = ui->checkBox_NoReturn->checkState() == Qt::Checked;
 
-    emit changed();
-}
-
-void PropertiesWindow::accept() {
     level->modified = true;
     level->modifiedRecently = true;
 
