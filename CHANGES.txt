@@ -1,3 +1,17 @@
+v0.83 [2014-04-18]
+- fixed the limit on # of exits being too high, easily leading to corruption
+  (due to some incorrect info on datacrystal)
+  this was capable of affecting boss battle info (for the "next world" doors) which
+  can now be edited as part of the normal exit data, as well as part of the tileset
+  data, which the editor will now repair automatically until the actual tileset editor
+  is added (soon, hopefully.)
+- added the ability to change boss battle locations when editing a door with type 0x1F
+  (the "next" overworld doors)
+- fixed a bug where the music track and "no return on death" settings in the level
+  properties dialog didn't take effect unless other settings were also changed
+  (thanks J^P)
+- new "edit exits" and "level properties" menu/window icons (made by Reimu)
+
 v0.82 [2014-03-29]
 - fixed double size mode leaving sprites/exits in the wrong place
   (thanks Darkdata)
