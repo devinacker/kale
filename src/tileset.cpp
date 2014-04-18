@@ -27,7 +27,10 @@ void loadTilesets(ROMFile& rom) {
             tilesets[set][tile].action  = behavior[tile];
         }
 
-        tileSubtract[set] = rom.readByte(tileSubVals + set);
+        // for now, use the default value, because this may have been corrupted
+        // by a bug in the previous release (and it can't be changed in the editor right now anyway)
+        tileSubtract[set] = 0x08;
+        // tileSubtract[set] = rom.readByte(tileSubVals + set);
     }
 }
 
@@ -57,4 +60,7 @@ void saveTileset(ROMFile& file, const DataChunk &chunk, romaddr_t addr) {
     // save compressed data chunk, update pointer table
     uint num = chunk.num;
     file.writeToPointer(ptrTilesetL, ptrTilesetH, ptrTilesetB, addr, chunk.size, chunk.data, num);
+
+    // save destroyable value
+    file.writeByte(tileSubVals + num, tileSubtract[num]);
 }
