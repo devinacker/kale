@@ -5,7 +5,8 @@
 #include <map>
 #include "romfile.h"
 
-#define NUM_TILESETS 0x31
+#define NUM_TILESETS        0x31
+#define NUM_TILESETS_INGAME 0x1F
 
 struct metatile_t {
     uint8_t ul, ur, ll, lr;
