@@ -555,6 +555,11 @@ void MainWindow::saveFile() {
         saveExits(rom, levels[i], i);
     }
 
+    // fixed a fucked up thing that v0.83 may have broken
+    // TODO: remove this and find out what the data actually does
+    const uint8_t stupidFix[] = {0x5e, 0x62, 0x6a, 0x6e, 0x76, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x7a, 0x7e};
+    rom.writeBytes({0x12, 0x9c7e}, 0x12, stupidFix);
+
     status(tr("Saved %1").arg(fileName));
 
     unsaved = false;

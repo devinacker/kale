@@ -1,3 +1,8 @@
+v0.83b [2014-04-19]
+- only write some tileset info for ingame tilesets, not every single one.
+  this was causing crashes as of v0.83 (thanks again J^P)
+  once again, this update will automatically repair any ROM damage caused by v0.83
+
 v0.83 [2014-04-18]
 - fixed the limit on # of exits being too high, easily leading to corruption
   (due to some incorrect info on datacrystal)
