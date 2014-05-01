@@ -425,8 +425,8 @@ void MapScene::paste() {
     edit->setText("paste");
 
     // otherwise, move stuff into the level from the buffer
-    for (uint i = 0; i < copyLength && selY + i < 64; i++) {
-        for (uint j = 0; j < copyWidth && selX + j < 64; j++) {
+    for (uint i = 0; i < copyLength && selY + i < 16*SCREEN_HEIGHT; i++) {
+        for (uint j = 0; j < copyWidth && selX + j < 16*SCREEN_WIDTH; j++) {
             level->tiles[selY + i][selX + j] = copyBuffer[i][j];
         }
     }
@@ -455,8 +455,8 @@ void MapScene::deleteTiles() {
     edit->setText("delete");
 
     // otherwise, delete stuff
-    for (int i = 0; i < selLength && selY + i < 64; i++) {
-        for (int j = 0; j < selWidth && selX + j < 64; j++) {
+    for (int i = 0; i < selLength; i++) {
+        for (int j = 0; j < selWidth; j++) {
             level->tiles[selY + i][selX + j] = 0;
         }
     }
