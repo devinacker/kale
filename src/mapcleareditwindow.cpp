@@ -30,6 +30,7 @@ MapClearEditWindow::~MapClearEditWindow()
 
 int MapClearEditWindow::exec() {
     ui->comboBox->setCurrentIndex(0);
+    this->setLevelIndex(0);
 
     return QDialog::exec();
 }
