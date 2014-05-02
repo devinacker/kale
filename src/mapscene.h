@@ -13,6 +13,7 @@
 #include <QTimer>
 #include <QFontMetrics>
 #include <list>
+#include <vector>
 
 #include "level.h"
 #include "sceneitem.h"
@@ -49,6 +50,9 @@ private:
 
     bool showBounds, seeThrough;
     uint tileSize;
+
+    // used to display map clear rects when non-null
+    const std::vector<QRect> *clearRects;
 
     void copyTiles(bool cut);
     void deleteTiles();
@@ -90,6 +94,7 @@ public slots:
     void setShowBounds(bool);
     void setSeeThrough(bool);
     void setDoubleSize(bool);
+    void setClearRects(const std::vector<QRect>*);
 
 signals:
     void doubleClicked();

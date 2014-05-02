@@ -25,7 +25,9 @@
 #include "level.h"
 #include "tileset.h"
 #include "graphics.h"
+#include "mapclear.h"
 #include "coursewindow.h"
+#include "mapcleareditwindow.h"
 #include "version.h"
 
 #ifdef _WIN32
@@ -46,7 +48,8 @@ MainWindow::MainWindow(QWidget *parent) :
     level(0),
 
     scene(new MapScene(this, &currentLevel)),
-    propWindow(new PropertiesWindow(this, scene->getPixmap()))
+    propWindow(new PropertiesWindow(this, scene->getPixmap())),
+    clearWindow(new MapClearEditWindow(this))
 {
     ui->setupUi(this);
     selectGroup->addAction(ui->action_Select_Tiles);
@@ -100,6 +103,8 @@ MainWindow::~MainWindow()
     delete selectGroup;
     delete scene;
     delete settings;
+    delete propWindow;
+    delete clearWindow;
 }
 
 void MainWindow::setupSignals() {
@@ -160,6 +165,8 @@ void MainWindow::setupSignals() {
 
     QObject::connect(ui->action_Level_Properties, SIGNAL(triggered()),
                      this, SLOT(levelProperties()));
+    QObject::connect(ui->action_Edit_Map_Clear_Data, SIGNAL(triggered()),
+                     this, SLOT(editMapClearData()));
 
     QObject::connect(ui->action_Select_Level, SIGNAL(triggered()),
                      this, SLOT(selectLevel()));
@@ -194,6 +201,10 @@ void MainWindow::setupSignals() {
                      scene, SLOT(setAnimSpeed(int)));
     QObject::connect(propWindow, SIGNAL(speedChanged(int)),
                      scene, SLOT(update()));
+
+    // display map clear rects when editing them
+    QObject::connect(clearWindow, SIGNAL(clearRectsChanged(const std::vector<QRect>*)),
+                     scene, SLOT(setClearRects(const std::vector<QRect>*)));
 }
 
 void MainWindow::setupActions() {
@@ -211,6 +222,7 @@ void MainWindow::setupActions() {
     ui->toolBar->addAction(ui->action_Select_Exits);
     ui->toolBar->addAction(ui->action_Edit_Tiles);
     ui->toolBar->addAction(ui->action_Level_Properties);
+    ui->toolBar->addAction(ui->action_Edit_Map_Clear_Data);
     ui->toolBar->addSeparator();
 
     // from view menu
@@ -307,6 +319,8 @@ void MainWindow::setUndoRedoActions(bool val) {
 void MainWindow::setLevelChangeActions(bool val) {
     ui->action_Previous_Level ->setEnabled(val && level > 0);
     ui->action_Next_Level     ->setEnabled(val && level < NUM_LEVELS - 1);
+    // map clear data only available for overworlds (000-006)
+    ui->action_Edit_Map_Clear_Data->setEnabled(val && level < 7);
 }
 
 /*
@@ -365,6 +379,10 @@ void MainWindow::openFile() {
 
             loadCHRBanks(rom);
             loadTilesets(rom);
+
+            // get information about progressively revealing the overworld
+            for (uint i = 0; i < 7; i++)
+                loadMapClearData(rom, i, levels[i]->header.screensH);
 
             // show first level
             setLevel(0);
@@ -669,6 +687,13 @@ void MainWindow::levelProperties() {
     if (currentLevel.header.screensH == 0) return;
 
     propWindow->startEdit(&currentLevel);
+}
+
+void MainWindow::editMapClearData() {
+    if (level >= 7) return;
+
+    clearWindow->setLevel(level);
+    clearWindow->exec();
 }
 
 void MainWindow::selectLevel() {

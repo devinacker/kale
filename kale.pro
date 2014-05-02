@@ -39,7 +39,9 @@ SOURCES += \
     src/tilesetview.cpp \
     src/tileeditwindow.cpp \
     src/spriteeditwindow.cpp \
-    src/exiteditwindow.cpp
+    src/exiteditwindow.cpp \
+    src/mapclear.cpp \
+    src/mapcleareditwindow.cpp
 
 HEADERS  += \
     src/romfile.h \
@@ -59,7 +61,9 @@ HEADERS  += \
     src/tilesetview.h \
     src/tileeditwindow.h \
     src/spriteeditwindow.h \
-    src/exiteditwindow.h
+    src/exiteditwindow.h \
+    src/mapclear.h \
+    src/mapcleareditwindow.h
 
 FORMS += \
     src/mainwindow.ui \
@@ -67,7 +71,8 @@ FORMS += \
     src/propertieswindow.ui \
     src/tileeditwindow.ui \
     src/spriteeditwindow.ui \
-    src/exiteditwindow.ui
+    src/exiteditwindow.ui \
+    src/mapcleareditwindow.ui
 
 RESOURCES += \
     src/icons.qrc

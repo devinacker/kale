@@ -17,6 +17,7 @@
 #include "mapscene.h"
 #include "level.h"
 #include "propertieswindow.h"
+#include "mapcleareditwindow.h"
 
 namespace Ui {
 class MainWindow;
@@ -50,6 +51,7 @@ protected slots:
     void enableSelectExits(bool);
 
     void levelProperties();
+    void editMapClearData();
 
     void selectLevel();
     void prevLevel();
@@ -91,6 +93,7 @@ private:
     // renderin stuff
     MapScene *scene;
     PropertiesWindow *propWindow;
+    MapClearEditWindow *clearWindow;
 
     // various funcs
     void setupSignals();

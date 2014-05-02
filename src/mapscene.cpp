@@ -51,7 +51,8 @@ MapScene::MapScene(QObject *parent, leveldata_t *currentLevel)
       tilesetPixmap(256*TILE_SIZE, TILE_SIZE),
       animFrame(0), animTimer(this),
       showBounds(true), seeThrough(true),
-      tileSize(TILE_SIZE)
+      tileSize(TILE_SIZE),
+      clearRects(NULL)
 {
     /*
     QObject::connect(this, SIGNAL(edited()),
@@ -700,6 +701,15 @@ void MapScene::setDoubleSize(bool on) {
 }
 
 /*
+ * Update the vector of map clear rects when editing map clear data
+ * so that the cleared-out area surrounding the selected level can be shown.
+ */
+void MapScene::setClearRects(const std::vector<QRect>* rects) {
+    this->clearRects = rects;
+    this->update();
+}
+
+/*
   Remove the selection pixmap from the scene.
 */
 void MapScene::cancelSelection() {
@@ -719,6 +729,17 @@ void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
     for (uint y = rec.top() / tileSize; y < rec.bottom() / tileSize; y++) {
         for (uint x = rec.left() / tileSize; x < rec.right() / tileSize; x++) {
             uint8_t tile = level->tiles[y][x];
+            // if we're showing map clear rects, block out the other parts of the map
+            if (clearRects) {
+                tile = 0xF8 + ((x ^ y) & 1);
+
+                for (std::vector<QRect>::const_iterator i = clearRects->begin(); i < clearRects->end(); i++) {
+                    if (i->contains(x, y)) {
+                        tile = level->tiles[y][x];
+                        break;
+                    }
+                }
+            }
 
             QRect destRect(x * tileSize, y * tileSize, tileSize, tileSize);
             QRect srcRect (tile * 16, 0, 16, 16);

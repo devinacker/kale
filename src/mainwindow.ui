@@ -100,6 +100,7 @@
     <addaction name="action_Select_Exits"/>
     <addaction name="separator"/>
     <addaction name="action_Level_Properties"/>
+    <addaction name="action_Edit_Map_Clear_Data"/>
     <addaction name="separator"/>
     <addaction name="action_Select_Level"/>
     <addaction name="action_Previous_Level"/>
@@ -341,7 +342,7 @@
      <normaloff>:/images/icons/kale-roomheader.png</normaloff>:/images/icons/kale-roomheader.png</iconset>
    </property>
    <property name="text">
-    <string>Level Properties</string>
+    <string>Level Properties...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
@@ -518,6 +519,15 @@
    </property>
    <property name="text">
     <string>Double Size</string>
+   </property>
+  </action>
+  <action name="action_Edit_Map_Clear_Data">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/icons/kale-mapclear.png</normaloff>:/images/icons/kale-mapclear.png</iconset>
+   </property>
+   <property name="text">
+    <string>Edit Map Clear Data...</string>
    </property>
   </action>
  </widget>

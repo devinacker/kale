@@ -27,5 +27,6 @@
         <file>images/icons/page_white_magnify.png</file>
         <file>images/icons/kale-doors-new.png</file>
         <file>images/icons/kale-roomheader.png</file>
+        <file>images/icons/kale-mapclear.png</file>
     </qresource>
 </RCC>
