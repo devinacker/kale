@@ -61,7 +61,7 @@ void SceneItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
         this->editItem();
 }
 
-void SceneItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void SceneItem::paint(QPainter *painter, const QStyleOptionGraphicsItem* /* option */, QWidget* /* widget */) {
     // just draw a goofy rectangle for now, dunno a better thing to do
     // (door icon?)
     painter->fillRect(this->boundingRect(), this->color(this->isSelected()));

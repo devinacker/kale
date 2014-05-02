@@ -767,7 +767,7 @@ void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
 
 }
 
-void MapScene::drawForeground(QPainter *painter, const QRectF &rect) {
+void MapScene::drawForeground(QPainter *painter, const QRectF& /* rect */) {
     // highlight tile under cursor
     if (tileX < level->header.screensH * SCREEN_WIDTH
             && tileY < level->header.screensV * SCREEN_HEIGHT

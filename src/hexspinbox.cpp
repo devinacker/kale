@@ -14,7 +14,7 @@ QString HexSpinBox::textFromValue(int val) const {
     return QString::number(val, 16).rightJustified(this->digits, QLatin1Char('0')).toUpper();
 }
 
-QValidator::State HexSpinBox::validate(QString &input, int &pos) const {
+QValidator::State HexSpinBox::validate(QString &input, int& /* pos */) const {
     bool ok;
     int res = input.toInt(&ok, 16);
     if ((ok && res <= this->maximum() && res >= this->minimum())
