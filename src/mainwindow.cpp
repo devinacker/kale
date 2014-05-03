@@ -177,7 +177,7 @@ void MainWindow::setupSignals() {
 
     // view menu
     QObject::connect(ui->action_Double_Size, SIGNAL(toggled(bool)),
-                     scene, SLOT(setDoubleSize(bool)));
+                     this, SLOT(setDoubleSize(bool)));
     QObject::connect(ui->action_Show_Screen_Boundaries, SIGNAL(toggled(bool)),
                      scene, SLOT(setShowBounds(bool)));
     QObject::connect(ui->action_See_Through_Breakable_Tiles, SIGNAL(toggled(bool)),
@@ -709,6 +709,15 @@ void MainWindow::prevLevel() {
 }
 void MainWindow::nextLevel() {
     if (level < NUM_LEVELS) setLevel(level + 1);
+}
+
+/*
+ *Change the graphics view scale factor
+ */
+void MainWindow::setDoubleSize(bool on) {
+    ui->graphicsView->resetTransform();
+    if (on)
+        ui->graphicsView->scale(2.0, 2.0);
 }
 
 /*

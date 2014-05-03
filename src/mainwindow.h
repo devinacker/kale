@@ -57,6 +57,9 @@ protected slots:
     void prevLevel();
     void nextLevel();
 
+    // view stuff
+    void setDoubleSize(bool);
+
     // help menu
     void showHelp() const;
     void showAbout();

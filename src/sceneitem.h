@@ -11,7 +11,6 @@ public:
     SceneItem();
 
     QRectF boundingRect() const;
-    void setDoubleSize(bool on);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual QColor color(bool selected);
 
@@ -24,8 +23,6 @@ protected:
     virtual void updateObject() = 0;
     virtual void updateItem() = 0;
     virtual void editItem() = 0;
-
-    uint tileSize;
 
 };
 

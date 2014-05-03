@@ -29,24 +29,13 @@ const QColor SpriteItem::fillColor  (255, 0, 0, 128);
 const QColor ExitItem::fillColor    (0, 0, 255, 128);
 
 SceneItem::SceneItem():
-    QGraphicsItem(0),
-    tileSize(TILE_SIZE)
+    QGraphicsItem(0)
 {
     this->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 }
 
-void SceneItem::setDoubleSize(bool on) {
-    if (on)
-        tileSize = TILE_SIZE * 2;
-    else
-        tileSize = TILE_SIZE;
-
-    this->prepareGeometryChange();
-    this->updateItem();
-}
-
 QRectF SceneItem::boundingRect() const {
-    return QRectF(0, 0, tileSize, tileSize);
+    return QRectF(0, 0, TILE_SIZE, TILE_SIZE);
 }
 
 QColor SceneItem::color(bool selected) {
@@ -74,16 +63,16 @@ QVariant SceneItem::itemChange(GraphicsItemChange change, const QVariant& value)
     if (scene() && change == QGraphicsItem::ItemPositionChange) {
         QPointF newPos = value.toPointF();
         // rect is adjusted so that items cannot be placed one tile to the right/bottom
-        int adjust = -tileSize;
+        int adjust = -TILE_SIZE;
         QRectF rect = scene()->sceneRect().adjusted(0, 0, adjust, adjust);
 
         if (!rect.contains(newPos)) {
-            // Keep the item inside the scene rect.
+            // don't allow the item to be moved outside the scene
             newPos.setX(qMin(rect.right(), qMax(newPos.x(), rect.left())));
             newPos.setY(qMin(rect.bottom(), qMax(newPos.y(), rect.top())));
         }
-        newPos.setX(round(newPos.x() / tileSize) * tileSize);
-        newPos.setY(round(newPos.y() / tileSize) * tileSize);
+        newPos.setX(round(newPos.x() / TILE_SIZE) * TILE_SIZE);
+        newPos.setY(round(newPos.y() / TILE_SIZE) * TILE_SIZE);
 
         return newPos;
     } else if (change == QGraphicsItem::ItemPositionHasChanged) {
@@ -114,12 +103,12 @@ QColor ExitItem::color(bool selected) {
 }
 
 void ExitItem::updateObject() {
-    this->exit->x = this->x() / tileSize;
-    this->exit->y = this->y() / tileSize;
+    this->exit->x = this->x() / TILE_SIZE;
+    this->exit->y = this->y() / TILE_SIZE;
 }
 
 void ExitItem::updateItem() {
-    this->setPos(exit->x * tileSize, exit->y * tileSize);
+    this->setPos(exit->x * TILE_SIZE, exit->y * TILE_SIZE);
 
     this->setToolTip(QString("Exit to level %1 (screen %2, %3, %4)\nType %5")
                      .arg(QString::number(exit->dest, 16).rightJustified(3, QLatin1Char('0')).toUpper())
@@ -153,12 +142,12 @@ QColor SpriteItem::color(bool selected) {
 }
 
 void SpriteItem::updateObject() {
-    this->sprite->x = this->x() / tileSize;
-    this->sprite->y = this->y() / tileSize;
+    this->sprite->x = this->x() / TILE_SIZE;
+    this->sprite->y = this->y() / TILE_SIZE;
 }
 
 void SpriteItem::updateItem() {
-    this->setPos(sprite->x * tileSize, sprite->y * tileSize);
+    this->setPos(sprite->x * TILE_SIZE, sprite->y * TILE_SIZE);
     this->setToolTip(QString("Sprite %1").arg(spriteType(sprite->type)));
 }
 

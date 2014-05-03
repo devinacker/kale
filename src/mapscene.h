@@ -93,7 +93,6 @@ public slots:
     void animate();
     void setShowBounds(bool);
     void setSeeThrough(bool);
-    void setDoubleSize(bool);
     void setClearRects(const std::vector<QRect>*);
 
 signals:
