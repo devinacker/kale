@@ -47,7 +47,9 @@ QColor SceneItem::color(bool selected) {
 
 void SceneItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
     // don't handle clicks for things that are outside of the scene
-    if (!scene()->sceneRect().contains(scenePos()))
+    int adjust = -TILE_SIZE;
+    QRectF rect = scene()->sceneRect().adjusted(0, 0, adjust, adjust);
+    if (!rect.contains(scenePos()))
         return;
 
     if (event->button() == Qt::LeftButton)
@@ -56,7 +58,9 @@ void SceneItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 
 void SceneItem::paint(QPainter *painter, const QStyleOptionGraphicsItem* /* option */, QWidget* /* widget */) {
     // don't draw things that are outside of the scene
-    if (!scene()->sceneRect().contains(scenePos()))
+    int adjust = -TILE_SIZE;
+    QRectF rect = scene()->sceneRect().adjusted(0, 0, adjust, adjust);
+    if (!rect.contains(scenePos()))
         return;
 
     painter->fillRect(this->boundingRect(), this->color(this->isSelected()));
