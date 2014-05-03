@@ -225,17 +225,6 @@ DataChunk packLevel(const leveldata_t *level, uint num) {
 DataChunk packSprites(const leveldata_t *level, uint num) {
     uint8_t buf[DATA_SIZE] = {0};
 
-    uint numScreens = level->header.screensH * level->header.screensV;
-    uint numSprites = level->sprites.size();
-
-    uint8_t  *screens   = buf + 2;
-    uint8_t  *positions = screens + numScreens;
-    uint8_t  *types     = positions + numSprites;
-
-    // write screen count bytes
-    buf[0] = numScreens;
-    buf[1] = level->header.screensV;
-
     // sort sprites by screen
     std::list<sprite_t> sprites;
 
@@ -243,6 +232,12 @@ DataChunk packSprites(const leveldata_t *level, uint num) {
          i != level->sprites.end(); i++) {
 
         sprite_t sprite = *(*i);
+
+        // only include sprites which are actually within the bounds of the level
+        // (any others would get invalid coordinates)
+        if (sprite.x >= level->header.screensH * SCREEN_WIDTH
+            || sprite.y >= level->header.screensV * SCREEN_HEIGHT)
+            continue;
 
         // which screen is this sprite on?
         // (treat screens as 16 tiles tall instead of 12 - fixes issue #2)
@@ -253,6 +248,17 @@ DataChunk packSprites(const leveldata_t *level, uint num) {
     }
 
     sprites.sort();
+
+    uint numScreens = level->header.screensH * level->header.screensV;
+    uint numSprites = sprites.size();
+
+    uint8_t  *screens   = buf + 2;
+    uint8_t  *positions = screens + numScreens;
+    uint8_t  *types     = positions + numSprites;
+
+    // write screen count bytes
+    buf[0] = numScreens;
+    buf[1] = level->header.screensV;
 
     uint sprNum = 0;
     for (std::list<sprite_t>::const_iterator i = sprites.begin(); i != sprites.end(); i++) {
@@ -300,6 +306,12 @@ void saveExits(ROMFile& file, const leveldata_t *level, uint num) {
     for (std::list<exit_t*>::const_iterator i = level->exits.begin(); i != level->exits.end(); i++) {
         exit_t *exit = *i;
         uint8_t bytes[5];
+
+        // only include exits which are actually within the bounds of the level
+        // (any others would get invalid coordinates)
+        if (exit->x >= level->header.screensH * SCREEN_WIDTH
+            || exit->y >= level->header.screensV * SCREEN_HEIGHT)
+            continue;
 
         // byte 0: upper 4 = exit type & 0xF, lower 4 = screen exit is on
         bytes[0] = exit->type << 4;

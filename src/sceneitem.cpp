@@ -46,13 +46,19 @@ QColor SceneItem::color(bool selected) {
 }
 
 void SceneItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+    // don't handle clicks for things that are outside of the scene
+    if (!scene()->sceneRect().contains(scenePos()))
+        return;
+
     if (event->button() == Qt::LeftButton)
         this->editItem();
 }
 
 void SceneItem::paint(QPainter *painter, const QStyleOptionGraphicsItem* /* option */, QWidget* /* widget */) {
-    // just draw a goofy rectangle for now, dunno a better thing to do
-    // (door icon?)
+    // don't draw things that are outside of the scene
+    if (!scene()->sceneRect().contains(scenePos()))
+        return;
+
     painter->fillRect(this->boundingRect(), this->color(this->isSelected()));
 
     painter->setPen(QPen(strokeColor, 2));
