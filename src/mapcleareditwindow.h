@@ -2,6 +2,7 @@
 #define MAPCLEAREDITWINDOW_H
 
 #include <QDialog>
+#include <QItemSelectionModel>
 #include "mapclear.h"
 
 namespace Ui {
@@ -23,12 +24,19 @@ public slots:
 
 protected slots:
     void setLevelIndex(int);
+    void updateRects();
+    void addRect();
+    void deleteRects();
+    void selectionChanged();
 
 private:
     Ui::MapClearEditWindow *ui;
     MapClearModel *model;
-    uint level;
-    std::vector<QRect> rects;
+    MapClearDelegate *delegate;
+    uint level, levelIndex;
+    std::vector<QRect> rects[0x10];
+
+    uint rectCount;
 
 private slots:
     void accept();

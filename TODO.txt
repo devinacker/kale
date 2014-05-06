@@ -7,5 +7,4 @@ later:
 - level import/export
 - dreamtool level importing
 - tileset & palette editing
-- info about overworld barrier locations
 - info about warp star anim., etc. (ask Reimu)

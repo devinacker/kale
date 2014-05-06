@@ -573,10 +573,10 @@ void MainWindow::saveFile() {
         saveExits(rom, levels[i], i);
     }
 
-    // fixed a fucked up thing that v0.83 may have broken
-    // TODO: remove this and find out what the data actually does
-    const uint8_t stupidFix[] = {0x5e, 0x62, 0x6a, 0x6e, 0x76, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x7a, 0x7e};
-    rom.writeBytes({0x12, 0x9c7e}, 0x12, stupidFix);
+    // save map clear data for overworlds
+    for (uint i = 0; i < 7; i++) {
+        saveMapClearData(rom, levels[i], i);
+    }
 
     status(tr("Saved %1").arg(fileName));
 
@@ -693,7 +693,8 @@ void MainWindow::editMapClearData() {
     if (level >= 7) return;
 
     clearWindow->setLevel(level);
-    clearWindow->exec();
+    if (clearWindow->exec())
+        setUnsaved();
 }
 
 void MainWindow::selectLevel() {
