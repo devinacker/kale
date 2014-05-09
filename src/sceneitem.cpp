@@ -2,8 +2,7 @@
  * QGraphicsItem that represents an object (sprite/exit) in the level.
  * Contains a pointer to the thing itself, which it manipulates when the user interacts
  * with the item in some way (dragging around to move, or double/clicking to edit.)
- * No interactivity is currently implemented, nor graphics, so just appears as an
- * immobile rectangle.
+ * No graphics are implmented, so just appears as an immobile rectangle.
  * Item info is shown in the tooltip.
  *
  */
