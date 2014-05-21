@@ -1,5 +1,8 @@
-Kirby's Adventure Level Editor (KALE)
-version 0.83b
+Kirby's Adventure Level Editor (KALE) 
+=====================================
+version 0.83b 
+
+!(http://dl.dropboxusercontent.com/u/43107309/kale-v083.png)
 
 This is an extremely temporary readme.
 
