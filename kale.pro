@@ -81,4 +81,4 @@ OTHER_FILES += \
     src/windows.rc \
     TODO.txt \
     CHANGES.txt \
-    README.txt
+    README.md
