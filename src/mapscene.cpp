@@ -196,7 +196,6 @@ void MapScene::refreshPixmap() {
         srcRect.moveLeft(8 * (thisTile.lr % 64));
         painter.drawImage(destRect, gfxBanks[thisTile.lr / 64], srcRect);
     }
-
 }
 
 // advance to next animation frame

@@ -27,11 +27,8 @@ void loadTilesets(ROMFile& rom) {
             tilesets[set][tile].action  = behavior[tile];
         }
 
-        // for now, use the default value, because this may have been corrupted
-        // by a bug in the previous release (and it can't be changed in the editor right now anyway)
-        tileSubtract[set] = 0x08;
-        // if (num < NUM_TILESETS_INGAME)
-        //     tileSubtract[set] = rom.readByte(tileSubVals + set);
+        if (set < NUM_TILESETS_INGAME)
+            tileSubtract[set] = rom.readByte(tileSubVals + set);
     }
 }
 

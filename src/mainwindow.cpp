@@ -27,7 +27,6 @@
 #include "graphics.h"
 #include "mapclear.h"
 #include "coursewindow.h"
-#include "mapcleareditwindow.h"
 #include "version.h"
 
 #ifdef _WIN32
@@ -49,7 +48,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     scene(new MapScene(this, &currentLevel)),
     propWindow(new PropertiesWindow(this, scene->getPixmap())),
-    clearWindow(new MapClearEditWindow(this))
+    clearWindow(new MapClearEditWindow(this)),
+    tilesetWindow(new TilesetEditWindow(this))
 {
     ui->setupUi(this);
     selectGroup->addAction(ui->action_Select_Tiles);
@@ -105,6 +105,7 @@ MainWindow::~MainWindow()
     delete settings;
     delete propWindow;
     delete clearWindow;
+    delete tilesetWindow;
 }
 
 void MainWindow::setupSignals() {
@@ -167,6 +168,8 @@ void MainWindow::setupSignals() {
                      this, SLOT(levelProperties()));
     QObject::connect(ui->action_Edit_Map_Clear_Data, SIGNAL(triggered()),
                      this, SLOT(editMapClearData()));
+    QObject::connect(ui->action_Edit_Tilesets, SIGNAL(triggered()),
+                     this, SLOT(editTilesets()));
 
     QObject::connect(ui->action_Select_Level, SIGNAL(triggered()),
                      this, SLOT(selectLevel()));
@@ -201,6 +204,10 @@ void MainWindow::setupSignals() {
                      scene, SLOT(setAnimSpeed(int)));
     QObject::connect(propWindow, SIGNAL(speedChanged(int)),
                      scene, SLOT(update()));
+
+    // update map when tileset changes are applied
+    QObject::connect(tilesetWindow, SIGNAL(changed()),
+                     scene, SLOT(refresh()));
 
     // display map clear rects when editing them
     QObject::connect(clearWindow, SIGNAL(clearRectsChanged(const std::vector<QRect>*)),
@@ -695,6 +702,11 @@ void MainWindow::editMapClearData() {
     clearWindow->setLevel(level);
     if (clearWindow->exec())
         setUnsaved();
+}
+
+void MainWindow::editTilesets() {
+    // TODO: make this actually work
+    tilesetWindow->startEdit(&currentLevel);
 }
 
 void MainWindow::selectLevel() {

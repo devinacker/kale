@@ -30,6 +30,8 @@ QSize TilesetView::sizeHint() const {
 }
 
 void TilesetView::paintEvent(QPaintEvent *event) {
+    if (!pixmap) return;
+
     // assign a painter to the widget
     QPainter painter(this);
     QRect rect = event->rect();
