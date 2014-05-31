@@ -32,6 +32,7 @@ public:
 public slots:
     void applySpeed(int);
     void animate();
+    void setTileset(int);
     void setTile(int);
     void updateTile();
     void applyChange();
@@ -40,7 +41,7 @@ public slots:
 private:
     Ui::TilesetEditWindow *ui;
 
-    HexSpinBox *tilesetBox, *tilePalBox;
+    HexSpinBox *tilesetBox, *tilePalBox, *subtractBox;
     HexSpinBox *tileBoxes[4];
     TilesetView *tileView;
 
@@ -51,6 +52,7 @@ private:
     QTimer animTimer;
     uint animFrame;
     metatile_t tempTilesets[NUM_TILESETS][0x100];
+    uint8_t    tempTileSubtract[NUM_TILESETS];
 
 private slots:
     void accept();

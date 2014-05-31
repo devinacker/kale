@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>483</width>
-    <height>291</height>
+    <width>552</width>
+    <height>310</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -26,7 +26,7 @@
    <property name="sizeConstraint">
     <enum>QLayout::SetFixedSize</enum>
    </property>
-   <item row="3" column="0" colspan="2">
+   <item row="4" column="0" colspan="4">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -42,7 +42,33 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Subtract this # when tiles are broken</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3" rowspan="3">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab_tile16">
+      <attribute name="title">
+       <string>16x16 Tiles</string>
+      </attribute>
+      <layout class="QGridLayout" name="tile16Layout"/>
+     </widget>
+     <widget class="QWidget" name="tab_tile8">
+      <attribute name="title">
+       <string>8x8 Tiles</string>
+      </attribute>
+      <layout class="QGridLayout" name="tile8Layout"/>
+     </widget>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBox_Display">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -207,7 +233,20 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="2" column="2">
+    <spacer name="horizontalSpacer_7">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="3" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBox_Tile">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
@@ -326,24 +365,18 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="1" rowspan="2">
-    <widget class="QTabWidget" name="tabWidget">
-     <property name="currentIndex">
-      <number>0</number>
+   <item row="2" column="1">
+    <spacer name="horizontalSpacer_8">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="tab_tile16">
-      <attribute name="title">
-       <string>16x16 Tiles</string>
-      </attribute>
-      <layout class="QGridLayout" name="tile16Layout"/>
-     </widget>
-     <widget class="QWidget" name="tab_tile8">
-      <attribute name="title">
-       <string>8x8 Tiles</string>
-      </attribute>
-      <layout class="QGridLayout" name="tile8Layout"/>
-     </widget>
-    </widget>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

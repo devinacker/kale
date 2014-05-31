@@ -24,6 +24,7 @@ TilesetEditWindow::TilesetEditWindow(QWidget *parent) :
     ui(new Ui::TilesetEditWindow),
     tilesetBox(new HexSpinBox(this, 2)),
     tilePalBox(new HexSpinBox(this, 2)),
+    subtractBox(new HexSpinBox(this, 2)),
     tileView(new TilesetView(this, &tilesetPixmap)),
     tilesetPixmap(256*TILE_SIZE, TILE_SIZE),
     animTimer(this), animFrame(0)
@@ -54,6 +55,12 @@ TilesetEditWindow::TilesetEditWindow(QWidget *parent) :
     layout->addWidget(tileBoxes[2], 1, 2, 1, 1);
     layout->addWidget(tileBoxes[3], 1, 4, 1, 1);
 
+    // add tile subtract box
+    layout = ui->mainLayout;
+    layout->addWidget(subtractBox, 2, 2, 1, 1);
+    subtractBox->setMinimum(0);
+    subtractBox->setMaximum(255);
+
     // add tile views
     layout = ui->tile16Layout;
     layout->addWidget(tileView);
@@ -69,16 +76,10 @@ TilesetEditWindow::TilesetEditWindow(QWidget *parent) :
     // set up signals to automatically apply changes
     QObject::connect(ui->comboBox_TileGFX, SIGNAL(currentIndexChanged(int)),
                      this, SLOT(refreshPixmap()));
-    QObject::connect(ui->comboBox_TileGFX, SIGNAL(currentIndexChanged(int)),
-                     tileView, SLOT(update()));
     QObject::connect(this->tilesetBox, SIGNAL(valueChanged(int)),
-                     this, SLOT(refreshPixmap()));
-    QObject::connect(this->tilesetBox, SIGNAL(valueChanged(int)),
-                     tileView, SLOT(update()));
+                     this, SLOT(setTileset(int)));
     QObject::connect(this->tilePalBox, SIGNAL(valueChanged(int)),
                      this, SLOT(refreshPixmap()));
-    QObject::connect(this->tilePalBox, SIGNAL(valueChanged(int)),
-                     tileView, SLOT(update()));
     QObject::connect(ui->slider_AnimSpeed, SIGNAL(valueChanged(int)),
                      this, SLOT(applySpeed(int)));
 
@@ -102,6 +103,7 @@ TilesetEditWindow::~TilesetEditWindow()
     delete ui;
     delete tilesetBox;
     delete tilePalBox;
+    delete subtractBox;
     delete tileView;
     delete tileBoxes[0];
     delete tileBoxes[1];
@@ -123,7 +125,7 @@ void TilesetEditWindow::startEdit(const leveldata_t *level) {
 
     // set graphics values
     ui->comboBox_TileGFX->setCurrentIndex(level->header.tileIndex);
-    this->tilesetBox       ->setValue(level->tileset);
+    this->tilesetBox    ->setValue(level->tileset);
     this->tilePalBox    ->setValue(level->header.tilePal);
 
     // set slider initial value to the opposite of the level speed
@@ -137,8 +139,10 @@ void TilesetEditWindow::startEdit(const leveldata_t *level) {
     // make editing copies of tilesets
     for (uint i = 0; i < NUM_TILESETS; i++)
         memcpy(tempTilesets[i], tilesets[i], 0x100 * sizeof(metatile_t));
-    refreshPixmap();
 
+    memcpy(tempTileSubtract, tileSubtract, NUM_TILESETS * sizeof(uint8_t));
+
+    setTileset(level->tileset);
     setTile(0);
 
     this->exec();
@@ -155,8 +159,6 @@ void TilesetEditWindow::refreshPixmap() {
     gfxBanks[3] = getCHRBank(bankTable[2][chr] + animFrame, pal);
 
     QPainter painter(&tilesetPixmap);
-
-    this->tileset = tilesetBox->value();
 
     for (uint i = 0; i < 256; i++) {
         metatile_t thisTile = tempTilesets[tileset][i];
@@ -212,7 +214,15 @@ void TilesetEditWindow::applySpeed(int speed) {
 void TilesetEditWindow::animate() {
     ++animFrame &= 3;
     refreshPixmap();
-    update();
+}
+
+void TilesetEditWindow::setTileset(int tileset) {
+    this->tileset = tileset;
+
+    subtractBox->setValue(tempTileSubtract[tileset]);
+    subtractBox->setEnabled(tileset < NUM_TILESETS_INGAME);
+
+    refreshPixmap();
 }
 
 void TilesetEditWindow::setTile(int tile) {
@@ -251,13 +261,14 @@ void TilesetEditWindow::updateTile() {
     thisTile->palette = ui->spinBox_Palette->value();
 
     refreshPixmap();
-    update();
 }
 
 void TilesetEditWindow::applyChange() {
     // save changes to tilesets
     for (uint i = 0; i < NUM_TILESETS; i++)
         memcpy(tilesets[i], tempTilesets[i], 0x100 * sizeof(metatile_t));
+
+    memcpy(tileSubtract, tempTileSubtract, NUM_TILESETS * sizeof(uint8_t));
 
     emit changed();
 }
