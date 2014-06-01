@@ -26,6 +26,7 @@ TilesetEditWindow::TilesetEditWindow(QWidget *parent) :
     tilePalBox(new HexSpinBox(this, 2)),
     subtractBox(new HexSpinBox(this, 2)),
     tileView(new TilesetView(this, &tilesetPixmap)),
+    tile8View(new Tile8View(this, gfxBanks)),
     tilesetPixmap(256*TILE_SIZE, TILE_SIZE),
     animTimer(this), animFrame(0)
 {
@@ -65,7 +66,8 @@ TilesetEditWindow::TilesetEditWindow(QWidget *parent) :
     layout = ui->tile16Layout;
     layout->addWidget(tileView);
     tileView->setMouseEnabled(true);
-    // TODO: 8x8 tile view widget
+    layout = ui->tile8Layout;
+    layout->addWidget(tile8View);
 
 
     // add tile behaviors to other dropdown
@@ -85,6 +87,8 @@ TilesetEditWindow::TilesetEditWindow(QWidget *parent) :
 
     QObject::connect(ui->spinBox_Palette, SIGNAL(valueChanged(int)),
                      this, SLOT(updateTile()));
+    QObject::connect(ui->spinBox_Palette, SIGNAL(valueChanged(int)),
+                     tile8View, SLOT(setPalette(int)));
     QObject::connect(ui->comboBox_Behavior, SIGNAL(currentIndexChanged(int)),
                      this, SLOT(updateTile()));
 
@@ -105,6 +109,7 @@ TilesetEditWindow::~TilesetEditWindow()
     delete tilePalBox;
     delete subtractBox;
     delete tileView;
+    delete tile8View;
     delete tileBoxes[0];
     delete tileBoxes[1];
     delete tileBoxes[2];
@@ -284,4 +289,36 @@ void TilesetEditWindow::accept() {
     applyChange();
 
     QDialog::accept();
+}
+
+Tile8View::Tile8View(QWidget *parent, const QImage *banks) :
+    TilesetView(parent, NULL),
+    gfxBanks(banks),
+    palette(0)
+{}
+
+void Tile8View::setPalette(int palette) {
+    this->palette = palette;
+    update();
+}
+
+void Tile8View::paintEvent(QPaintEvent *event) {
+    // assign a painter to the widget
+    QPainter painter(this);
+    QRect rect = event->rect();
+
+    uint tile = 0;
+    for (int h = rect.top() / TILE_SIZE; tile < 256 && h <= rect.bottom() / TILE_SIZE; h++) {
+        for (int w = rect.left() / TILE_SIZE; tile < 256 && w <= rect.right() / TILE_SIZE; w++) {
+            QRect destRect(w * TILE_SIZE, h * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            QRect srcRect ((tile % 64) * 8, palette * 8, 8, 8);
+            painter.drawImage(destRect, gfxBanks[tile / 64], srcRect);
+
+            tile++;
+        }
+    }
+
+    if (currTile >= 0)
+        painter.fillRect((currTile % 16) * TILE_SIZE, (currTile / 16) * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                         TilesetView::infoColor);
 }

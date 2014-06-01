@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Edit Tileset</string>
+   <string>Edit Tilesets</string>
   </property>
   <property name="modal">
    <bool>true</bool>

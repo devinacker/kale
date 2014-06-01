@@ -9,6 +9,7 @@
 #include <QDialog>
 #include <QTimer>
 #include <QAbstractButton>
+#include <QPaintEvent>
 #include <cstdint>
 #include "level.h"
 #include "tileset.h"
@@ -18,6 +19,23 @@
 namespace Ui {
 class TilesetEditWindow;
 }
+
+// subclass of TilesetView that displays 8x8 tiles instead
+class Tile8View : public TilesetView {
+    Q_OBJECT
+
+public:
+    Tile8View(QWidget*, const QImage*);
+
+public slots:
+    void setPalette(int);
+
+protected:
+    void paintEvent(QPaintEvent*);
+private:
+    const QImage *gfxBanks;
+    uint palette;
+};
 
 class TilesetEditWindow : public QDialog
 {
@@ -44,6 +62,7 @@ private:
     HexSpinBox *tilesetBox, *tilePalBox, *subtractBox;
     HexSpinBox *tileBoxes[4];
     TilesetView *tileView;
+    Tile8View *tile8View;
 
     QPixmap tilesetPixmap;
     QImage gfxBanks[4];

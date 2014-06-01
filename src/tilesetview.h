@@ -17,13 +17,14 @@ protected:
     void mousePressEvent(QMouseEvent *);
     void mouseMoveEvent(QMouseEvent *);
 
-private:
     static const QColor infoColor;
 
-    const QPixmap* pixmap;
     QTimer timer;
     bool mouseEnabled;
     int currTile;
+
+private:
+    const QPixmap* pixmap;
 
 signals:
     void tileHovered(int);
