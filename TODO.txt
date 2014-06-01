@@ -1,10 +1,9 @@
-later:
-
 - change "level" to "room" to avoid confusion with actual, complete stages
 - double click (instead of right-click) to insert sprites/exits?
 - generate undo/redo actions when moving sprites/exits
 - copying/pasting sprites and exits
 - level import/export
 - dreamtool level importing
-- tileset & palette editing
+- palette editing
+- replace "boss level" part of exit editor w/ new dialog and list
 - info about warp star anim., etc. (ask Reimu)

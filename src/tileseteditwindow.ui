@@ -49,25 +49,6 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="3" rowspan="3">
-    <widget class="QTabWidget" name="tabWidget">
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
-     <widget class="QWidget" name="tab_tile16">
-      <attribute name="title">
-       <string>16x16 Tiles</string>
-      </attribute>
-      <layout class="QGridLayout" name="tile16Layout"/>
-     </widget>
-     <widget class="QWidget" name="tab_tile8">
-      <attribute name="title">
-       <string>8x8 Tiles</string>
-      </attribute>
-      <layout class="QGridLayout" name="tile8Layout"/>
-     </widget>
-    </widget>
-   </item>
    <item row="1" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBox_Display">
      <property name="sizePolicy">
@@ -233,19 +214,6 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="2">
-    <spacer name="horizontalSpacer_7">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="3" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBox_Tile">
      <property name="sizePolicy">
@@ -378,11 +346,46 @@
      </property>
     </spacer>
    </item>
+   <item row="2" column="2">
+    <spacer name="horizontalSpacer_7">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="3" rowspan="3">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab_tile16">
+      <attribute name="title">
+       <string>16x16 Tiles</string>
+      </attribute>
+      <layout class="QGridLayout" name="tile16Layout"/>
+     </widget>
+     <widget class="QWidget" name="tab_tile8">
+      <attribute name="title">
+       <string>8x8 Tiles</string>
+      </attribute>
+      <layout class="QGridLayout" name="tile8Layout"/>
+     </widget>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>
   <tabstop>comboBox_TileGFX</tabstop>
   <tabstop>slider_AnimSpeed</tabstop>
+  <tabstop>comboBox_Behavior</tabstop>
+  <tabstop>spinBox_Palette</tabstop>
+  <tabstop>tabWidget</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources/>

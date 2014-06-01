@@ -41,6 +41,14 @@ TilesetEditWindow::TilesetEditWindow(QWidget *parent) :
     tilePalBox->setMaximum(255);
     QWidget::setTabOrder(tilesetBox, tilePalBox);
 
+
+    // add tile subtract box
+    layout = ui->mainLayout;
+    layout->addWidget(subtractBox, 2, 2, 1, 1);
+    subtractBox->setMinimum(0);
+    subtractBox->setMaximum(255);
+    QWidget::setTabOrder(tilePalBox, subtractBox);
+
     // 8x8 tile selection boxes
     layout = ui->gridLayout_Tile;
     for (uint i = 0; i < 4; i++) {
@@ -52,15 +60,13 @@ TilesetEditWindow::TilesetEditWindow(QWidget *parent) :
                          this, SLOT(updateTile()));
     }
     layout->addWidget(tileBoxes[0], 0, 2, 1, 1);
+    QWidget::setTabOrder(subtractBox, tileBoxes[0]);
     layout->addWidget(tileBoxes[1], 0, 4, 1, 1);
+    QWidget::setTabOrder(tileBoxes[0], tileBoxes[1]);
     layout->addWidget(tileBoxes[2], 1, 2, 1, 1);
+    QWidget::setTabOrder(tileBoxes[1], tileBoxes[2]);
     layout->addWidget(tileBoxes[3], 1, 4, 1, 1);
-
-    // add tile subtract box
-    layout = ui->mainLayout;
-    layout->addWidget(subtractBox, 2, 2, 1, 1);
-    subtractBox->setMinimum(0);
-    subtractBox->setMaximum(255);
+    QWidget::setTabOrder(tileBoxes[2], tileBoxes[3]);
 
     // add tile views
     layout = ui->tile16Layout;
