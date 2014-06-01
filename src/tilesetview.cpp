@@ -11,9 +11,9 @@ const QColor TilesetView::infoColor(255, 192, 192, 192);
 
 TilesetView::TilesetView(QWidget *parent, const QPixmap *tiles) :
     QWidget(parent),
-    pixmap(tiles),
     timer(this),
-    currTile(-1)
+    currTile(-1),
+    pixmap(tiles)
 {
     this->setFixedSize(sizeHint());
     this->setMouseEnabled(false);

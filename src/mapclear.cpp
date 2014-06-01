@@ -254,7 +254,7 @@ bool MapClearModel::setData(const QModelIndex &index, const QVariant &value, int
 }
 
 bool MapClearModel::insertRow(int row, const QModelIndex &parent) {
-    if (rects && row < rects->size()) {
+    if (rects && (uint)row < rects->size()) {
         beginInsertRows(parent, row, row);
         rects->insert(rects->begin() + row, QRect());
         endInsertRows();
@@ -271,7 +271,7 @@ bool MapClearModel::insertRow(int row, const QModelIndex &parent) {
 }
 
 bool MapClearModel::removeRow(int row, const QModelIndex &parent) {
-    if (rects && row < rects->size()) {
+    if (rects && (uint)row < rects->size()) {
         beginRemoveRows(parent, row, row);
         rects->erase(rects->begin() + row);
         endRemoveRows();
