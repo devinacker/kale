@@ -51,9 +51,6 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="4">
-    <widget class="QSpinBox" name="spinBox"/>
-   </item>
    <item row="1" column="0" colspan="5">
     <widget class="QListView" name="listView">
      <property name="resizeMode">
@@ -76,6 +73,19 @@
       <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
+   </item>
+   <item row="0" column="4">
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

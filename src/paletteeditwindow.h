@@ -5,6 +5,7 @@
 #include <QAbstractButton>
 #include <QAbstractListModel>
 #include <cstdint>
+#include "hexspinbox.h"
 
 namespace Ui {
 class PaletteEditWindow;
@@ -54,6 +55,7 @@ private slots:
 private:
     Ui::PaletteEditWindow *ui;
     PaletteModel *model;
+    HexSpinBox *spinBox;
 
     uint currPal, currSprPal;
 

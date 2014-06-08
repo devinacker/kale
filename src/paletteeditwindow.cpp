@@ -3,13 +3,19 @@
 #include "graphics.h"
 
 PaletteEditWindow::PaletteEditWindow(QWidget *parent) :
-    QDialog(parent),
+    QDialog(parent, Qt::CustomizeWindowHint
+            | Qt::WindowTitleHint
+            | Qt::WindowCloseButtonHint
+            | Qt::MSWindowsFixedSizeDialogHint
+           ),
     ui(new Ui::PaletteEditWindow),
-    model(new PaletteModel(this, tempPalettes, tempSprPalettes))
+    model(new PaletteModel(this, tempPalettes, tempSprPalettes)),
+    spinBox(new HexSpinBox(this, 2))
 {
     ui->setupUi(this);
 
-    // TODO: set up palette model and shit
+    ui->gridLayout->addWidget(spinBox, 0, 4);
+
     ui->listView->setIconSize(QSize(32, 32));
     ui->listView->setModel(model);
 
@@ -20,7 +26,7 @@ PaletteEditWindow::PaletteEditWindow(QWidget *parent) :
                      this, SLOT(selectPalType()));
     QObject::connect(ui->radioButton_Sprite, SIGNAL(clicked()),
                      this, SLOT(selectPalType()));
-    QObject::connect(ui->spinBox, SIGNAL(valueChanged(int)),
+    QObject::connect(spinBox, SIGNAL(valueChanged(int)),
                      this, SLOT(selectPalette(int)));
 }
 
@@ -28,6 +34,7 @@ PaletteEditWindow::~PaletteEditWindow()
 {
     delete ui;
     delete model;
+    delete spinBox;
 }
 
 void PaletteEditWindow::startEdit(uint pal, uint sprPal) {
@@ -49,13 +56,13 @@ void PaletteEditWindow::startEdit(uint pal, uint sprPal) {
 
 void PaletteEditWindow::selectPalType() {
     if (ui->radioButton_BG->isChecked()) {
-        ui->spinBox->setMaximum(255);
-        ui->spinBox->setValue(currPal);
+        spinBox->setMaximum(255);
+        spinBox->setValue(currPal);
 
         model->setPalette(false, currPal);
     } else {
-        ui->spinBox->setMaximum(49);
-        ui->spinBox->setValue(currSprPal);
+        spinBox->setMaximum(49);
+        spinBox->setValue(currSprPal);
 
         model->setPalette(true, currSprPal);
     }
@@ -133,7 +140,7 @@ QVariant PaletteModel::data(const QModelIndex &index, int role) const {
         return QSize(32, 32);
 
     case Qt::DisplayRole:
-        return QString::number(color);
+        return QString::number(color, 16).rightJustified(2, QLatin1Char('0')).toUpper();
     }
 
     return QVariant();
@@ -144,7 +151,8 @@ bool PaletteModel::setData(const QModelIndex &index, const QVariant &value, int 
     if (role == Qt::EditRole) {
         int row = index.row();
         bool ok;
-        uint val = value.toUInt(&ok);
+        QString text = value.toString();
+        uint val = text.toUInt(&ok, 16);
 
         if (ok && val < 0x40) {
             if (spritePal)
