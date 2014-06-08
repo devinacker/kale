@@ -163,3 +163,13 @@ void saveBankTables(ROMFile& file, romaddr_t addr) {
         file.writeBytes(addr + (i * 0x100), 0x100, bankTable[i]);
     }
 }
+
+void savePalettes(ROMFile& file) {
+    // background palettes
+    for (uint i = 0; i < 10; i++)
+        file.writeBytes(palAddr + 256*i, 256, &palettes[i][0]);
+
+    // sprite palettes
+    for (uint i = 0; i < 50; i++)
+        file.writeBytes(sprPalAddr + 6*i, 6, &sprPalettes[i][0]);
+}

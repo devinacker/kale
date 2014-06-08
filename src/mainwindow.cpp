@@ -596,6 +596,9 @@ void MainWindow::saveFile() {
         saveMapClearData(rom, levels[i], i);
     }
 
+    // save palettes
+    savePalettes(rom);
+
     status(tr("Saved %1").arg(fileName));
 
     unsaved = false;
