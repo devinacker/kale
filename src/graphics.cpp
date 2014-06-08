@@ -86,8 +86,8 @@ const QRgb nesPalette[] = {
     0xff000000
 };
 
-uint8_t palettes[10][256];
-uint8_t sprPalettes[50][6];
+uint8_t palettes[BG_PAL_SIZE][BG_PAL_NUM];
+uint8_t sprPalettes[SPR_PAL_NUM][SPR_PAL_SIZE];
 
 void loadCHRBanks(ROMFile& rom) {
     numBanks = rom.getNumCHRBanks();
@@ -103,12 +103,12 @@ void loadCHRBanks(ROMFile& rom) {
     rom.readBytes(bankLists + 512, 256, &bankTable[2][0]);
 
     // background palettes
-    for (uint i = 0; i < 10; i++)
-        rom.readBytes(palAddr + 256*i, 256, &palettes[i][0]);
+    for (uint i = 0; i < BG_PAL_SIZE; i++)
+        rom.readBytes(palAddr + BG_PAL_NUM*i, BG_PAL_NUM, &palettes[i][0]);
 
     // sprite palettes
-    for (uint i = 0; i < 50; i++)
-        rom.readBytes(sprPalAddr + 6*i, 6, &sprPalettes[i][0]);
+    for (uint i = 0; i < SPR_PAL_NUM; i++)
+        rom.readBytes(sprPalAddr + SPR_PAL_SIZE*i, SPR_PAL_SIZE, &sprPalettes[i][0]);
 }
 
 void freeCHRBanks() {
@@ -166,10 +166,10 @@ void saveBankTables(ROMFile& file, romaddr_t addr) {
 
 void savePalettes(ROMFile& file) {
     // background palettes
-    for (uint i = 0; i < 10; i++)
-        file.writeBytes(palAddr + 256*i, 256, &palettes[i][0]);
+    for (uint i = 0; i < BG_PAL_SIZE; i++)
+        file.writeBytes(palAddr + BG_PAL_NUM*i, BG_PAL_NUM, &palettes[i][0]);
 
     // sprite palettes
-    for (uint i = 0; i < 50; i++)
-        file.writeBytes(sprPalAddr + 6*i, 6, &sprPalettes[i][0]);
+    for (uint i = 0; i < SPR_PAL_NUM; i++)
+        file.writeBytes(sprPalAddr + SPR_PAL_SIZE*i, SPR_PAL_SIZE, &sprPalettes[i][0]);
 }

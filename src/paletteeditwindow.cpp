@@ -40,12 +40,12 @@ PaletteEditWindow::~PaletteEditWindow()
 void PaletteEditWindow::startEdit(uint pal, uint sprPal) {
     // make working copies of palettes
     // background palettes
-    for (uint i = 0; i < 10; i++)
-        memcpy(tempPalettes[i], palettes[i], 256);
+    for (uint i = 0; i < BG_PAL_SIZE; i++)
+        memcpy(tempPalettes[i], palettes[i], BG_PAL_NUM);
 
     // sprite palettes
-    for (uint i = 0; i < 50; i++)
-        memcpy(tempSprPalettes[i], sprPalettes[i], 6);
+    for (uint i = 0; i < SPR_PAL_NUM; i++)
+        memcpy(tempSprPalettes[i], sprPalettes[i], SPR_PAL_SIZE);
 
     currPal = pal;
     currSprPal = sprPal;
@@ -56,12 +56,12 @@ void PaletteEditWindow::startEdit(uint pal, uint sprPal) {
 
 void PaletteEditWindow::selectPalType() {
     if (ui->radioButton_BG->isChecked()) {
-        spinBox->setMaximum(255);
+        spinBox->setMaximum(BG_PAL_NUM - 1);
         spinBox->setValue(currPal);
 
         model->setPalette(false, currPal);
     } else {
-        spinBox->setMaximum(49);
+        spinBox->setMaximum(SPR_PAL_NUM - 1);
         spinBox->setValue(currSprPal);
 
         model->setPalette(true, currSprPal);
@@ -81,12 +81,12 @@ void PaletteEditWindow::selectPalette(int pal) {
 void PaletteEditWindow::applyChange() {
     // apply changes to palettes
     // background palettes
-    for (uint i = 0; i < 10; i++)
-        memcpy(palettes[i], tempPalettes[i], 256);
+    for (uint i = 0; i < BG_PAL_SIZE; i++)
+        memcpy(palettes[i], tempPalettes[i], BG_PAL_NUM);
 
     // sprite palettes
-    for (uint i = 0; i < 50; i++)
-        memcpy(sprPalettes[i], tempSprPalettes[i], 6);
+    for (uint i = 0; i < SPR_PAL_NUM; i++)
+        memcpy(sprPalettes[i], tempSprPalettes[i], SPR_PAL_SIZE);
 
     emit changed();
 }
@@ -104,7 +104,8 @@ void PaletteEditWindow::accept() {
     QDialog::accept();
 }
 
-PaletteModel::PaletteModel(QObject *parent, uint8_t (&pal)[10][256], uint8_t (&sprPal)[50][6]) :
+PaletteModel::PaletteModel(QObject *parent, uint8_t (&pal)[BG_PAL_SIZE][BG_PAL_NUM],
+                                            uint8_t (&sprPal)[SPR_PAL_NUM][SPR_PAL_SIZE]) :
     QAbstractListModel(parent),
     spritePal(false),
     palette(0),
@@ -114,9 +115,9 @@ PaletteModel::PaletteModel(QObject *parent, uint8_t (&pal)[10][256], uint8_t (&s
 
 int PaletteModel::rowCount(const QModelIndex &) const {
     if (spritePal)
-        return 6;
+        return SPR_PAL_SIZE;
 
-    return 10;
+    return BG_PAL_SIZE;
 }
 
 Qt::ItemFlags PaletteModel::flags(const QModelIndex &) const {
