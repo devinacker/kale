@@ -24,6 +24,9 @@
     <normaloff>:/images/icons/kale-doors-new.png</normaloff>:/images/icons/kale-doors-new.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
    <item row="0" column="4">
     <widget class="QLabel" name="label_X">
      <property name="text">

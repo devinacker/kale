@@ -2,9 +2,6 @@ for v0.90:
 
 - change "level" to "room" to avoid confusion with actual, complete stages
 - more new icons!
-- make sure most windows actually have fixed size on other platforms
-  (i thought i was setting them this way already but apparently wasn't -
-   and MSWindowsFixedSizeDialogHint may be pointless)
 - replace "boss level" part of exit editor w/ new dialog and list
 
 for whenever:

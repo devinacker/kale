@@ -24,6 +24,9 @@
     <normaloff>:/images/icons/kale-enemies.png</normaloff>:/images/icons/kale-enemies.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
    <item row="1" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
