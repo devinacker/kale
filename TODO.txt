@@ -4,6 +4,10 @@
 - copying/pasting sprites and exits
 - level import/export
 - dreamtool level importing
-- palette editing
+- NES color picker for palette editor
+- more new icons!
+- make sure most windows actually have fixed size on other platforms
+  (i thought i was setting them this way already but apparently wasn't -
+   and MSWindowsFixedSizeDialogHint may be pointless)
 - replace "boss level" part of exit editor w/ new dialog and list
 - info about warp star anim., etc. (ask Reimu)
