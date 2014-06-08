@@ -19,6 +19,7 @@
 #include "propertieswindow.h"
 #include "mapcleareditwindow.h"
 #include "tileseteditwindow.h"
+#include "paletteeditwindow.h"
 
 namespace Ui {
 class MainWindow;
@@ -54,6 +55,7 @@ protected slots:
     void levelProperties();
     void editMapClearData();
     void editTilesets();
+    void editPalettes();
 
     void selectLevel();
     void prevLevel();
@@ -100,6 +102,7 @@ private:
     PropertiesWindow *propWindow;
     MapClearEditWindow *clearWindow;
     TilesetEditWindow *tilesetWindow;
+    PaletteEditWindow *paletteWindow;
 
     // various funcs
     void setupSignals();

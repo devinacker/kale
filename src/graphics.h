@@ -11,7 +11,11 @@
 // size of on-screen metatile display
 #define TILE_SIZE 16
 
+extern const QRgb nesPalette[];
 extern uint8_t bankTable[][256];
+
+extern uint8_t palettes[10][256];
+extern uint8_t sprPalettes[50][6];
 
 void loadCHRBanks(ROMFile& rom);
 void freeCHRBanks();

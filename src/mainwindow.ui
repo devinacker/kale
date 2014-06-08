@@ -102,6 +102,7 @@
     <addaction name="action_Level_Properties"/>
     <addaction name="action_Edit_Map_Clear_Data"/>
     <addaction name="action_Edit_Tilesets"/>
+    <addaction name="action_Edit_Palettes"/>
     <addaction name="separator"/>
     <addaction name="action_Select_Level"/>
     <addaction name="action_Previous_Level"/>
@@ -534,6 +535,11 @@
   <action name="action_Edit_Tilesets">
    <property name="text">
     <string>Edit Tilesets...</string>
+   </property>
+  </action>
+  <action name="action_Edit_Palettes">
+   <property name="text">
+    <string>Edit Palettes...</string>
    </property>
   </action>
  </widget>

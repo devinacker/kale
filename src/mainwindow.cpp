@@ -49,7 +49,8 @@ MainWindow::MainWindow(QWidget *parent) :
     scene(new MapScene(this, &currentLevel)),
     propWindow(new PropertiesWindow(this, scene->getPixmap())),
     clearWindow(new MapClearEditWindow(this)),
-    tilesetWindow(new TilesetEditWindow(this))
+    tilesetWindow(new TilesetEditWindow(this)),
+    paletteWindow(new PaletteEditWindow(this))
 {
     ui->setupUi(this);
     selectGroup->addAction(ui->action_Select_Tiles);
@@ -106,6 +107,7 @@ MainWindow::~MainWindow()
     delete propWindow;
     delete clearWindow;
     delete tilesetWindow;
+    delete paletteWindow;
 }
 
 void MainWindow::setupSignals() {
@@ -170,6 +172,8 @@ void MainWindow::setupSignals() {
                      this, SLOT(editMapClearData()));
     QObject::connect(ui->action_Edit_Tilesets, SIGNAL(triggered()),
                      this, SLOT(editTilesets()));
+    QObject::connect(ui->action_Edit_Palettes, SIGNAL(triggered()),
+                     this, SLOT(editPalettes()));
 
     QObject::connect(ui->action_Select_Level, SIGNAL(triggered()),
                      this, SLOT(selectLevel()));
@@ -207,6 +211,10 @@ void MainWindow::setupSignals() {
 
     // update map when tileset changes are applied
     QObject::connect(tilesetWindow, SIGNAL(changed()),
+                     scene, SLOT(refresh()));
+
+    // update map when palette changes are applied
+    QObject::connect(paletteWindow, SIGNAL(changed()),
                      scene, SLOT(refresh()));
 
     // display map clear rects when editing them
@@ -310,6 +318,9 @@ void MainWindow::setEditActions(bool val) {
     ui->action_Level_Properties->setEnabled(val);
     ui->action_Load_Course_from_File->setEnabled(val);
     ui->action_Save_Course_to_File->setEnabled(val);
+
+    ui->action_Edit_Tilesets   ->setEnabled(val);
+    ui->action_Edit_Palettes   ->setEnabled(val);
 }
 
 /*
@@ -705,8 +716,12 @@ void MainWindow::editMapClearData() {
 }
 
 void MainWindow::editTilesets() {
-    // TODO: make this actually work
     tilesetWindow->startEdit(&currentLevel);
+}
+
+void MainWindow::editPalettes() {
+    paletteWindow->startEdit(currentLevel.header.tilePal,
+                             currentLevel.header.sprPal);
 }
 
 void MainWindow::selectLevel() {
