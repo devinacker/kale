@@ -55,6 +55,20 @@ bool ROMFile::openROM(OpenMode flags) {
     if (!this->open(flags))
         return false;
 
+    // make sure this is an actual Kirby's Adventure ROM
+    // (by looking at the reset code)
+    romaddr_t checkAddr = {0x3F, 0xFFF0};
+    const uint8_t goodData[9] = {0x78, 0xa9, 0, 0x8d, 0, 0x80, 0x4c, 0, 0xc0};
+    uint8_t thisData[9] = {0};
+    this->readBytes(checkAddr, 9, thisData);
+    if (memcmp(thisData, goodData, 9)) {
+        QMessageBox::critical(NULL, "Open File",
+                              "Please select a valid Kirby's Adventure ROM.",
+                              QMessageBox::Ok);
+        this->close();
+        return false;
+    }
+
     numPRGBanks = 0;
     numCHRBanks = 0;
 
