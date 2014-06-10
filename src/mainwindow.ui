@@ -305,7 +305,7 @@
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/images/icons/brick_edit.png</normaloff>:/images/icons/brick_edit.png</iconset>
+     <normaloff>:/images/icons/kale-tilepicker.png</normaloff>:/images/icons/kale-tilepicker.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Edit Tiles...</string>
@@ -375,7 +375,7 @@
   <action name="action_Select_Level">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/images/icons/door_in.png</normaloff>:/images/icons/door_in.png</iconset>
+     <normaloff>:/images/icons/kale-roomwarp.png</normaloff>:/images/icons/kale-roomwarp.png</iconset>
    </property>
    <property name="text">
     <string>Select Room...</string>
@@ -480,7 +480,7 @@
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/images/icons/kale-tileblend.png</normaloff>:/images/icons/kale-tileblend.png</iconset>
+     <normaloff>:/images/icons/kale-tileblend-new.png</normaloff>:/images/icons/kale-tileblend-new.png</iconset>
    </property>
    <property name="text">
     <string>See Through Breakable Tiles</string>
@@ -517,7 +517,7 @@
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/images/icons/page_white_magnify.png</normaloff>:/images/icons/page_white_magnify.png</iconset>
+     <normaloff>:/images/icons/kale-2xmagnification.png</normaloff>:/images/icons/kale-2xmagnification.png</iconset>
    </property>
    <property name="text">
     <string>Double Size</string>
