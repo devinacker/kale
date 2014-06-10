@@ -811,8 +811,8 @@ void MainWindow::setLevel(uint level) {
     setUndoRedoActions(false);
     ui->graphicsView->update();
 
-    // display the level name in the toolbar label
-    levelLabel->setText(QString("  Level ")
+    // display the room number in the toolbar label
+    levelLabel->setText(QString("  Room ")
                       + QString::number(level, 16)
                         .rightJustified(3, QLatin1Char('0')).toUpper());
 }
