@@ -105,8 +105,8 @@
     <addaction name="action_Edit_Palettes"/>
     <addaction name="separator"/>
     <addaction name="action_Select_Level"/>
-    <addaction name="action_Previous_Room"/>
-    <addaction name="action_Next_Room"/>
+    <addaction name="action_Previous_Level"/>
+    <addaction name="action_Next_Level"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -314,7 +314,7 @@
     <string>E</string>
    </property>
   </action>
-  <action name="action_Previous_Room">
+  <action name="action_Previous_Level">
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/images/icons/resultset_previous.png</normaloff>:/images/icons/resultset_previous.png</iconset>
@@ -326,7 +326,7 @@
     <string>Ctrl+Left</string>
    </property>
   </action>
-  <action name="action_Next_Room">
+  <action name="action_Next_Level">
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/images/icons/resultset_next.png</normaloff>:/images/icons/resultset_next.png</iconset>
