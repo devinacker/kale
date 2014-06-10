@@ -237,7 +237,11 @@ void MainWindow::setupActions() {
     ui->toolBar->addAction(ui->action_Select_Exits);
     ui->toolBar->addAction(ui->action_Edit_Tiles);
     ui->toolBar->addAction(ui->action_Level_Properties);
+    ui->toolBar->addSeparator();
+
     ui->toolBar->addAction(ui->action_Edit_Map_Clear_Data);
+    ui->toolBar->addAction(ui->action_Edit_Tilesets);
+    ui->toolBar->addAction(ui->action_Edit_Palettes);
     ui->toolBar->addSeparator();
 
     // from view menu

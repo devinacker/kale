@@ -533,11 +533,19 @@
    </property>
   </action>
   <action name="action_Edit_Tilesets">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/icons/bricks.png</normaloff>:/images/icons/bricks.png</iconset>
+   </property>
    <property name="text">
     <string>Edit Tilesets...</string>
    </property>
   </action>
   <action name="action_Edit_Palettes">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/icons/color_swatch.png</normaloff>:/images/icons/color_swatch.png</iconset>
+   </property>
    <property name="text">
     <string>Edit Palettes...</string>
    </property>

@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Edit Palettes</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+    <normaloff>:/images/icons/color_swatch.png</normaloff>:/images/icons/color_swatch.png</iconset>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="sizeConstraint">
     <enum>QLayout::SetFixedSize</enum>
@@ -110,7 +114,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

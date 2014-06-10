@@ -32,5 +32,7 @@
         <file>images/icons/kale-roomwarp.png</file>
         <file>images/icons/kale-tileblend-new.png</file>
         <file>images/icons/kale-tilepicker.png</file>
+        <file>images/icons/color_swatch.png</file>
+        <file>images/icons/bricks.png</file>
     </qresource>
 </RCC>
