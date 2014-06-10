@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Select Course</string>
+   <string>Select Room</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="sizeConstraint">
@@ -28,7 +28,7 @@
      <item>
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Go to Level</string>
+        <string>Go to Room</string>
        </property>
       </widget>
      </item>

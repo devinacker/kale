@@ -20,9 +20,9 @@ MapClearEditWindow::MapClearEditWindow(QWidget *parent) :
     // set combobox stuff
     ui->comboBox->addItem("Start", 0);
 
-    for (uint i = 0; i < 7; i++) {
-        ui->comboBox->addItem(QString("Level %1 Clear").arg(i + 1), i + 1);
-        ui->comboBox->addItem(QString("Level %1 Switch").arg(i + 1), i + 8);
+    for (uint i = 1; i < 8; i++) {
+        ui->comboBox->addItem(QString("Level %1 Clear").arg(i), i);
+        ui->comboBox->addItem(QString("Level %1 Switch").arg(i), i + 7);
     }
 
     connect(ui->comboBox, SIGNAL(currentIndexChanged(int)),

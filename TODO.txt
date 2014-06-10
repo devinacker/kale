@@ -1,11 +1,10 @@
 for v0.90:
 
-- change "level" to "room" to avoid confusion with actual, complete stages
 - more new icons!
-- replace "boss level" part of exit editor w/ new dialog and list
 
 for whenever:
 
+- replace "boss level" part of exit editor w/ new dialog and list
 - double click (instead of right-click) to insert sprites/exits?
 - generate undo/redo actions when moving sprites/exits
 - copying/pasting sprites and exits

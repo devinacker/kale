@@ -37,7 +37,7 @@
    <item row="0" column="0">
     <widget class="QLabel" name="label_Level">
      <property name="text">
-      <string>Level</string>
+      <string>Room</string>
      </property>
     </widget>
    </item>
@@ -126,7 +126,7 @@
    <item row="3" column="0">
     <widget class="QLabel" name="label_BossLevel">
      <property name="text">
-      <string>Level</string>
+      <string>Room</string>
      </property>
     </widget>
    </item>

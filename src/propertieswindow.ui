@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Level Properties</string>
+   <string>Room Properties</string>
   </property>
   <property name="windowIcon">
    <iconset resource="icons.qrc">
@@ -39,7 +39,7 @@
       </sizepolicy>
      </property>
      <property name="title">
-      <string>Level Properties</string>
+      <string>Room Properties</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -311,7 +311,7 @@
       <item row="6" column="0" colspan="6">
        <widget class="QCheckBox" name="checkBox_NoReturn">
         <property name="text">
-         <string>Don't return to this level after losing a life</string>
+         <string>Don't return to this room after losing a life</string>
         </property>
        </widget>
       </item>

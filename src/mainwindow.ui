@@ -105,8 +105,8 @@
     <addaction name="action_Edit_Palettes"/>
     <addaction name="separator"/>
     <addaction name="action_Select_Level"/>
-    <addaction name="action_Previous_Level"/>
-    <addaction name="action_Next_Level"/>
+    <addaction name="action_Previous_Room"/>
+    <addaction name="action_Next_Room"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -200,7 +200,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Save Level</string>
+    <string>Save Room</string>
    </property>
   </action>
   <action name="action_Save_Course_to_File">
@@ -314,7 +314,7 @@
     <string>E</string>
    </property>
   </action>
-  <action name="action_Previous_Level">
+  <action name="action_Previous_Room">
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/images/icons/resultset_previous.png</normaloff>:/images/icons/resultset_previous.png</iconset>
@@ -326,7 +326,7 @@
     <string>Ctrl+Left</string>
    </property>
   </action>
-  <action name="action_Next_Level">
+  <action name="action_Next_Room">
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/images/icons/resultset_next.png</normaloff>:/images/icons/resultset_next.png</iconset>
@@ -344,7 +344,7 @@
      <normaloff>:/images/icons/kale-roomheader.png</normaloff>:/images/icons/kale-roomheader.png</iconset>
    </property>
    <property name="text">
-    <string>Level Properties...</string>
+    <string>Room Properties...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
@@ -378,7 +378,7 @@
      <normaloff>:/images/icons/door_in.png</normaloff>:/images/icons/door_in.png</iconset>
    </property>
    <property name="text">
-    <string>Select Level...</string>
+    <string>Select Room...</string>
    </property>
   </action>
   <action name="action_Undo">

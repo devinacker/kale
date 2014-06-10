@@ -859,7 +859,7 @@ void MainWindow::saveCurrentLevel() {
         thisLevel->sprites.push_back(sprite);
     }
 
-    status(tr("Level saved."));
+    status(tr("Room saved."));
 }
 
 /*
@@ -881,8 +881,8 @@ QMessageBox::StandardButton MainWindow::checkSaveLevel() {
     }
 
     QMessageBox::StandardButton button =
-            QMessageBox::question(this, tr("Save Level"),
-                                  tr("Save changes to current level?"),
+            QMessageBox::question(this, tr("Save Room"),
+                                  tr("Save changes to current room?"),
                                   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
     // yes = save current level to group of all levels
