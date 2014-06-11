@@ -15,6 +15,7 @@ PaletteEditWindow::PaletteEditWindow(QWidget *parent) :
     ui->setupUi(this);
 
     ui->gridLayout->addWidget(spinBox, 0, 4);
+    QWidget::setTabOrder(ui->radioButton_Sprite, spinBox);
 
     ui->listView->setIconSize(QSize(32, 32));
     ui->listView->setModel(model);

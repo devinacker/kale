@@ -114,6 +114,12 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>radioButton_BG</tabstop>
+  <tabstop>radioButton_Sprite</tabstop>
+  <tabstop>listView</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>
