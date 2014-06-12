@@ -1,3 +1,16 @@
+v0.90 [2014-06-12]
+- new HTML documentation
+- full tileset, BG palette, and sprite palette editing
+- editing of "stage clear" and star switch reveal areas on overworlds
+- some text changes ("level" replaced with "room" or "stage" when appropriate)
+- allow pasting beyond 64 tiles in either direction; this was a limitation that managed
+  to survive being copied from KDCEditor without being updated for the real maximum
+  height/width of Kirby's Adventure maps (thanks DarkMatt)
+- more new icons (by Reimu)
+- sprites and exits outside of level bounds are no longer shown, saved, or editable
+- tile edit window displays tile numbers in hex
+- opening non-Kirby's Adventure ROMs now displays an error instead of continuing
+
 v0.83b [2014-04-19]
 - only write some tileset info for ingame tilesets, not every single one.
   this was causing crashes as of v0.83 (thanks again J^P)
