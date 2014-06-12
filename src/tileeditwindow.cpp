@@ -38,7 +38,9 @@ void TileEditWindow::setTileLabel(int tile) {
     if (tile < 0)
         ui->label->setText("");
     else
-        ui->label->setText(QString("Tile %1 (%2)").arg(tile).arg(tileType(tilesets[level->tileset][tile].action)));
+        ui->label->setText(QString("Tile %1 (%2)")
+                           .arg(QString::number(tile, 16).rightJustified(2, QLatin1Char('0')).toUpper())
+                           .arg(tileType(tilesets[level->tileset][tile].action)));
 }
 
 void TileEditWindow::accept(int tile) {
