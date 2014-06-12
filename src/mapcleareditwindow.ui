@@ -82,6 +82,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>button_Add</tabstop>
+  <tabstop>button_Del</tabstop>
+  <tabstop>comboBox</tabstop>
+  <tabstop>tableView</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>
