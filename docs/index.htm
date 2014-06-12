@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<title>KALE - Kirby's Adventure Level Editor</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+<body>
+
+<h1>KALE - Kirby's Adventure Level Editor</h1>
+version 0.90
+<p>
+
+<table><tr><td>
+<a href="#intro">Introduction</a> - <a href="#main">The main window</a> - <a href="#tiles">Editing tiles</a> - <a href="#exits">Editing exits</a> - <a href="#properties">The properties window</a><br>
+<a href="#mapclear">Editing map clear data</a> - <a href="#tileset">Editing tilesets</a> - <a href="#palette">Editing palettes</a><br>
+<a href="#credits">Credits</a> - <a href="#changes">What's new</a> - <a href="#blahblah">Remarks</a> - <a href="#contact">Contact</a>
+</td></tr></table>
+<p>
+
+<a name="intro"></a>
+<h1>Introduction</h1>
+<b>KALE</b> is a level editor for <i>Kirby's Adventure</i>.
+<p>
+KALE supports editing almost every part of the game's level data, including sprite and exit locations, tilesets, palettes, and overworld progression. The editor supports all US, European, and Japanese ROMs. 
+<p>
+Source code is available on <a href="http://github.com/devinacker" target="_blank">GitHub</a>, and is distributed under the MIT license.
+<p>
+<span class="smallLink">(<a href="#top">top</a>)</span>
+
+<a name="main"></a>
+<h1>The main window</h1>
+<img class="center" src="images/mainwindow.png">
+<p>
+The main window is where all level editing takes place. When you load a ROM, level data is shown tile-for-tile exactly as it appears in game, with sprites and exits represented by red and blue squares, respectively. Each room is divided into screens (16 tiles wide by 12 tiles tall), which are numbered in the upper left corner. (These screen numbers are used to determine exit destinations; see the <a href="exits">exit editing</a> section for more info.)
+<p>
+Hovering over a tile with the mouse will display its tile number and behavior (in hexadecimal) on the window's status bar.
+<p>
+The View menu can be used to control some properties of how the current room is displayed, including scaling (double size), screen boundaries, and blending of destroyable tiles (such as bombs or star blocks) with the tile they leave behind.
+<p>
+When selecting tiles is enabled, clicking and dragging will select a tile or range of tiles, which you can then edit by double-clicking, selecting the "Edit Tiles" option on the Edit menu or toolbar, or pressing the "E" key. This will bring up the <a href="#tiles">tile edit window</a>, allowing you to replace the selected tiles. To deselect tiles, right-click anywhere within the level view.
+<p>
+Otherwise, clicking and dragging will select either sprites or exits, which can be moved around and deleted individually or in groups. Double-clicking an individual sprite or exit will allow you to edit it (see <a href="#exits">editing exits</a> for more information on the latter), and right-clicking will insert a new one at the current location.
+<p>
+(<b>Note</b>: Currently, moving or editing sprites and exits doesn't result in a "dirty" editing state, and so changes to either one will be saved automatically when changing levels if no other changes were made. Actions involving sprites or exits currently aren't added to the undo/redo stack; this will be changed eventually.)
+<p>
+To change rooms, click the "Select Room..." option on the Level menu or the toolbar. Use the "previous/next room" options to move back/forward one room at a time, or hold Ctrl and use the left/right arrow keys.
+<p>
+The "Save Room" option in the Level menu will save all outstanding changes to the current room; otherwise, you will be prompted to do so when changing rooms or saving the ROM.
+<p>
+<span class="smallLink">(<a href="#top">top</a>)</span>
+
+<a name="tiles"></a>
+<h1>Editing tiles</h1>
+<img class="right" src="images/tiles.png">
+<p>
+This is the window which appears when you double-click a selection of tiles or select the "Edit Tiles" menu option. All 256 tiles in the current tile set are displayed here, and mousing over a tile will display its behavior underneath. Clicking a tile will change all of the currently selected tiles in the room.
+<p>
+To select which tiles and graphics a room uses, open the <a href="#properties">properties window</a>.
+<p>
+<span class="smallLink">(<a href="#top">top</a>)</span>
+
+<a name="exits"></a>
+<h1>Editing exits</h1>
+<img class="right" src="images/exits.png">
+<p>
+This is the window which appears when you double-click an exit. 
+<p>
+Some general information about editing exits:
+<ul><li>The destination of an exit is specified as a screen number and coordinates within that screen. If the dimensions of a level are changed, exits pointing to that level may need to be updated to point to the correct screen numbers.</li>
+<li>In order to work, an exit must be placed on a tile with behavior 0x28 (i.e. any door tile)</li>
+<li>Due to limited ROM space, Kirby's Adventure already has the maximum number of possible exits. In order to add new exits to a room, others will have to be removed, either from the current room or from another (there are several <a href="http://tcrf.net/Kirby%27s_Adventure/Debug_Rooms" target="_blank">debug rooms</a> and <a href="http://tcrf.net/Kirby%27s_Adventure/Unused_Rooms" target="_blank">other unused rooms</a> which exits can be stolen from if desired).</li>
+<li>When using a warp star, there must be an exit within the level which determines where the warp star actually leads to. Ideally it should be the only exit in the level, or else the warp star may not go to the intended destination. (Currently there is no way to define custom warp star animations, as the game uses hardcoded animations based on the current world and stage number.)</li>
+</ul>
+<p>
+Additionally, when exit type 1F ("next level") is selected, some additional information can be entered about the boss level that the door leads to prior to the next level becoming available. This info is only valid for rooms 000 through 007 (i.e. overworlds and the debug hub).
+<p>
+<span class="smallLink">(<a href="#top">top</a>)</span>
+
+<a name="properties"></a>
+<h1>The properties window</h1>
+<img src="images/properties.png">
+<p>
+The properties window allows you to customize some details of the current room.
+<p>
+The width and height boxes control the dimensions of the room, measured in whole screens. The total area of a room (width times height) cannot exceed 16 screens.
+<p>
+The "don't return to this room after losing a life" setting determines whether the player will continue in the current room after losing a life, or be sent back to their previous location. This is commonly enabled for miniboss encounters.
+<p>
+The <i>tile graphics</i> combo box allows you to select 8x8 tile graphics from various preset combinations of CHR ROM banks (along with bank 00, which contains various common graphics such as star blocks, powerups, and doors, and is always present). The last bank value of each combination represents a range of four banks which can be cycled through by enabling animation (note that not all of these banks are actually designed to be animated, and will produce strange results if attempted). The animation speed slider allows you to control this cycle interval in frames (1/60 sec. for US/JP, 1/50 sec. for EU).
+<p>
+The <i>tileset</i> box determines how the selected 8x8 tile graphics are combined into 16x16 tiles, as well as how they behave (these can be edited using the <a href="#tileset">tileset editor</a>).
+<p>
+The sprite box determines the graphics used for the current room's sprites. Sprites actually use two consecutive CHR ROM banks (so for example, selecting sprite bank 9A will use both 9A and 9B). The "sprites" tab on the right side of the window lets you view the currently selected sprite graphics and palette; this is useful for being able to determine which enemy types are currently usable in the room.
+<p>
+Both tile and sprite palettes can be modified using the <a href="#palette">palette editor</a>.
+<p>
+<span class="smallLink">(<a href="#top">top</a>)</span>
+
+<a name="mapclear"></a>
+<h1>Editing map clear data</h1>
+<img src="images/mapclear.png">
+<p>
+This window is available from the Level menu or the toolbar, and allows you to control which parts of overworlds are revealed when a level is cleared or a switch is pressed.
+<p>
+Since this info is limited to the overworld, the window is only accessible when editing rooms 000 through 006. Also, similarly to exits, the number of total regions defined by this data is limited.
+<p>
+The currently selected regions can be previewed by looking at the main window; the overworld will be covered up just like in game, except for the current regions.
+<p>
+<span class="smallLink">(<a href="#top">top</a>)</span>
+
+<a name="tileset"></a>
+<h1>Editing tilesets</h1>
+<img src="images/tileset.png">
+<p>
+The tileset editor allows you to assemble 16x16 tiles and select their behavior and color information. The "display properties" box works the same way as the corresponding controls on the room properties window; their values default to the ones used by the current room.
+<p>
+The tabs on the right switch between the tileset's 16x16 tiles and the 8x8 tiles which make up the current "tile graphics" setting. Clicking on a 16x16 tile will allow you to edit it and view your changes in real time.
+<p>
+The "subtract this # when tiles are broken" box determines the number (in hexadecimal) that is subtracted when a breakable block (such as a bomb or a star block) is destroyed. For example, if tile F8 is a star block and this value is 08, then inhaling the star block will replace it with a tile of type F0 (ideally some kind of background tile). This value is only valid for tilesets 00 through 1E; tilesets 1F and above are not intended for ingame use, but can be used as such; if you do, <b>don't define any breakable blocks</b> or the results in game will be unpredictable!
+<p>
+<span class="smallLink">(<a href="#top">top</a>)</span>
+
+<a name="palette"></a>
+<h1>Editing palettes</h1>
+<img src="images/palette.png">
+<p>
+Finally, the palette editor allows you to edit both background tile and sprite palettes. Once again, this window's settings default to the palettes used by the current room.
+<p>
+To edit a color, double-click it and enter a valid NES color number (in hexadecimal). For reference, here is a chart of valid colors (top row: 00-0F, bottom row: 30-3F):
+<p>
+<img src="images/nespalette.png">
+<p>
+<span class="smallLink">(<a href="#top">top</a>)</span>
+
+
+<a name="credits"></a>
+<h1>Credits</h1>
+The author would like to extend well-earned salami sandwiches to each of the following individuals and groups:
+<p>
+<ul>
+<li><b>borokobo / PureSabe</b> for creating <a href="http://www.geocities.jp/borokobo/neo/download.html#KirbyYume" target="_blank">DreamTool</a>, the Kirby's Adventure hacking tool (in Japanese) which partially inspired the creation of this one (and which helped me verify some of my own information)
+<li><b><a href="http://tcrf.net/" target="_blank">The Cutting Room Floor</a></b> and <a href="irc://irc.badnik.net/tcrf">#tcrf</a> for moral support and once again giving me inspiration to poke around this game</li>
+<li><b>DarkMatt</b> for testing</li>
+<li><b>J^P</b> for even more testing</li>
+<li><b>Kapow</b> for posting lots of info <a href="http://datacrystal.romhacking.net/wiki/Kirby%27s_Adventure" target="_blank">on Data Crystal</a> and helping me corroborate some of my own findings (some of which I found before realizing said Data Crystal page even existed and rightly felt like an idiot for afterwards)</li>
+<li><b>Mark James</b> (<a href="http://www.famfamfam.com/" target="_blank">famfamfam</a>) for the Silk Icons set, used for menu and toolbar graphics</li>
+<li><b>Raccoon Sam</b> for build assistance and testing on OS X</li>
+<li><b>Reimu</b> for extensive testing, feedback, graphic design, and lots of poking around the game's insides</li>
+<li>Everyone else who has downloaded and supported the development of this program in any way</li>
+</ul>
+<p>
+<span class="smallLink">(<a href="#top">top</a>)</span>
+
+<a name="changes"></a>
+<h1>What's new</h1>
+See <a href="../CHANGES.txt" target="_blank">the full changelog</a> for a complete version history.
+<p>
+<span class="smallLink">(<a href="#top">top</a>)</span>
+
+<a name="blahblah"></a>
+<h1>Remarks</h1>
+Well, here's my second Kirby editor. Will there be a third? I have no idea. I started this at the very beginning of 2014 (doing preliminary hacking work over Christmas break, actually), and as of version 0.90, it's now June. That's longer than I was expecting it to take to get to this point, but isn't that how it always goes? I mostly have my laziness to blame, of course, but at least it didn't take as long as the Dream Course editor did.
+<p>
+Hopefully this will be a bit more popular than KDCEditor was (just like their respective games, I guess). Most of the stuff left to be done, aside from any bugs that might pop up later, is just UI-related convenience. I don't know what else I'll start working on in the meantime, or if any of it will be ROM hacking-related at all (aside from a translation or two I've had on the back burner for a while. Who knows?
+<p>
+<span class="smallLink">(<a href="#top">top</a>)</span>
+
+<a name="contact"></a>
+<h1>Contact</h1>
+If you want to yell at me about something, here's how you can:
+<p>
+<b>Email</b>:<br>
+<a href="mailto:d@revenant1.net">d@revenant1.net</a>
+<p>
+<b>IRC</b>:<br>
+"devin"     on irc.badnik.net<br>
+"Revenant"  on irc.oftc.net<br>
+"Revenant`" on irc.synirc.net and irc.dal.net
+<p>
+<b>Forums</b>:<br>
+<a href="http://jul.rustedlogic.net/profile.php?id=504" target="_blank">http://jul.rustedlogic.net/profile.php?id=504</a><br>
+<a href="http://www.romhacking.net/forum/index.php?action=profile;u=10455" target="_blank">http://www.romhacking.net/forum/index.php?action=profile;u=10455</a>
+<p>
+<span class="smallLink">(<a href="#top">top</a>)</span>
+
+<p>
+copyright 2014 Devin "Revenant" Acker - "life is but a dream"
+</body>
+</html>

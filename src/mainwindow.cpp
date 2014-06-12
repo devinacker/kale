@@ -760,7 +760,7 @@ void MainWindow::setDoubleSize(bool on) {
 */
 void MainWindow::showHelp() const {
     QDesktopServices::openUrl(QUrl(QCoreApplication::applicationDirPath()
-                                   + "/README.txt"));
+                                   + "/docs/index.htm"));
 }
 
 void MainWindow::showAbout() {
