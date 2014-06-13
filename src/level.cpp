@@ -62,12 +62,26 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
     } catch (std::bad_alloc) {
         QMessageBox::critical(0,
                               "Load ROM",
-                              QString("Unable to allocate memory for level %1").arg(num),
+                              QString("Unable to allocate memory for room %1").arg(num),
                               QMessageBox::Ok);
         return NULL;
     }
 
     memcpy(&level->header, header, sizeof(header_t));
+
+    // make sure the level size is valid
+    if (header->screensH * header->screensV > 16
+            || header->screensH == 0
+            || header->screensV == 0) {
+        QMessageBox::critical(0,
+                              "Load ROM",
+                              QString("Unable to load room %1 because it has an invalid size.\n\n"
+                                      "The ROM may be corrupt.").arg(num),
+                              QMessageBox::Ok);
+
+        delete level;
+        return NULL;
+    }
 
     // kinda slow, but eh
     for (uint y = 0; y < SCREEN_HEIGHT * header->screensV; y++) {
