@@ -121,6 +121,16 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
             sprite_t *sprite = new sprite_t;
 
             sprite->type = file.readByte(spriteTypes + sprNum);
+#ifdef QT_DEBUG
+            // temporary check to see if any levels use warp star 2 or cannon 2
+            if (sprite->type == 0xF8)
+                printf("room %03X uses warp star 2!\n", num);
+            else if (sprite->type == 0xFA)
+                printf("room %03X uses cannon 2!\n", num);
+
+            fflush(stdout);
+#endif
+
             uint8_t pos  = file.readByte(spritePos + sprNum);
 
             // calculate normal x/y positions

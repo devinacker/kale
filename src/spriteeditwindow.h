@@ -19,6 +19,9 @@ public:
 protected:
     void accept();
 
+private slots:
+    void setSpriteInfo(int);
+
 private:
     Ui::SpriteEditWindow *ui;
     sprite_t *sprite;

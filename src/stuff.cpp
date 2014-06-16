@@ -431,9 +431,9 @@ const StringMap spriteTypes ({
      {0xf5, "F5: Warp Star (level 6)"},
      {0xf6, "F6: Warp Star (level 7)"},
      {0xf7, "F7: Warp Star"},
-     {0xf8, "F8: Warp Star 2?"},
+     {0xf8, "F8: Warp Star 2"},
      {0xf9, "F9: Cannon"},
-     {0xfa, "FA: Cannon 2?"},
+     {0xfa, "FA: Cannon 2"},
      {0xfb, "FB: Fuse"},
      // FC/FD unused
      {0xfe, "FE: Floor switch"},
