@@ -28,6 +28,7 @@
 #include "mapclear.h"
 #include "coursewindow.h"
 #include "version.h"
+#include "stuff.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -817,8 +818,7 @@ void MainWindow::setLevel(uint level) {
 
     // display the room number in the toolbar label
     levelLabel->setText(QString("  Room ")
-                      + QString::number(level, 16)
-                        .rightJustified(3, QLatin1Char('0')).toUpper());
+                        + hexFormat(level, 3));
 }
 
 void MainWindow::saveCurrentLevel() {

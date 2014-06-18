@@ -1,13 +1,15 @@
 #include <stdexcept>
 #include "stuff.h"
 
+QString hexFormat(int number, uint digits) {
+    return QString::number(number, 16).rightJustified(digits, QLatin1Char('0')).toUpper();
+}
+
 QString fromStringMap(const StringMap& map, uint type) {
-    try {
+    if (map.count(type))
         return map.at(type);
-    } catch (std::out_of_range) {
-        return QString("%1: unknown")
-                .arg(QString::number(type, 16).rightJustified(2, QLatin1Char('0')).toUpper());
-    }
+
+    return QString("%1: unknown").arg(hexFormat(type, 2));
 }
 
 const StringMap tileTypes ({

@@ -126,12 +126,12 @@ void TilesetEditWindow::startEdit(const leveldata_t *level) {
     // add graphics indices to dropdown
     ui->comboBox_TileGFX->clear();
     for (int i = 0; i < 256; i++)
-        ui->comboBox_TileGFX->addItem(QString::number(i, 16).rightJustified(2, QLatin1Char('0')).toUpper()
-                                         + ": banks "
-                                         + QString::number(bankTable[0][i], 16).rightJustified(2, QLatin1Char('0')).toUpper() + ", "
-                                         + QString::number(bankTable[1][i], 16).rightJustified(2, QLatin1Char('0')).toUpper() + ", "
-                                         + QString::number(bankTable[2][i], 16).rightJustified(2, QLatin1Char('0')).toUpper() + "-"
-                                         + QString::number((bankTable[2][i] + 3) & 0xFF, 16).rightJustified(2, QLatin1Char('0')).toUpper());
+        ui->comboBox_TileGFX->addItem(hexFormat(i, 2)
+                                      + ": banks "
+                                      + hexFormat(bankTable[0][i], 2) + ", "
+                                      + hexFormat(bankTable[1][i], 2) + ", "
+                                      + hexFormat(bankTable[2][i], 2) + "-"
+                                      + hexFormat((bankTable[2][i] + 3) & 0xFF, 2));
 
 
     // set graphics values

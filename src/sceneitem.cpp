@@ -120,7 +120,7 @@ void ExitItem::updateItem() {
     this->setPos(exit->x * TILE_SIZE, exit->y * TILE_SIZE);
 
     this->setToolTip(QString("Exit to level %1 (screen %2, %3, %4)\nType %5")
-                     .arg(QString::number(exit->dest, 16).rightJustified(3, QLatin1Char('0')).toUpper())
+                     .arg(hexFormat(exit->dest, 3))
                      .arg(QString::number(exit->destScreen, 16).toUpper())
                      .arg(exit->destX).arg(exit->destY)
                      .arg(exitType(exit->type)));

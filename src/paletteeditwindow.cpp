@@ -1,6 +1,7 @@
 #include "paletteeditwindow.h"
 #include "ui_paletteeditwindow.h"
 #include "graphics.h"
+#include "stuff.h"
 
 PaletteEditWindow::PaletteEditWindow(QWidget *parent) :
     QDialog(parent, Qt::CustomizeWindowHint
@@ -142,7 +143,7 @@ QVariant PaletteModel::data(const QModelIndex &index, int role) const {
         return QSize(32, 32);
 
     case Qt::DisplayRole:
-        return QString::number(color, 16).rightJustified(2, QLatin1Char('0')).toUpper();
+        return hexFormat(color, 2);
     }
 
     return QVariant();

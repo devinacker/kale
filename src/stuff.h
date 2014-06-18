@@ -4,6 +4,8 @@
 #include <QString>
 #include <map>
 
+QString hexFormat(int num, uint digits = 0);
+
 typedef std::map<uint, QString> StringMap;
 
 extern const StringMap tileTypes;

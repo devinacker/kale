@@ -1,4 +1,5 @@
 #include "hexspinbox.h"
+#include "stuff.h"
 
 HexSpinBox::HexSpinBox(QWidget *parent, uint digits = 0):
     QSpinBox(parent) {
@@ -11,7 +12,7 @@ int HexSpinBox::valueFromText(const QString &text) const {
 }
 
 QString HexSpinBox::textFromValue(int val) const {
-    return QString::number(val, 16).rightJustified(this->digits, QLatin1Char('0')).toUpper();
+    return hexFormat(val, this->digits);
 }
 
 QValidator::State HexSpinBox::validate(QString &input, int& /* pos */) const {

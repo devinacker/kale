@@ -608,7 +608,7 @@ void MapScene::showTileInfo(QGraphicsSceneMouseEvent *event) {
 
             // show tile contents on the status bar
             QString stat(QString("(%1, %2) tile %3 (%4)").arg(tileX).arg(tileY)
-                         .arg(QString::number(tile, 16).rightJustified(2, QLatin1Char('0')).toUpper())
+                         .arg(hexFormat(tile, 2))
                          .arg(tileType(tilesets[level->tileset][tile].action)));
 
             emit statusMessage(stat);
