@@ -851,12 +851,24 @@ void MainWindow::saveCurrentLevel() {
     for (std::list<exit_t*>::const_iterator i = currentLevel.exits.begin();
          i != currentLevel.exits.end(); i++) {
 
+        // only include exits which are actually within the bounds of the level
+        // (any others would get invalid coordinates)
+        if ((*i)->x >= currentLevel.header.screensH * SCREEN_WIDTH
+            || (*i)->y >= currentLevel.header.screensV * SCREEN_HEIGHT)
+            continue;
+
         exit_t *exit = new exit_t;
         *exit = *(*i);
         thisLevel->exits.push_back(exit);
     }
     for (std::list<sprite_t*>::const_iterator i = currentLevel.sprites.begin();
          i != currentLevel.sprites.end(); i++) {
+
+        // only include sprites which are actually within the bounds of the level
+        // (any others would get invalid coordinates)
+        if ((*i)->x >= currentLevel.header.screensH * SCREEN_WIDTH
+            || (*i)->y >= currentLevel.header.screensV * SCREEN_HEIGHT)
+            continue;
 
         sprite_t *sprite = new sprite_t;
         *sprite = *(*i);

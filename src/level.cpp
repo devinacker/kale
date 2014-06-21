@@ -257,12 +257,6 @@ DataChunk packSprites(const leveldata_t *level, uint num) {
 
         sprite_t sprite = *(*i);
 
-        // only include sprites which are actually within the bounds of the level
-        // (any others would get invalid coordinates)
-        if (sprite.x >= level->header.screensH * SCREEN_WIDTH
-            || sprite.y >= level->header.screensV * SCREEN_HEIGHT)
-            continue;
-
         // which screen is this sprite on?
         // (treat screens as 16 tiles tall instead of 12 - fixes issue #2)
         sprite.screen = (sprite.y / (SCREEN_HEIGHT + 4) * level->header.screensH)
@@ -330,12 +324,6 @@ void saveExits(ROMFile& file, const leveldata_t *level, uint num) {
     for (std::list<exit_t*>::const_iterator i = level->exits.begin(); i != level->exits.end(); i++) {
         exit_t *exit = *i;
         uint8_t bytes[5];
-
-        // only include exits which are actually within the bounds of the level
-        // (any others would get invalid coordinates)
-        if (exit->x >= level->header.screensH * SCREEN_WIDTH
-            || exit->y >= level->header.screensV * SCREEN_HEIGHT)
-            continue;
 
         // byte 0: upper 4 = exit type & 0xF, lower 4 = screen exit is on
         bytes[0] = exit->type << 4;
