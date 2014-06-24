@@ -4,6 +4,30 @@
 ; FILENAME: ka_audio.bin, File Size: 1659, ORG: $8000
 ;     -> NES mode enabled
 ;---------------------------------------------------------------------------
+
+SongPointer  =	$19
+TrackPointer =	$22
+
+SFXPlaying   =	$0604
+
+RegistersSFX =	$0607
+Square1SFX   =	RegistersSFX
+Square2SFX   =	RegistersSFX+4
+TriangleSFX  =	RegistersSFX+8
+NoiseSFX     =	RegistersSFX+12
+
+RegistersMus =	$0617
+Square1Mus   =	RegistersMus
+Square2Mus   =	RegistersMus+4
+TriangleMus  =	RegistersMus+8
+NoiseMus     =	RegistersMus+12
+
+RegistersOld =	$0627
+Square1Old   =	RegistersOld
+Square2Old   =	RegistersOld+4
+TriangleOld  =	RegistersOld+8
+NoiseOld     =	RegistersOld+12
+
 $8000	LDX #$00	
 $8002	STX $4011	; [NES] Audio -> DPCM D/A data
 $8005	DEX		
@@ -24,7 +48,7 @@ $8026	LDA #$FF
 $8028	TAX		
 $8029	BPL $802E	
 $802B	JMP $809E	
-$802E	LDA $0604	
+$802E	LDA SFXPlaying	
 $8031	BEQ $8055	
 $8033	AND $8AEF,X	
 $8036	BEQ $8055	
@@ -73,7 +97,7 @@ $8092	LDX #$04
 $8094	ORA $06D7,X	
 $8097	DEX		
 $8098	BNE $8094	
-$809A	STA $0604	
+$809A	STA SFXPlaying	
 $809D	RTS		
 ;---------------------------------------------------------------------------
 
@@ -86,34 +110,23 @@ $80AA	STA $06DC,X
 $80AD	DEX		
 $80AE	BPL $80A0	
 $80B0	LDX #$0F	
-$80B2	LDA $TrackInit,X	
-$80B5	STA $0607,X	
+$80B2	LDA $ChannelInit,X	
+$80B5	STA RegistersSFX,X	
 $80B8	DEX		
 $80B9	BPL $80B2	
 $80BB	RTS		
 ;---------------------------------------------------------------------------
 
-TrackInit:
+ChannelInit:
 
-; TODO: write as binary data
-
-$80BC	BMI $813D	
-$80BE	BRK		
-$80BF	.byte $ff	; INVALID OPCODE !!!
-
-$80C0	BMI $8141	
-$80C2	BRK		
-$80C3	.byte $ff	; INVALID OPCODE !!!
-
-$80C4	BRK		
-$80C5	BRK		
-$80C6	BRK		
-$80C7	BRK		
-$80C8	BMI $80CA	
-$80CA	BRK		
-$80CB	.byte $ff	; INVALID OPCODE !!!
-
-; end of binary data
+; square 1 init
+$80BC	.byte $30, $7F, $00, $FF
+; square 2 init
+$80C0	.byte $30, $7F, $00, $FF
+; triangle init
+$80C4	.byte $00, $00, $00, $00
+; noise init
+$80C8	.byte $30, $00, $00, $FF
 
 $80CC	LDA #$27	
 $80CE	STA $0687,X	
@@ -158,11 +171,11 @@ $810A	STA $0646,X
 $810D	DEX		
 $810E	BPL $8108	
 
-; clear ??? for all tracks (or ???)
+; init register values for all channels
 
 $8110	LDX #$0F	
-$8112	LDA $TrackInit,X	
-$8115	STA $0617,X	
+$8112	LDA $ChannelInit,X	
+$8115	STA RegistersMus,X	
 $8118	DEX		
 $8119	BPL $8112
 
@@ -253,22 +266,23 @@ $81B8	DEX
 $81B9	BPL $81A9	
 $81BB	JSR $808F
 
+$81BE	LDA SFXPlaying	
+
 ;---------------------------------------------------------------------------
 ; Update square 1 registers
 ;---------------------------------------------------------------------------
 	
-$81BE	LDA $0604	
 $81C1	LSR A		
 $81C2	PHA		
 $81C3	LDX #$00	
 $81C5	LDY #$03	
 $81C7	PHP		
-$81C8	LDA $0617,X	
+$81C8	LDA Square1Mus,X	
 $81CB	BCC $81D0	
-$81CD	LDA $0607,X	
-$81D0	CMP $0627,X	
+$81CD	LDA Square1SFX,X	
+$81D0	CMP Square1Old,X	
 $81D3	BEQ $81DB	
-$81D5	STA $0627,X	
+$81D5	STA Square1Old,X	
 $81D8	STA $4000,X	; [NES] Audio -> Square 1
 $81DB	PLP		
 $81DC	INX		
@@ -285,12 +299,12 @@ $81E2	PHA
 $81E3	LDX #$00	
 $81E5	LDY #$03	
 $81E7	PHP		
-$81E8	LDA $061B,X	
+$81E8	LDA Square2Mus,X	
 $81EB	BCC $81F0	
-$81ED	LDA $060B,X	
-$81F0	CMP $062B,X	
+$81ED	LDA Square2SFX,X	
+$81F0	CMP Square2Old,X	
 $81F3	BEQ $81FB	
-$81F5	STA $062B,X	
+$81F5	STA Square2Old,X	
 $81F8	STA $4004,X	; [NES] Audio -> Square 2
 $81FB	PLP		
 $81FC	INX		
@@ -307,12 +321,12 @@ $8202	PHA
 $8203	LDX #$00	
 $8205	LDY #$03	
 $8207	PHP		
-$8208	LDA $061F,X	
+$8208	LDA TriangleMus,X	
 $820B	BCC $8210	
-$820D	LDA $060F,X	
-$8210	CMP $062F,X	
+$820D	LDA TriangleSFX,X	
+$8210	CMP TriangleOld,X	
 $8213	BEQ $821B	
-$8215	STA $062F,X	
+$8215	STA TriangleOld,X	
 $8218	STA $4008,X	; [NES] Audio -> Triangle
 $821B	PLP		
 $821C	INX		
@@ -327,12 +341,12 @@ $8220	PLA
 $8221	LSR A		
 $8222	LDX #$03	
 $8224	PHP		
-$8225	LDA $0623,X	
+$8225	LDA NoiseMus,X	
 $8228	BCC $822D	
-$822A	LDA $0613,X	
-$822D	CMP $0633,X	
+$822A	LDA NoiseSFX,X	
+$822D	CMP NoiseOld,X	
 $8230	BEQ $8238	
-$8232	STA $0633,X	
+$8232	STA NoiseOld,X	
 $8235	STA $400C,X	; [NES] Audio -> Noise control reg
 $8238	PLP		
 $8239	DEX		
@@ -724,20 +738,11 @@ $8517	STA ($24),Y
 $8519	RTS		
 ;---------------------------------------------------------------------------
 
-; TODO: replace this with binary data
+$851A	.byte $00, $00, $00, $00, $00
+$851F	.byte $20, $20, $20, $20, $20
 
-$851A	BRK		
-$851B	BRK		
-$851C	BRK		
-$851D	BRK		
-$851E	BRK		
-$851F	JSR $2020	
-$8522	JSR $BD20	
-$8525	ADC $F006,X	
-$8528	.byte $14	; INVALID OPCODE !!!
-
-; TODO: binary data ends here
-
+$8524	LDA $067D,X
+$8527	BEQ $853D
 $8529	CMP #$FF	
 $852B	BEQ $853D	
 $852D	DEC $067D,X	
