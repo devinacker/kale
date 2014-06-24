@@ -375,10 +375,14 @@ TrackPlay:
 
 $824E	LDY #$00	
 $8250	LDA (TrackPointer),Y	
+
+; bytes $E0 and up = track commands
+
 $8252	AND #$E0	
 $8254	CMP #$E0	
 $8256	BNE $825B	
-$8258	JMP $8326	
+$8258	JMP DoTrackCommand	
+
 $825B	LDA $0637,X	
 $825E	CMP #$0C	
 $8260	BNE $8288	
@@ -479,9 +483,15 @@ $8322	STA $0641,X
 $8325	RTS		
 ;---------------------------------------------------------------------------
 
+DoTrackCommand:
+
+;---------------------------------------------------------------------------
+; Track command $F0
+;---------------------------------------------------------------------------
+
 $8326	LDA (TrackPointer),Y	
 $8328	CMP #$F0	
-$832A	BNE $8345	
+$832A	BNE TrackCommandF1	
 $832C	JSR GetNextTrackByte	
 $832F	ASL A		
 $8330	ASL A		
@@ -494,8 +504,14 @@ $833A	ORA $13
 $833C	STA $069B,X	
 $833F	JSR $85F3	
 $8342	JMP TrackPlayContinue	
+
+;---------------------------------------------------------------------------
+; Track command $F1
+;---------------------------------------------------------------------------
+TrackCommandF1:
+
 $8345	CMP #$F1	
-$8347	BNE $8369	
+$8347	BNE TrackCommandF2	
 $8349	JSR GetNextTrackByte	
 $834C	STA $13		
 $834E	LDA $069B,X	
@@ -513,8 +529,14 @@ $8360	BNE $8366
 $8362	BCS $8366	
 $8364	LDA #$00	
 $8366	JMP $832F	
+
+;---------------------------------------------------------------------------
+; Track command $F2
+;---------------------------------------------------------------------------
+TrackCommandF2:
+
 $8369	CMP #$F2	
-$836B	BNE $837C	
+$836B	BNE TrackCommandF3	
 $836D	JSR GetNextTrackByte	
 $8370	ASL A		
 $8371	STA $14		
@@ -522,44 +544,85 @@ $8373	ASL A
 $8374	ADC $14		
 $8376	STA $06AF,X	
 $8379	JMP TrackPlayContinue	
+
+;---------------------------------------------------------------------------
+; Track command $F3
+;---------------------------------------------------------------------------
+TrackCommandF3:
+
 $837C	CMP #$F3	
-$837E	BNE $838E	
+$837E	BNE TrackCommandF4	
 $8380	JSR GetNextTrackByte	
 $8383	STA $0641,X	
 $8386	LDA #$FF	
 $8388	STA $067D,X	
 $838B	JMP GetNextTrackByte	
+
+;---------------------------------------------------------------------------
+; Track command $F4
+;---------------------------------------------------------------------------
+TrackCommandF4:
+
 $838E	CMP #$F4	
-$8390	BNE $839B	
+$8390	BNE TrackCommandF5	
 $8392	JSR GetNextTrackByte	
 $8395	STA $0691,X	
-$8398	JMP TrackPlayContinue	
+$8398	JMP TrackPlayContinue
+
+;---------------------------------------------------------------------------
+; Track command $F5
+;---------------------------------------------------------------------------
+TrackCommandF5:
+
 $839B	CMP #$F5	
-$839D	BNE $83A8	
+$839D	BNE TrackCommandF6	
 $839F	JSR GetNextTrackByte	
 $83A2	STA $0687,X	
 $83A5	JMP TrackPlayContinue	
+
+;---------------------------------------------------------------------------
+; Track command $F6
+;---------------------------------------------------------------------------
+TrackCommandF6:
+
 $83A8	CMP #$F6	
-$83AA	BNE $83BA	
+$83AA	BNE TrackCommandF7	
 $83AC	JSR GetNextTrackByte	
 $83AF	STA $06A5,X	
 $83B2	BPL $83B7	
 $83B4	JSR $82EB	
-$83B7	JMP TrackPlayContinue	
+$83B7	JMP TrackPlayContinue
+
+;---------------------------------------------------------------------------
+; Track command $F7
+;---------------------------------------------------------------------------
+TrackCommandF7:
+	
 $83BA	CMP #$F7	
-$83BC	BNE $83C7	
+$83BC	BNE TrackCommandE0	
 $83BE	JSR GetNextTrackByte	
 $83C1	STA $06B9,X	
 $83C4	JMP TrackPlayContinue	
+
+;---------------------------------------------------------------------------
+; Track command $E0
+;---------------------------------------------------------------------------
+
 $83C7	CMP #$E0	
-$83C9	BNE $83DA	
+$83C9	BNE TrackCommandE2	
 $83CB	JSR GetNextTrackByte	
 $83CE	STA $4012	; [NES] Audio -> DPCM address
 $83D1	JSR GetNextTrackByte	
 $83D4	STA $4013	; [NES] Audio -> DPCM data length
 $83D7	JMP TrackPlayContinue	
+
+;---------------------------------------------------------------------------
+; Track command $E2
+;---------------------------------------------------------------------------
+TrackCommandE2:
+
 $83DA	CMP #$E2	
-$83DC	BNE $8404	
+$83DC	BNE TrackCommandE3	
 $83DE	JSR GetNextTrackByte	
 $83E1	PHA		
 $83E2	JSR GetNextTrackByte	
@@ -579,20 +642,38 @@ $83FB	DEY
 $83FC	STA ($24),Y	
 $83FE	JSR $82E6	
 $8401	JMP TrackPlayContinue	
+
+;---------------------------------------------------------------------------
+; Track command $E3
+;---------------------------------------------------------------------------
+TrackCommandE3:
+
 $8404	CMP #$E3	
-$8406	BNE $8414	
+$8406	BNE TrackCommandE1	
 $8408	JSR GetNextTrackByte	
 $840B	BPL $840E	
 $840D	DEY		
 $840E	JSR $8666	
-$8411	JMP TrackPlayContinue	
+$8411	JMP TrackPlayContinue
+
+;---------------------------------------------------------------------------
+; Track command $E1
+;---------------------------------------------------------------------------
+TrackCommandE1:
+	
 $8414	CMP #$E1	
-$8416	BNE $8421	
+$8416	BNE TrackCommandFF	
 $8418	JSR GetNextTrackByte	
 $841B	STA $0601	
-$841E	JMP TrackPlayContinue	
+$841E	JMP TrackPlayContinue
+
+;---------------------------------------------------------------------------
+; Track command $FF
+;---------------------------------------------------------------------------
+TrackCommandFF:
+	
 $8421	CMP #$FF	
-$8423	BNE $8431	
+$8423	BNE MoreTrackCommands	
 $8425	LDA #$00	
 $8427	STA $0641,X	
 $842A	STA $065F,X	
@@ -600,15 +681,27 @@ $842D	JSR $85E7
 $8430	RTS		
 ;---------------------------------------------------------------------------
 
+;---------------------------------------------------------------------------
+; Additional track commands
+;---------------------------------------------------------------------------
+MoreTrackCommands:
+
 $8431	LDA $06C3,X	
 $8434	STA $26		
-$8436	JSR $8441	
+$8436	JSR DoOtherTrackCommand	
 $8439	LDA $26		
 $843B	STA $06C3,X	
-$843E	JMP $TrackPlay	
+$843E	JMP $TrackPlay
+
+DoOtherTrackCommand:
+
+;---------------------------------------------------------------------------
+; Track command $F8
+;---------------------------------------------------------------------------
+
 $8441	LDA (TrackPointer),Y	
 $8443	CMP #$F8	
-$8445	BNE $8454	
+$8445	BNE TrackCommandFA	
 $8447	INY		
 $8448	LDA (TrackPointer),Y	
 $844A	PHA		
@@ -620,8 +713,13 @@ $8451	STA TrackPointer
 $8453	RTS		
 ;---------------------------------------------------------------------------
 
+;---------------------------------------------------------------------------
+; Track command $FA
+;---------------------------------------------------------------------------
+TrackCommandFA:
+
 $8454	CMP #$FA	
-$8456	BNE $847A	
+$8456	BNE TrackCommandFB	
 $8458	JSR GetNextTrackByte	
 $845B	PHA		
 $845C	JSR GetNextTrackByte	
@@ -642,8 +740,13 @@ $8477	STA TrackPointer
 $8479	RTS		
 ;---------------------------------------------------------------------------
 
+;---------------------------------------------------------------------------
+; Track command $FB
+;---------------------------------------------------------------------------
+TrackCommandFB:
+
 $847A	CMP #$FB	
-$847C	BNE $848F	
+$847C	BNE TrackCommandFC	
 $847E	LDY $26		
 $8480	LDA $06E1,Y	
 $8483	STA TrackPointer		
@@ -655,8 +758,13 @@ $848C	STY $26
 $848E	RTS		
 ;---------------------------------------------------------------------------
 
+;---------------------------------------------------------------------------
+; Track command $FC
+;---------------------------------------------------------------------------
+TrackCommandFC:
+
 $848F	CMP #$FC	
-$8491	BNE $84B0	
+$8491	BNE TrackCommandFD	
 $8493	JSR GetNextTrackByte	
 $8496	PHA		
 $8497	JSR GetNextTrackByte	
@@ -674,8 +782,13 @@ $84AD	STY $26
 $84AF	RTS		
 ;---------------------------------------------------------------------------
 
+;---------------------------------------------------------------------------
+; Track command $FD
+;---------------------------------------------------------------------------
+TrackCommandFD:
+
 $84B0	CMP #$FD	
-$84B2	BNE $84D5	
+$84B2	BNE TrackCommandFE	
 $84B4	LDY $26		
 $84B6	LDA $06E1,Y	
 $84B9	SEC		
@@ -693,6 +806,12 @@ $84CC	INC $26
 $84CE	INC $26		
 $84D0	INC $26		
 $84D2	JMP GetNextTrackByte	
+
+;---------------------------------------------------------------------------
+; Track command $FE
+;---------------------------------------------------------------------------
+TrackCommandFE:
+
 $84D5	CMP #$FE	
 $84D7	BNE $84DF	
 $84D9	JSR GetNextTrackByte	
