@@ -5,7 +5,7 @@
 ;     -> NES mode enabled
 ;---------------------------------------------------------------------------
 
-SongPointer  =	$19
+SongPointer  =	$18
 TrackPointer =	$22
 
 SFXPlaying   =	$0604
@@ -73,7 +73,7 @@ $805B	STA $0605
 $805E	LDA $8B47,X	
 $8061	STA $02		
 $8063	LDA $8A3F,X	
-$8066	STA SongPointer		; $19
+$8066	STA SongPointer	
 $8068	LDA $8A97,X	
 $806B	STA $SongPointer+1		
 $806D	LDY #$00	
