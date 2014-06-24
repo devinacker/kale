@@ -220,25 +220,25 @@ $8167	STA $25
 $8169	DEC $0641,X	
 $816C	BNE $8185	
 $816E	LDA $064B,X	
-$8171	STA $22		
+$8171	STA TrackPointer	; $22	
 $8173	LDA $0655,X	
-$8176	STA $23		
+$8176	STA TrackPointer+1	; $23	
 $8178	JSR TrackPlay	; $824E
-$817B	LDA $22		
+$817B	LDA TrackPointer		
 $817D	STA $064B,X	
-$8180	LDA $23		
+$8180	LDA TrackPointer+1		
 $8182	STA $0655,X	
 $8185	JSR $8524	
 $8188	DEC $065F,X	
 $818B	BNE $81A4	
 $818D	LDA $0669,X	
-$8190	STA $22		
+$8190	STA TrackPointer		
 $8192	LDA $0673,X	
-$8195	STA $23		
+$8195	STA TrackPointer+1		
 $8197	JSR $8541	
-$819A	LDA $22		
+$819A	LDA TrackPointer		
 $819C	STA $0669,X	
-$819F	LDA $23		
+$819F	LDA TrackPointer+1		
 $81A1	STA $0673,X	
 $81A4	DEX		
 $81A5	BPL $815A	
@@ -353,14 +353,14 @@ $8248	RTS
 $8249	.byte $08
 $824A	.byte $10 
 
-TrackPlayLoop:
+TrackPlayContinue:
 
 $824B	JSR GetNextTrackByte
 
 TrackPlay: 
 
 $824E	LDY #$00	
-$8250	LDA ($22),Y	
+$8250	LDA (TrackPointer),Y	
 $8252	AND #$E0	
 $8254	CMP #$E0	
 $8256	BNE $825B	
@@ -368,7 +368,7 @@ $8258	JMP $8326
 $825B	LDA $0637,X	
 $825E	CMP #$0C	
 $8260	BNE $8288	
-$8262	LDA ($22),Y	
+$8262	LDA (TrackPointer),Y	
 $8264	BIT $824A	
 $8267	BNE $8276	
 $8269	AND #$0F	
@@ -384,7 +384,7 @@ $827D	STA $4015	; [NES] IRQ status / Sound enable
 $8280	LDA #$1F	
 $8282	STA $4015	; [NES] IRQ status / Sound enable
 $8285	JMP $82B8	
-$8288	LDA ($22),Y	
+$8288	LDA (TrackPointer),Y	
 $828A	AND #$1F	
 $828C	CMP #$10	
 $828E	BEQ $82A1	
@@ -447,7 +447,7 @@ $8305	RTS
 ;---------------------------------------------------------------------------
 
 $8306	LDY #$00	
-$8308	LDA ($22),Y	
+$8308	LDA (TrackPointer),Y	
 $830A	AND #$E0	
 $830C	CMP #$C0	
 $830E	BNE $8316	
@@ -465,7 +465,7 @@ $8322	STA $0641,X
 $8325	RTS		
 ;---------------------------------------------------------------------------
 
-$8326	LDA ($22),Y	
+$8326	LDA (TrackPointer),Y	
 $8328	CMP #$F0	
 $832A	BNE $8345	
 $832C	JSR GetNextTrackByte	
@@ -592,17 +592,17 @@ $8436	JSR $8441
 $8439	LDA $26		
 $843B	STA $06C3,X	
 $843E	JMP $TrackPlay	
-$8441	LDA ($22),Y	
+$8441	LDA (TrackPointer),Y	
 $8443	CMP #$F8	
 $8445	BNE $8454	
 $8447	INY		
-$8448	LDA ($22),Y	
+$8448	LDA (TrackPointer),Y	
 $844A	PHA		
 $844B	INY		
-$844C	LDA ($22),Y	
-$844E	STA $23		
+$844C	LDA (TrackPointer),Y	
+$844E	STA TrackPointer+1		
 $8450	PLA		
-$8451	STA $22		
+$8451	STA TrackPointer		
 $8453	RTS		
 ;---------------------------------------------------------------------------
 
@@ -614,17 +614,17 @@ $845C	JSR GetNextTrackByte
 $845F	PHA		
 $8460	JSR GetNextTrackByte	
 $8463	LDY $26		
-$8465	LDA $23		
+$8465	LDA TrackPointer+1		
 $8467	DEY		
 $8468	STA $06E1,Y	
-$846B	LDA $22		
+$846B	LDA TrackPointer		
 $846D	DEY		
 $846E	STA $06E1,Y	
 $8471	STY $26		
 $8473	PLA		
-$8474	STA $23		
+$8474	STA TrackPointer+1		
 $8476	PLA		
-$8477	STA $22		
+$8477	STA TrackPointer		
 $8479	RTS		
 ;---------------------------------------------------------------------------
 
@@ -632,10 +632,10 @@ $847A	CMP #$FB
 $847C	BNE $848F	
 $847E	LDY $26		
 $8480	LDA $06E1,Y	
-$8483	STA $22		
+$8483	STA TrackPointer		
 $8485	INY		
 $8486	LDA $06E1,Y	
-$8489	STA $23		
+$8489	STA TrackPointer+1		
 $848B	INY		
 $848C	STY $26		
 $848E	RTS		
@@ -647,10 +647,10 @@ $8493	JSR GetNextTrackByte
 $8496	PHA		
 $8497	JSR GetNextTrackByte	
 $849A	LDY $26		
-$849C	LDA $23		
+$849C	LDA TrackPointer+1		
 $849E	DEY		
 $849F	STA $06E1,Y	
-$84A2	LDA $22		
+$84A2	LDA TrackPointer		
 $84A4	DEY		
 $84A5	STA $06E1,Y	
 $84A8	PLA		
@@ -669,9 +669,9 @@ $84BA	SBC #$01
 $84BC	STA $06E1,Y	
 $84BF	BEQ $84CC	
 $84C1	LDA $06E2,Y	
-$84C4	STA $22		
+$84C4	STA TrackPointer		
 $84C6	LDA $06E3,Y	
-$84C9	STA $23		
+$84C9	STA TrackPointer+1		
 $84CB	RTS		
 ;---------------------------------------------------------------------------
 
@@ -688,10 +688,10 @@ $84DF	RTS
 
 GetNextTrackByte:
 
-$84E0	INC $22		
+$84E0	INC TrackPointer		
 $84E2	BNE $84E6	
-$84E4	INC $23		
-$84E6	LDA ($22),Y	
+$84E4	INC TrackPointer+1		
+$84E6	LDA (TrackPointer),Y	
 $84E8	RTS		
 ;---------------------------------------------------------------------------
 
@@ -754,10 +754,10 @@ $853D	RTS
 
 $853E	JSR GetNextTrackByte	
 $8541	LDY #$00	
-$8543	LDA ($22),Y	
+$8543	LDA (TrackPointer),Y	
 $8545	AND #$E0	
 $8547	BNE $8553	
-$8549	LDA ($22),Y	
+$8549	LDA (TrackPointer),Y	
 $854B	AND #$1F	
 $854D	STA $065F,X	
 $8550	JMP GetNextTrackByte	
@@ -766,7 +766,7 @@ $8555	BNE $856D
 $8557	JSR $8648	
 $855A	JSR $8666	
 $855D	LDY #$00	
-$855F	LDA ($22),Y	
+$855F	LDA (TrackPointer),Y	
 $8561	AND #$10	
 $8563	BEQ $853E	
 $8565	LDA #$01	
@@ -774,7 +774,7 @@ $8567	STA $065F,X
 $856A	JMP GetNextTrackByte	
 $856D	CMP #$40	
 $856F	BNE $8578	
-$8571	LDA ($22),Y	
+$8571	LDA (TrackPointer),Y	
 $8573	AND #$0F	
 $8575	JMP $8593	
 $8578	CMP #$60	
@@ -794,7 +794,7 @@ $8593	JSR $85E7
 $8596	JMP $855D	
 $8599	CMP #$80	
 $859B	BNE $85B6	
-$859D	LDA ($22),Y	
+$859D	LDA (TrackPointer),Y	
 $859F	AND #$0F	
 $85A1	LDY $0637,X	
 $85A4	ROR A		
@@ -809,7 +809,7 @@ $85B1	STA ($24),Y
 $85B3	JMP $855D	
 $85B6	CMP #$E0	
 $85B8	BNE $85E6	
-$85BA	LDA ($22),Y	
+$85BA	LDA (TrackPointer),Y	
 $85BC	CMP #$F0	
 $85BE	BNE $85CC	
 $85C0	JSR GetNextTrackByte	
@@ -891,7 +891,7 @@ $8647	RTS
 ;---------------------------------------------------------------------------
 
 $8648	LDY #$00	
-$864A	LDA ($22),Y	
+$864A	LDA (TrackPointer),Y	
 $864C	AND #$0F	
 $864E	BIT $8249	
 $8651	BEQ $8656	
@@ -901,7 +901,7 @@ $8656	RTS
 ;---------------------------------------------------------------------------
 
 $8657	LDY #$00	
-$8659	LDA ($22),Y	
+$8659	LDA (TrackPointer),Y	
 $865B	AND #$1F	
 $865D	BIT $824A	
 $8660	BEQ $8665	
