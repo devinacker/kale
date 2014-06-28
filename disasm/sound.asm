@@ -5,8 +5,11 @@
 ;     -> NES mode enabled
 ;---------------------------------------------------------------------------
 
+NumTracks    =	$01
+
 SongPointer  =	$18
 TrackPointer =	$22
+RegistersPtr  =	$24
 
 SFXPlaying   =	$0604
 
@@ -27,6 +30,34 @@ Square1Old   =	RegistersOld
 Square2Old   =	RegistersOld+4
 TriangleOld  =	RegistersOld+8
 NoiseOld     =	RegistersOld+12
+
+TrackVoice   =	$0637
+Square1Chn   =	$00
+Square2Chn   =	$04
+TriangleChn  =	$08
+NoiseChn     =	$0C
+
+; duration in frames of the current note/rest on this track
+; if == $00 then track is not in use
+TrackCounter =	$0641
+
+TrackBaseNt  =	$0687
+
+; high nibble = track volume
+; low nibble = current note volume
+TrackVol     =	$069B
+
+; length of a track's notes in increments of 6 frames
+TrackNoteLen =	$06AF
+
+; position of track's sequence/loop stack
+TrackStackPos = $06C3
+
+TrackStack    = $06E1
+
+;---------------------------------------------------------------------------
+; code begins here
+;---------------------------------------------------------------------------
 
 $8000	LDX #$00	
 $8002	STX $4011	; [NES] Audio -> DPCM D/A data
@@ -60,7 +91,7 @@ $8042	LDA $06DC,Y
 $8045	CMP $8B47,X	
 $8048	BCC $8054	
 $804A	LDA #$00	
-$804C	STA $0641,Y	
+$804C	STA TrackCounter,Y	
 $804F	DEY		
 $8050	BPL $803A	
 $8052	BMI $8055	
@@ -78,9 +109,9 @@ $8068	LDA $8A97,X
 $806B	STA $SongPointer+1		
 $806D	LDY #$00	
 $806F	LDA (SongPointer),Y	
-$8071	STA $01		
+$8071	STA NumTracks		
 $8073	LDX #$04	
-$8075	LDA $0641,X	
+$8075	LDA TrackCounter,X	
 $8078	BNE $808C	
 $807A	JSR $80CC	
 $807D	PHP		
@@ -103,7 +134,7 @@ $809D	RTS
 
 $809E	LDX #$04	
 $80A0	LDA #$00	
-$80A2	STA $0641,X	
+$80A2	STA TrackCounter,X	
 $80A5	STA $06D7,X	
 $80A8	LDA #$FF	
 $80AA	STA $06DC,X	
@@ -129,15 +160,15 @@ $80C4	.byte $00, $00, $00, $00
 $80C8	.byte $30, $00, $00, $FF
 
 $80CC	LDA #$27	
-$80CE	STA $0687,X	
+$80CE	STA TrackBaseNt,X	
 $80D1	LDA #$00	
 $80D3	STA $0691,X	
-$80D6	STA $069B,X	
+$80D6	STA TrackVol,X	
 $80D9	STA $06A5,X	
-$80DC	STA $06AF,X	
+$80DC	STA TrackNoteLen,X	
 $80DF	STA $06B9,X	
 $80E2	LDA $8724,X	
-$80E5	STA $06C3,X	
+$80E5	STA TrackStackPos,X	
 $80E8	INY		
 $80E9	LDA (SongPointer),Y	
 $80EB	STA $064B,X	
@@ -146,11 +177,11 @@ $80EF	LDA (SongPointer),Y
 $80F1	STA $0655,X	
 $80F4	INY		
 $80F5	LDA (SongPointer),Y	
-$80F7	STA $0637,X	
+$80F7	STA TrackVoice,X	
 $80FA	LDA #$01	
-$80FC	STA $0641,X	
+$80FC	STA TrackCounter,X	
 $80FF	STA $067D,X	
-$8102	DEC $01		
+$8102	DEC NumTracks		
 $8104	RTS		
 ;---------------------------------------------------------------------------
 
@@ -163,7 +194,7 @@ MusicInit:
 
 $8105	PHA		
 
-; clear ??? for all channels
+; clear delay(?) for tracks 5-9 (music)
 
 $8106	LDX #$04	
 $8108	LDA #$00	
@@ -189,6 +220,9 @@ $811F	LDA SongTableL,X	; $8991
 $8122	STA SongPointer 	; $18
 $8124	LDA SongTableH,X	; $89CB
 $8127	STA SongPointer+1	; $19
+
+; do stuff with the MMC3 bank switch registers here
+
 $8129	LDY #$87	
 $812B	STY $38		
 $812D	LDA SongTableB,X	; $8A05
@@ -197,15 +231,16 @@ $8133	STA $49
 $8135	STY $8000	
 $8138	STA $8001	
 
+; first byte in music data = number of tracks
+
 $813B	LDY #$00	
 $813D	LDA (SongPointer),Y	
-$813F	STA $01		
+$813F	STA NumTracks		
 
-; load ??? (delay?) for current track
-; if it's zero, do ???
+; if nothing is playing on this track, then ???
 
 $8141	LDX #$09	
-$8143	LDA $0641,X	
+$8143	LDA TrackCounter,X	
 $8146	BNE $814D	
 $8148	JSR $80CC	
 $814B	BEQ $8152	
@@ -221,17 +256,28 @@ $8152	RTS
 
 MusicPlay:
 
+; synchronize frame counter (5 step)
 $8153	LDA #$C0	
 $8155	STA $4017	; [NES] Joypad & I/O port for port #2
+
+; for each track...
 $8158	LDX #$09	
-$815A	LDA $0641,X	
+
+; if nothing is playing on this track, skip it
+$815A	LDA TrackCounter,X	
 $815D	BEQ $81A4	
-$815F	LDA $8710,X	
-$8162	STA $24		
-$8164	LDA $871A,X	
-$8167	STA $25		
-$8169	DEC $0641,X	
+
+; store pointer to sound register values in RAM ($0607 for SFX tracks, $0617 for music tracks)
+$815F	LDA TrackMemTableL,X	; $8710
+$8162	STA RegistersPtr		; $24
+$8164	LDA TrackMemTableH,X	; $871A
+$8167	STA RegistersPtr+1		
+
+; decrease track counter
+$8169	DEC TrackCounter,X	
 $816C	BNE $8185	
+
+; current note/rest has ended, read the next part of the track
 $816E	LDA $064B,X	
 $8171	STA TrackPointer	; $22	
 $8173	LDA $0655,X	
@@ -241,9 +287,14 @@ $817B	LDA TrackPointer
 $817D	STA $064B,X	
 $8180	LDA TrackPointer+1		
 $8182	STA $0655,X	
+
+; a note/rest is still going (or now going) on this track...
 $8185	JSR $8524	
+
+; decrease ??? counter
 $8188	DEC $065F,X	
-$818B	BNE $81A4	
+$818B	BNE $81A4
+	
 $818D	LDA $0669,X	
 $8190	STA TrackPointer		
 $8192	LDA $0673,X	
@@ -253,17 +304,24 @@ $819A	LDA TrackPointer
 $819C	STA $0669,X	
 $819F	LDA TrackPointer+1		
 $81A1	STA $0673,X	
+
+; done processing this track
 $81A4	DEX		
 $81A5	BPL $815A	
+
+; check tracks 0-4 (SFX)
 $81A7	LDX #$04	
-$81A9	LDA $0641,X	
+$81A9	LDA TrackCounter,X	
 $81AC	BNE $81B8	
+
+; if no SFX is playing on this track, ???
 $81AE	LDA #$FF	
 $81B0	STA $06DC,X	
 $81B3	LDA #$00	
 $81B5	STA $06D7,X	
 $81B8	DEX		
 $81B9	BPL $81A9	
+; do something with SFX
 $81BB	JSR $808F
 
 $81BE	LDA SFXPlaying	
@@ -365,6 +423,10 @@ $8248	RTS
 ;---------------------------------------------------------------------------
 
 $8249	.byte $08
+
+; used on noise tracks to distinguish sample notes from actual noise notes
+; and on square/triangle tracks to ???
+SampleBit:
 $824A	.byte $10 
 
 TrackPlayContinue:
@@ -383,25 +445,49 @@ $8254	CMP #$E0
 $8256	BNE $825B	
 $8258	JMP DoTrackCommand	
 
-$825B	LDA $0637,X	
-$825E	CMP #$0C	
-$8260	BNE $8288	
+; otherwise, if this track is on the noise channel...
+
+$825B	LDA TrackVoice,X	
+$825E	CMP #NoiseChn	
+$8260	BNE DoNormalVoice
+
+; if bit 4 is set, this is a DPCM note
+
 $8262	LDA (TrackPointer),Y	
-$8264	BIT $824A	
-$8267	BNE $8276	
+$8264	BIT SampleBit	
+$8267	BNE DoSample	
+
+; if low nibble = $F, do something else
+
 $8269	AND #$0F	
 $826B	CMP #$0F	
 $826D	BEQ $82A1	
+
+; otherwise, set the noise period/loop ($400E)
+
 $826F	LDY #$0E	
-$8271	STA ($24),Y	
+$8271	STA (RegistersPtr),Y	
 $8273	JMP $82B8	
+
+; DPCM sample notes
+; low nibble = sample frequency
+
+DoSample:
+
 $8276	AND #$0F	
 $8278	STA $4010	; [NES] Audio -> DPCM control
+
+; retrigger sample
 $827B	LDA #$0F	
 $827D	STA $4015	; [NES] IRQ status / Sound enable
 $8280	LDA #$1F	
 $8282	STA $4015	; [NES] IRQ status / Sound enable
 $8285	JMP $82B8	
+
+; Square and triangle notes
+
+DoNormalVoice:
+
 $8288	LDA (TrackPointer),Y	
 $828A	AND #$1F	
 $828C	CMP #$10	
@@ -410,9 +496,11 @@ $8290	BIT $824A
 $8293	BEQ $8297	
 $8295	ORA #$E0	
 $8297	CLC		
-$8298	ADC $0687,X	
+$8298	ADC TrackBaseNt,X	
 $829B	JSR $84E9	
-$829E	JMP $82B8	
+$829E	JMP $82B8
+
+	
 $82A1	JSR $8306	
 $82A4	PHA		
 $82A5	LDA $067D,X	
@@ -423,6 +511,9 @@ $82AF	PLA
 $82B0	BEQ $82B5	
 $82B2	JMP GetNextTrackByte	
 $82B5	JMP TrackPlayContinue	
+
+
+
 $82B8	JSR $8306	
 $82BB	PHA		
 $82BC	TAY		
@@ -450,6 +541,7 @@ $82E0	JSR $82E6
 $82E3	JMP $82AF	
 $82E6	LDA $06A5,X	
 $82E9	BMI $8305	
+
 $82EB	ASL A		
 $82EC	ASL A		
 $82ED	TAY		
@@ -476,86 +568,110 @@ $8317	LSR A
 $8318	LSR A		
 $8319	LSR A		
 $831A	LSR A		
-$831B	ADC $06AF,X	
+$831B	ADC TrackNoteLen,X	
 $831E	TAY		
 $831F	LDA $8955,Y	
-$8322	STA $0641,X	
+$8322	STA TrackCounter,X	
 $8325	RTS		
 ;---------------------------------------------------------------------------
 
 DoTrackCommand:
 
 ;---------------------------------------------------------------------------
-; Track command $F0
+; Track command $F0 - Set track volume (upper nibble of TrackVol,X)
+; 1 byte: new track volume (00-0F)
 ;---------------------------------------------------------------------------
 
 $8326	LDA (TrackPointer),Y	
 $8328	CMP #$F0	
 $832A	BNE TrackCommandF1	
 $832C	JSR GetNextTrackByte	
+
+SetTrackVolume:
+
 $832F	ASL A		
 $8330	ASL A		
 $8331	ASL A		
 $8332	ASL A		
 $8333	STA $13		
-$8335	LDA $069B,X	
+
+; set upper nibble of TrackVol to lower nibble of argument
+$8335	LDA TrackVol,X	
 $8338	AND #$0F	
 $833A	ORA $13		
-$833C	STA $069B,X	
+$833C	STA TrackVol,X	
 $833F	JSR $85F3	
 $8342	JMP TrackPlayContinue	
 
 ;---------------------------------------------------------------------------
-; Track command $F1
+; Track command $F1 - Increase/decrease track volume
+; 1 byte: volume increase (00-0F) or decrease (80-8F)
 ;---------------------------------------------------------------------------
 TrackCommandF1:
 
 $8345	CMP #$F1	
 $8347	BNE TrackCommandF2	
+
 $8349	JSR GetNextTrackByte	
 $834C	STA $13		
-$834E	LDA $069B,X	
+$834E	LDA TrackVol,X	
 $8351	LSR A		
 $8352	LSR A		
 $8353	LSR A		
 $8354	LSR A		
 $8355	CLC		
 $8356	ADC $13		
+
+; adding or subtracting?
 $8358	BIT $13		
 $835A	BMI $8362	
+
+; adding = clamp volume at $0F
 $835C	BCC $8366	
 $835E	LDA #$0F	
 $8360	BNE $8366	
+
+; subtracting = clamp volume at $00
 $8362	BCS $8366	
 $8364	LDA #$00	
-$8366	JMP $832F	
+
+$8366	JMP SetTrackVolume	
 
 ;---------------------------------------------------------------------------
-; Track command $F2
+; Track command $F2 - Set track quantization
+; 1 byte: length of notes in 6-frame increments ($01 = 6 frames, etc)
 ;---------------------------------------------------------------------------
 TrackCommandF2:
 
 $8369	CMP #$F2	
 $836B	BNE TrackCommandF3	
+
 $836D	JSR GetNextTrackByte	
 $8370	ASL A		
 $8371	STA $14		
 $8373	ASL A		
 $8374	ADC $14		
-$8376	STA $06AF,X	
+$8376	STA TrackNoteLen,X	
 $8379	JMP TrackPlayContinue	
 
 ;---------------------------------------------------------------------------
-; Track command $F3
+; Track command $F3 - Set track delay
+; 1 byte: frames to delay until next note
+; Ends playback on the track for this frame.
 ;---------------------------------------------------------------------------
 TrackCommandF3:
 
 $837C	CMP #$F3	
 $837E	BNE TrackCommandF4	
+
 $8380	JSR GetNextTrackByte	
-$8383	STA $0641,X	
+$8383	STA TrackCounter,X	
+
+; ???
 $8386	LDA #$FF	
 $8388	STA $067D,X	
+
+; increase track pointer but don't continue playing it for now
 $838B	JMP GetNextTrackByte	
 
 ;---------------------------------------------------------------------------
@@ -570,12 +686,14 @@ $8395	STA $0691,X
 $8398	JMP TrackPlayContinue
 
 ;---------------------------------------------------------------------------
-; Track command $F5
+; Track command $F5 - Transpose track
+; 1 byte: track base note (default $27)
 ;---------------------------------------------------------------------------
 TrackCommandF5:
 
 $839B	CMP #$F5	
 $839D	BNE TrackCommandF6	
+
 $839F	JSR GetNextTrackByte	
 $83A2	STA $0687,X	
 $83A5	JMP TrackPlayContinue	
@@ -587,6 +705,7 @@ TrackCommandF6:
 
 $83A8	CMP #$F6	
 $83AA	BNE TrackCommandF7	
+
 $83AC	JSR GetNextTrackByte	
 $83AF	STA $06A5,X	
 $83B2	BPL $83B7	
@@ -605,8 +724,11 @@ $83C1	STA $06B9,X
 $83C4	JMP TrackPlayContinue	
 
 ;---------------------------------------------------------------------------
-; Track command $E0
+; Track command $E0 - Select sample
+; 1 byte: DPCM sample address ($4012)
+; 1 byte: DPCM sample length  ($4013)
 ;---------------------------------------------------------------------------
+TrackCommandE0:
 
 $83C7	CMP #$E0	
 $83C9	BNE TrackCommandE2	
@@ -626,7 +748,7 @@ $83DC	BNE TrackCommandE3
 $83DE	JSR GetNextTrackByte	
 $83E1	PHA		
 $83E2	JSR GetNextTrackByte	
-$83E5	LDY $0637,X	
+$83E5	LDY TrackVoice,X	
 $83E8	INY		
 $83E9	INY		
 $83EA	INY		
@@ -636,72 +758,85 @@ $83EF	LDA $0627,Y
 $83F2	AND #$10	
 $83F4	EOR #$10	
 $83F6	ORA $13		
-$83F8	STA ($24),Y	
+$83F8	STA (RegistersPtr),Y	
 $83FA	PLA		
 $83FB	DEY		
-$83FC	STA ($24),Y	
+$83FC	STA (RegistersPtr),Y	
 $83FE	JSR $82E6	
 $8401	JMP TrackPlayContinue	
 
 ;---------------------------------------------------------------------------
-; Track command $E3
+; Track command $E3 - Increase/decrease channel timer
+; 1 byte: increase amount
 ;---------------------------------------------------------------------------
 TrackCommandE3:
 
 $8404	CMP #$E3	
 $8406	BNE TrackCommandE1	
+
 $8408	JSR GetNextTrackByte	
 $840B	BPL $840E	
+; if negative, decrease Y (00 -> FF) so the high byte of the timer
+; (and the length counter) gets decreased too
 $840D	DEY		
-$840E	JSR $8666	
+$840E	JSR ChangeChannelTimer	
 $8411	JMP TrackPlayContinue
 
 ;---------------------------------------------------------------------------
-; Track command $E1
+; Track command $E1 - write to $0601
+; 1 byte: value to write
+; this address is never read by the entire game?
 ;---------------------------------------------------------------------------
 TrackCommandE1:
 	
 $8414	CMP #$E1	
 $8416	BNE TrackCommandFF	
+
 $8418	JSR GetNextTrackByte	
 $841B	STA $0601	
 $841E	JMP TrackPlayContinue
 
 ;---------------------------------------------------------------------------
-; Track command $FF
+; Track command $FF - End of track
 ;---------------------------------------------------------------------------
 TrackCommandFF:
 	
 $8421	CMP #$FF	
 $8423	BNE MoreTrackCommands	
+
 $8425	LDA #$00	
-$8427	STA $0641,X	
+$8427	STA TrackCounter,X	
 $842A	STA $065F,X	
 $842D	JSR $85E7	
 $8430	RTS		
 ;---------------------------------------------------------------------------
 
 ;---------------------------------------------------------------------------
-; Additional track commands
+; Additional track commands.
+; These are mostly position-based commands which use a stack to keep track
+; of position in the current track.
 ;---------------------------------------------------------------------------
 MoreTrackCommands:
 
-$8431	LDA $06C3,X	
-$8434	STA $26		
+; get the sequence stack position for this track
+$8431	LDA TrackStackPos,X	
+$8434	STA StackPos		
 $8436	JSR DoOtherTrackCommand	
-$8439	LDA $26		
-$843B	STA $06C3,X	
-$843E	JMP $TrackPlay
+$8439	LDA StackPos		
+$843B	STA TrackStackPos,X	
+$843E	JMP TrackPlay
 
 DoOtherTrackCommand:
 
 ;---------------------------------------------------------------------------
-; Track command $F8
+; Track command $F8 - set track pointer
+; 2 bytes: pointer to new data for this track
 ;---------------------------------------------------------------------------
 
 $8441	LDA (TrackPointer),Y	
 $8443	CMP #$F8	
 $8445	BNE TrackCommandFA	
+
 $8447	INY		
 $8448	LDA (TrackPointer),Y	
 $844A	PHA		
@@ -714,25 +849,34 @@ $8453	RTS
 ;---------------------------------------------------------------------------
 
 ;---------------------------------------------------------------------------
-; Track command $FA
+; Track command $FA - play sequence
+; 2 bytes: pointer to sequence
+; this is like calling a subroutine, but for music.
+; they can be nested, too (be careful with the stack size!)
 ;---------------------------------------------------------------------------
 TrackCommandFA:
 
 $8454	CMP #$FA	
 $8456	BNE TrackCommandFB	
+
 $8458	JSR GetNextTrackByte	
 $845B	PHA		
 $845C	JSR GetNextTrackByte	
 $845F	PHA		
 $8460	JSR GetNextTrackByte	
-$8463	LDY $26		
+
+; push the address to the next byte in the track (after this command)
+; onto the track's stack
+$8463	LDY StackPos		
 $8465	LDA TrackPointer+1		
 $8467	DEY		
-$8468	STA $06E1,Y	
+$8468	STA TrackStack,Y	
 $846B	LDA TrackPointer		
 $846D	DEY		
-$846E	STA $06E1,Y	
-$8471	STY $26		
+$846E	STA TrackStack,Y	
+$8471	STY StackPos	
+
+; and set the new track position to the given pointer	
 $8473	PLA		
 $8474	STA TrackPointer+1		
 $8476	PLA		
@@ -741,60 +885,75 @@ $8479	RTS
 ;---------------------------------------------------------------------------
 
 ;---------------------------------------------------------------------------
-; Track command $FB
+; Track command $FB - end sequence
+; return from the current sequence to the track/sequence that started it.
 ;---------------------------------------------------------------------------
 TrackCommandFB:
 
 $847A	CMP #$FB	
 $847C	BNE TrackCommandFC	
-$847E	LDY $26		
-$8480	LDA $06E1,Y	
+
+$847E	LDY StackPos		
+; pull the new track position off of the stack
+$8480	LDA TrackStack,Y	
 $8483	STA TrackPointer		
 $8485	INY		
-$8486	LDA $06E1,Y	
+$8486	LDA TrackStack,Y	
 $8489	STA TrackPointer+1		
 $848B	INY		
-$848C	STY $26		
+$848C	STY StackPos		
 $848E	RTS		
 ;---------------------------------------------------------------------------
 
 ;---------------------------------------------------------------------------
-; Track command $FC
+; Track command $FC - loop start
+; 1 byte: loop count
 ;---------------------------------------------------------------------------
 TrackCommandFC:
 
 $848F	CMP #$FC	
 $8491	BNE TrackCommandFD	
+
 $8493	JSR GetNextTrackByte	
 $8496	PHA		
 $8497	JSR GetNextTrackByte	
-$849A	LDY $26		
+
+; push the next byte in the track (after this command)
+; onto the track's stack. this is where the loop will return to
+$849A	LDY StackPos		
 $849C	LDA TrackPointer+1		
 $849E	DEY		
-$849F	STA $06E1,Y	
+$849F	STA TrackStack,Y	
 $84A2	LDA TrackPointer		
 $84A4	DEY		
-$84A5	STA $06E1,Y	
+$84A5	STA TrackStack,Y	
+
+; and push the loop count too
 $84A8	PLA		
 $84A9	DEY		
-$84AA	STA $06E1,Y	
-$84AD	STY $26		
+$84AA	STA TrackStack,Y	
+$84AD	STY StackPos		
 $84AF	RTS		
 ;---------------------------------------------------------------------------
 
 ;---------------------------------------------------------------------------
-; Track command $FD
+; Track command $FD - loop end
 ;---------------------------------------------------------------------------
 TrackCommandFD:
 
 $84B0	CMP #$FD	
 $84B2	BNE TrackCommandFE	
-$84B4	LDY $26		
-$84B6	LDA $06E1,Y	
+
+; decrease the loop counter
+$84B4	LDY StackPos		
+$84B6	LDA TrackStack,Y	
 $84B9	SEC		
 $84BA	SBC #$01	
-$84BC	STA $06E1,Y	
+$84BC	STA TrackStack,Y	
+; if it's 0, the loop is over
 $84BF	BEQ $84CC	
+
+; otherwise, go back to the beginning of the loop
 $84C1	LDA $06E2,Y	
 $84C4	STA TrackPointer		
 $84C6	LDA $06E3,Y	
@@ -802,20 +961,25 @@ $84C9	STA TrackPointer+1
 $84CB	RTS		
 ;---------------------------------------------------------------------------
 
-$84CC	INC $26		
-$84CE	INC $26		
-$84D0	INC $26		
+; pop the loop position and counter off of the stack and resume playback
+$84CC	INC StackPos		
+$84CE	INC StackPos		
+$84D0	INC StackPos		
 $84D2	JMP GetNextTrackByte	
 
 ;---------------------------------------------------------------------------
-; Track command $FE
+; Track command $FE - skip one byte
 ;---------------------------------------------------------------------------
 TrackCommandFE:
 
 $84D5	CMP #$FE	
-$84D7	BNE $84DF	
+$84D7	BNE EndOtherCommands	
+
 $84D9	JSR GetNextTrackByte	
-$84DC	JMP GetNextTrackByte	
+$84DC	JMP GetNextTrackByte
+
+EndOtherCommands:
+	
 $84DF	RTS		
 ;---------------------------------------------------------------------------
 
@@ -843,17 +1007,17 @@ $84FC	LDA ($1C),Y
 $84FE	STA $13		
 $8500	INY		
 $8501	LDA ($1C),Y	
-$8503	LDY $0637,X	
+$8503	LDY TrackVoice,X	
 $8506	INY		
 $8507	INY		
-$8508	STA ($24),Y	
+$8508	STA (RegistersPtr),Y	
 $850A	INY		
 $850B	LDA $0627,Y	
 $850E	AND #$10	
 $8510	EOR #$10	
 $8512	ORA $851A,X	
 $8515	ORA $13		
-$8517	STA ($24),Y	
+$8517	STA (RegistersPtr),Y	
 $8519	RTS		
 ;---------------------------------------------------------------------------
 
@@ -888,7 +1052,7 @@ $8550	JMP GetNextTrackByte
 $8553	CMP #$20	
 $8555	BNE $856D	
 $8557	JSR $8648	
-$855A	JSR $8666	
+$855A	JSR ChangeChannelTimer	
 $855D	LDY #$00	
 $855F	LDA (TrackPointer),Y	
 $8561	AND #$10	
@@ -906,7 +1070,7 @@ $857A	BNE $8599
 $857C	JSR $8648	
 $857F	CLC		
 $8580	STA $13		
-$8582	LDA $069B,X	
+$8582	LDA TrackVol,X	
 $8585	AND #$0F	
 $8587	ADC $13		
 $8589	BPL $858D	
@@ -920,16 +1084,16 @@ $8599	CMP #$80
 $859B	BNE $85B6	
 $859D	LDA (TrackPointer),Y	
 $859F	AND #$0F	
-$85A1	LDY $0637,X	
+$85A1	LDY TrackVoice,X	
 $85A4	ROR A		
 $85A5	ROR A		
 $85A6	ROR A		
 $85A7	AND #$C0	
 $85A9	STA $13		
-$85AB	LDA ($24),Y	
+$85AB	LDA (RegistersPtr),Y	
 $85AD	AND #$3F	
 $85AF	ORA $13		
-$85B1	STA ($24),Y	
+$85B1	STA (RegistersPtr),Y	
 $85B3	JMP $855D	
 $85B6	CMP #$E0	
 $85B8	BNE $85E6	
@@ -937,9 +1101,9 @@ $85BA	LDA (TrackPointer),Y
 $85BC	CMP #$F0	
 $85BE	BNE $85CC	
 $85C0	JSR GetNextTrackByte	
-$85C3	LDY $0637,X	
+$85C3	LDY TrackVoice,X	
 $85C6	INY		
-$85C7	STA ($24),Y	
+$85C7	STA (RegistersPtr),Y	
 $85C9	JMP $853E	
 $85CC	CMP #$FF	
 $85CE	BNE $85D6	
@@ -949,28 +1113,28 @@ $85D5	RTS
 ;---------------------------------------------------------------------------
 
 $85D6	LDA $06CD,X	
-$85D9	STA $26		
+$85D9	STA StackPos		
 $85DB	JSR $8441	
-$85DE	LDA $26		
+$85DE	LDA StackPos		
 $85E0	STA $06CD,X	
 $85E3	JMP $8541	
 $85E6	RTS		
 ;---------------------------------------------------------------------------
 
 $85E7	STA $13		
-$85E9	LDA $069B,X	
+$85E9	LDA TrackVol,X	
 $85EC	AND #$F0	
 $85EE	ORA $13		
-$85F0	STA $069B,X	
+$85F0	STA TrackVol,X	
 $85F3	LDA #$FF	
 $85F5	SEC		
-$85F6	SBC $069B,X	
+$85F6	SBC TrackVol,X	
 $85F9	LSR A		
 $85FA	LSR A		
 $85FB	LSR A		
 $85FC	LSR A		
 $85FD	STA $13		
-$85FF	LDA $069B,X	
+$85FF	LDA TrackVol,X	
 $8602	AND #$0F	
 $8604	SEC		
 $8605	SBC $13		
@@ -994,14 +1158,14 @@ $8621	ADC $13
 $8623	BPL $8627	
 $8625	LDA #$00	
 $8627	STA $13		
-$8629	LDY $0637,X	
+$8629	LDY TrackVoice,X	
 $862C	CPY #$08	
 $862E	BEQ $863B	
-$8630	LDA ($24),Y	
+$8630	LDA (RegistersPtr),Y	
 $8632	AND #$C0	
 $8634	ORA #$30	
 $8636	ORA $13		
-$8638	STA ($24),Y	
+$8638	STA (RegistersPtr),Y	
 $863A	RTS		
 ;---------------------------------------------------------------------------
 
@@ -1010,7 +1174,7 @@ $863D	CMP #$04
 $863F	LDA #$00	
 $8641	BCC $8645	
 $8643	LDA #$FF	
-$8645	STA ($24),Y	
+$8645	STA (RegistersPtr),Y	
 $8647	RTS		
 ;---------------------------------------------------------------------------
 
@@ -1034,17 +1198,27 @@ $8664	DEY
 $8665	RTS		
 ;---------------------------------------------------------------------------
 
+;---------------------------------------------------------------------------
+; add a 16-bit signed value to the timer/length counter for the channel
+; used by this track ($4002, $4006, $400A, and maybe $400E)
+; A = lower byte, Y = upper byte
+;---------------------------------------------------------------------------
+
+ChangeChannelTimer:
+
 $8666	STY $13		
-$8668	LDY $0637,X	
+$8668	LDY TrackVoice,X	
 $866B	CLC		
 $866C	INY		
 $866D	INY		
-$866E	ADC ($24),Y	
-$8670	STA ($24),Y	
+
+; add A to channel's timer / length counter ($4002-4003)
+$866E	ADC (RegistersPtr),Y	
+$8670	STA (RegistersPtr),Y	
 $8672	INY		
 $8673	LDA $13		
-$8675	ADC ($24),Y	
-$8677	STA ($24),Y	
+$8675	ADC (RegistersPtr),Y	
+$8677	STA (RegistersPtr),Y	
 $8679	RTS		
 ;---------------------------------------------------------------------------
 
