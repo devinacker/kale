@@ -7,6 +7,9 @@
 
 NumTracks    =	$01
 
+temp         =	$13
+temp2        =	$14
+
 SongPointer  =	$18
 TrackPointer =	$22
 RegistersPtr =	$24
@@ -523,21 +526,21 @@ $82BD	LDA #$FF
 $82BF	STA $067D,X	
 $82C2	LDA $0691,X	
 $82C5	BEQ $82E0	
-$82C7	STA $13		
+$82C7	STA temp		
 $82C9	TXA		
 $82CA	PHA		
 $82CB	LDA #$00	
 $82CD	TAX		
 $82CE	CLC		
-$82CF	ADC $13		
+$82CF	ADC temp		
 $82D1	BCC $82D4	
 $82D3	INX		
 $82D4	DEY		
 $82D5	BNE $82CE	
-$82D7	STX $13		
+$82D7	STX temp		
 $82D9	PLA		
 $82DA	TAX		
-$82DB	LDA $13		
+$82DB	LDA temp		
 $82DD	STA $067D,X	
 $82E0	JSR $82E6	
 $82E3	JMP $82AF	
@@ -595,12 +598,12 @@ $832F	ASL A
 $8330	ASL A		
 $8331	ASL A		
 $8332	ASL A		
-$8333	STA $13		
+$8333	STA temp		
 
 ; set upper nibble of TrackVol to lower nibble of argument
 $8335	LDA TrackVol,X	
 $8338	AND #$0F	
-$833A	ORA $13		
+$833A	ORA temp		
 $833C	STA TrackVol,X	
 $833F	JSR $85F3	
 $8342	JMP TrackPlayContinue	
@@ -615,17 +618,17 @@ $8345	CMP #$F1
 $8347	BNE TrackCommandF2	
 
 $8349	JSR GetNextTrackByte	
-$834C	STA $13		
+$834C	STA temp		
 $834E	LDA TrackVol,X	
 $8351	LSR A		
 $8352	LSR A		
 $8353	LSR A		
 $8354	LSR A		
 $8355	CLC		
-$8356	ADC $13		
+$8356	ADC temp		
 
 ; adding or subtracting?
-$8358	BIT $13		
+$8358	BIT temp		
 $835A	BMI $8362	
 
 ; adding = clamp volume at $0F
@@ -650,9 +653,9 @@ $836B	BNE TrackCommandF3
 
 $836D	JSR GetNextTrackByte	
 $8370	ASL A		
-$8371	STA $14		
+$8371	STA temp2		
 $8373	ASL A		
-$8374	ADC $14		
+$8374	ADC temp2		
 $8376	STA TrackNoteLen,X	
 $8379	JMP TrackPlayContinue	
 
@@ -755,11 +758,11 @@ $83E8	INY
 $83E9	INY		
 $83EA	INY		
 $83EB	AND #$0F	
-$83ED	STA $13		
+$83ED	STA temp		
 $83EF	LDA $0627,Y	
 $83F2	AND #$10	
 $83F4	EOR #$10	
-$83F6	ORA $13		
+$83F6	ORA temp		
 $83F8	STA (RegistersPtr),Y	
 $83FA	PLA		
 $83FB	DEY		
@@ -1006,7 +1009,7 @@ $84F9	PLA
 $84FA	ASL A		
 $84FB	TAY		
 $84FC	LDA ($1C),Y	
-$84FE	STA $13		
+$84FE	STA temp		
 $8500	INY		
 $8501	LDA ($1C),Y	
 $8503	LDY TrackVoice,X	
@@ -1018,7 +1021,7 @@ $850B	LDA $0627,Y
 $850E	AND #$10	
 $8510	EOR #$10	
 $8512	ORA $851A,X	
-$8515	ORA $13		
+$8515	ORA temp		
 $8517	STA (RegistersPtr),Y	
 $8519	RTS		
 ;---------------------------------------------------------------------------
@@ -1071,10 +1074,10 @@ $8578	CMP #$60
 $857A	BNE $8599	
 $857C	JSR $8648	
 $857F	CLC		
-$8580	STA $13		
+$8580	STA temp		
 $8582	LDA TrackVol,X	
 $8585	AND #$0F	
-$8587	ADC $13		
+$8587	ADC temp		
 $8589	BPL $858D	
 $858B	LDA #$00	
 $858D	CMP #$10	
@@ -1091,10 +1094,10 @@ $85A4	ROR A
 $85A5	ROR A		
 $85A6	ROR A		
 $85A7	AND #$C0	
-$85A9	STA $13		
+$85A9	STA temp		
 $85AB	LDA (RegistersPtr),Y	
 $85AD	AND #$3F	
-$85AF	ORA $13		
+$85AF	ORA temp		
 $85B1	STA (RegistersPtr),Y	
 $85B3	JMP $855D	
 $85B6	CMP #$E0	
@@ -1123,10 +1126,10 @@ $85E3	JMP $8541
 $85E6	RTS		
 ;---------------------------------------------------------------------------
 
-$85E7	STA $13		
+$85E7	STA temp		
 $85E9	LDA TrackVol,X	
 $85EC	AND #$F0	
-$85EE	ORA $13		
+$85EE	ORA temp		
 $85F0	STA TrackVol,X	
 $85F3	LDA #$FF	
 $85F5	SEC		
@@ -1135,14 +1138,14 @@ $85F9	LSR A
 $85FA	LSR A		
 $85FB	LSR A		
 $85FC	LSR A		
-$85FD	STA $13		
+$85FD	STA temp		
 $85FF	LDA TrackVol,X	
 $8602	AND #$0F	
 $8604	SEC		
-$8605	SBC $13		
+$8605	SBC temp		
 $8607	BPL $860B	
 $8609	LDA #$00	
-$860B	STA $13		
+$860B	STA temp		
 $860D	LDY #$00	
 $860F	CPX #$05	
 $8611	BCC $8614	
@@ -1156,22 +1159,22 @@ $861C	LSR A
 $861D	LSR A		
 $861E	EOR #$FF	
 $8620	SEC		
-$8621	ADC $13		
+$8621	ADC temp		
 $8623	BPL $8627	
 $8625	LDA #$00	
-$8627	STA $13		
+$8627	STA temp		
 $8629	LDY TrackVoice,X	
 $862C	CPY #$08	
 $862E	BEQ $863B	
 $8630	LDA (RegistersPtr),Y	
 $8632	AND #$C0	
 $8634	ORA #$30	
-$8636	ORA $13		
+$8636	ORA temp		
 $8638	STA (RegistersPtr),Y	
 $863A	RTS		
 ;---------------------------------------------------------------------------
 
-$863B	LDA $13		
+$863B	LDA temp		
 $863D	CMP #$04	
 $863F	LDA #$00	
 $8641	BCC $8645	
@@ -1208,7 +1211,7 @@ $8665	RTS
 
 ChangeChannelTimer:
 
-$8666	STY $13		
+$8666	STY temp		
 $8668	LDY TrackVoice,X	
 $866B	CLC		
 $866C	INY		
@@ -1218,7 +1221,7 @@ $866D	INY
 $866E	ADC (RegistersPtr),Y	
 $8670	STA (RegistersPtr),Y	
 $8672	INY		
-$8673	LDA $13		
+$8673	LDA temp		
 $8675	ADC (RegistersPtr),Y	
 $8677	STA (RegistersPtr),Y	
 $8679	RTS		
