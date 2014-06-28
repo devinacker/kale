@@ -9,7 +9,9 @@ NumTracks    =	$01
 
 SongPointer  =	$18
 TrackPointer =	$22
-RegistersPtr  =	$24
+RegistersPtr =	$24
+
+StackPos     =	$26
 
 SFXPlaying   =	$0604
 
