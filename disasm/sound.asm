@@ -46,6 +46,9 @@ NoiseChn     =	$0C
 ; if == $00 then track is not in use
 TrackCounter =	$0641
 
+TrackPtrsL   =	$064B
+TrackPtrsH   =	$0655
+
 TrackBaseNt  =	$0687
 
 ; high nibble = track volume
@@ -164,6 +167,9 @@ $80C4	.byte $00, $00, $00, $00
 ; noise init
 $80C8	.byte $30, $00, $00, $FF
 
+InitTrack:
+
+; set up default values for track
 $80CC	LDA #$27	
 $80CE	STA TrackBaseNt,X	
 $80D1	LDA #$00	
@@ -174,18 +180,25 @@ $80DC	STA TrackNoteLen,X
 $80DF	STA $06B9,X	
 $80E2	LDA $8724,X	
 $80E5	STA TrackStackPos,X	
+
+; get starting position for track
 $80E8	INY		
 $80E9	LDA (SongPointer),Y	
-$80EB	STA $064B,X	
+$80EB	STA TrackPtrsL,X	
 $80EE	INY		
 $80EF	LDA (SongPointer),Y	
-$80F1	STA $0655,X	
+$80F1	STA TrackPtrsH,X	
+
+; and which channel this track uses
 $80F4	INY		
 $80F5	LDA (SongPointer),Y	
 $80F7	STA TrackVoice,X	
+
+; indicate that something's playing on this track
 $80FA	LDA #$01	
 $80FC	STA TrackCounter,X	
 $80FF	STA $067D,X	
+
 $8102	DEC NumTracks		
 $8104	RTS		
 ;---------------------------------------------------------------------------
@@ -199,18 +212,18 @@ MusicInit:
 
 $8105	PHA		
 
-; clear delay(?) for tracks 5-9 (music)
+; clear counter for tracks 5-9 (music)
 
 $8106	LDX #$04	
 $8108	LDA #$00	
-$810A	STA $0646,X	
+$810A	STA TrackCounter+5,X	
 $810D	DEX		
 $810E	BPL $8108	
 
 ; init register values for all channels
 
 $8110	LDX #$0F	
-$8112	LDA $ChannelInit,X	
+$8112	LDA ChannelInit,X	
 $8115	STA RegistersMus,X	
 $8118	DEX		
 $8119	BPL $8112
@@ -242,12 +255,13 @@ $813B	LDY #$00
 $813D	LDA (SongPointer),Y	
 $813F	STA NumTracks		
 
-; if nothing is playing on this track, then ???
+; if nothing is playing on this track, then initialize it
 
 $8141	LDX #$09	
 $8143	LDA TrackCounter,X	
 $8146	BNE $814D	
-$8148	JSR $80CC	
+$8148	JSR InitTrack	
+; no more tracks? stop initializing any
 $814B	BEQ $8152	
 $814D	DEX		
 $814E	CPX #$04	
@@ -283,15 +297,15 @@ $8169	DEC TrackCounter,X
 $816C	BNE $8185	
 
 ; current note/rest has ended, read the next part of the track
-$816E	LDA $064B,X	
+$816E	LDA TrackPtrsL,X	
 $8171	STA TrackPointer	; $22	
-$8173	LDA $0655,X	
+$8173	LDA TrackPtrsH,X	
 $8176	STA TrackPointer+1	; $23	
 $8178	JSR TrackPlay	; $824E
 $817B	LDA TrackPointer		
-$817D	STA $064B,X	
+$817D	STA TrackPtrsL,X	
 $8180	LDA TrackPointer+1		
-$8182	STA $0655,X	
+$8182	STA TrackPtrsH,X	
 
 ; a note/rest is still going (or now going) on this track...
 $8185	JSR $8524	
