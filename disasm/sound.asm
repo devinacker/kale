@@ -63,6 +63,9 @@ TrackBaseNt  =	$0687
 ; low nibble = current note volume
 TrackVol     =	$069B
 
+; current instrument number
+TrackInstr   =	$06A5
+
 ; length of a track's notes in increments of 6 frames
 TrackNoteLen =	$06AF
 
@@ -213,7 +216,7 @@ $80CE	STA TrackBaseNt,X
 $80D1	LDA #$00	
 $80D3	STA $0691,X	
 $80D6	STA TrackVol,X	
-$80D9	STA $06A5,X	
+$80D9	STA TrackInstr,X	
 $80DC	STA TrackNoteLen,X	
 $80DF	STA $06B9,X	
 $80E2	LDA $8724,X	
@@ -484,7 +487,8 @@ FourBitSign:
 $8249	.byte $08
 
 ; used on noise tracks to distinguish sample notes from actual noise notes
-; and on square/triangle tracks to ???
+; and in sign-extending five bit values
+FiveBitSign:
 SampleBit:
 $824A	.byte $10 
 
@@ -547,19 +551,24 @@ $8285	JMP $82B8
 
 DoNormalVoice:
 
+; get five bit note value
 $8288	LDA (TrackPointer),Y	
 $828A	AND #$1F	
 $828C	CMP #$10	
 $828E	BEQ $82A1	
-$8290	BIT $824A	
+
+; sign extend to 8 bits
+$8290	BIT FiveBitSign	
 $8293	BEQ $8297	
 $8295	ORA #$E0	
+
+; add track's base note
 $8297	CLC		
 $8298	ADC TrackBaseNt,X	
 $829B	JSR $84E9	
 $829E	JMP $82B8
 
-	
+; note value $10 (minimum) = ??
 $82A1	JSR $8306	
 $82A4	PHA		
 $82A5	LDA $067D,X	
@@ -596,10 +605,17 @@ $82D9	PLA
 $82DA	TAX		
 $82DB	LDA temp		
 $82DD	STA $067D,X	
-$82E0	JSR $82E6	
+$82E0	JSR SetInstrumentPtr	
 $82E3	JMP $82AF	
-$82E6	LDA $06A5,X	
+
+SetInstrumentPtr:
+
+; if bit 7 of the instrument number is enabled, then tied notes are enabled
+; and the instrument should NOT be restarted on each note
+$82E6	LDA TrackInstr,X	
 $82E9	BMI $8305	
+
+RestartInstrument:
 
 $82EB	ASL A		
 $82EC	ASL A		
@@ -758,7 +774,9 @@ $83A2	STA $0687,X
 $83A5	JMP TrackPlayContinue	
 
 ;---------------------------------------------------------------------------
-; Track command $F6
+; Track command $F6 - Set instrument
+; 1 byte: instrument number (00 - 7F)
+; $80+ = enable tied notes (don't restart instrument on every note)
 ;---------------------------------------------------------------------------
 TrackCommandF6:
 
@@ -766,9 +784,9 @@ $83A8	CMP #$F6
 $83AA	BNE TrackCommandF7	
 
 $83AC	JSR GetNextTrackByte	
-$83AF	STA $06A5,X	
+$83AF	STA TrackInstr,X	
 $83B2	BPL $83B7	
-$83B4	JSR $82EB	
+$83B4	JSR RestartInstrument	
 $83B7	JMP TrackPlayContinue
 
 ;---------------------------------------------------------------------------
@@ -798,9 +816,8 @@ $83D4	STA $4013	; [NES] Audio -> DPCM data length
 $83D7	JMP TrackPlayContinue	
 
 ;---------------------------------------------------------------------------
-; Track command $E2
-; 1 byte: ???
-; 1 byte: ??? 
+; Track command $E2 - set raw pitch value
+; 2 bytes: new pitch (12 bits)
 ;---------------------------------------------------------------------------
 TrackCommandE2:
 
@@ -817,16 +834,20 @@ $83EA	INY
 $83EB	AND #$0F	
 $83ED	STA temp
 
-; get 
+; get existing length counter from whatever is playing on this channel
 $83EF	LDA RegistersOld,Y	
 $83F2	AND #$10	
 $83F4	EOR #$10	
+; add high nibble of timer value
 $83F6	ORA temp		
 $83F8	STA (RegistersPtr),Y	
+; get low nibble of timer value
 $83FA	PLA		
 $83FB	DEY		
 $83FC	STA (RegistersPtr),Y	
-$83FE	JSR $82E6	
+
+; trigger the current instrument
+$83FE	JSR SetInstrumentPtr	
 $8401	JMP TrackPlayContinue	
 
 ;---------------------------------------------------------------------------
@@ -1096,7 +1117,7 @@ $8529	CMP #$FF
 $852B	BEQ $853D	
 $852D	DEC $067D,X	
 $8530	BNE $853D	
-$8532	LDA $06A5,X	
+$8532	LDA TrackInstr,X	
 $8535	ASL A		
 $8536	ASL A		
 $8537	TAY		
@@ -1270,7 +1291,7 @@ $85D2	STA InstrCounter,X
 $85D5	RTS		
 ;---------------------------------------------------------------------------
 
-; $F8 - FF: same as for instrument position commands
+; $F8 - FF: same as for track position commands
 $85D6	LDA InstrStackPos,X	
 $85D9	STA StackPos		
 $85DB	JSR DoOtherTrackCommand	
@@ -1381,10 +1402,17 @@ $8655	DEY
 $8656	RTS		
 ;---------------------------------------------------------------------------
 
+;---------------------------------------------------------------------------
+; Get a five-bit signed value from the current track (instrument) position.
+; The value is sign-extended to 16 bits (with the upper byte in Y)
+;---------------------------------------------------------------------------
+
+GetFiveBitSigned:
+
 $8657	LDY #$00	
 $8659	LDA (TrackPointer),Y	
 $865B	AND #$1F	
-$865D	BIT $824A	
+$865D	BIT FiveBitSign	
 $8660	BEQ $8665	
 $8662	ORA #$E0	
 $8664	DEY		
