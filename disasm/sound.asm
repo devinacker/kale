@@ -16,6 +16,8 @@ RegistersPtr =	$24
 
 StackPos     =	$26
 
+SFXVolume    =	$0602
+MusicVolume  =	$0603
 SFXPlaying   =	$0604
 
 RegistersSFX =	$0607
@@ -45,9 +47,15 @@ NoiseChn     =	$0C
 ; duration in frames of the current note/rest on this track
 ; if == $00 then track is not in use
 TrackCounter =	$0641
+; same thing but for instruments
+InstrCounter =	$065F
 
 TrackPtrsL   =	$064B
 TrackPtrsH   =	$0655
+
+; pointers to the current instrument data
+TrackInstrL  =	$0669
+TrackInstrH  =	$0673
 
 TrackBaseNt  =	$0687
 
@@ -59,34 +67,59 @@ TrackVol     =	$069B
 TrackNoteLen =	$06AF
 
 ; position of track's sequence/loop stack
-TrackStackPos = $06C3
+TrackStackPos =	$06C3
+; same thing for instruments
+InstrStackPos =	$06CD
 
 TrackStack    = $06E1
 
 ;---------------------------------------------------------------------------
 ; code begins here
+; 
+; to play music:
+; LDA #nn ($FF to stop music)
+; JSR MusicInit
+;
+; to play SFX:
+; LDA #nn ($FF to stop SFX)
+; JSR SFXInit
+;
+; to stop all audio:
+; JSR SoundStop
+;
+; every frame, JSR MusicPlay to update music/sfx
 ;---------------------------------------------------------------------------
+
+SoundStop:
 
 $8000	LDX #$00	
 $8002	STX $4011	; [NES] Audio -> DPCM D/A data
 $8005	DEX		
-$8006	STX $0602	
-$8009	STX $0603	
+$8006	STX SFXVolume	
+$8009	STX MusicVolume	
 $800C	STX $0781	
 $800F	LDX #$0F	
 $8011	STX $4015	; [NES] IRQ status / Sound enable
+
 $8014	LDX #$0F	
 $8016	LDA #$0E	
-$8018	STA $0627,X	
+$8018	STA RegistersOld,X	
 $801B	DEX		
 $801C	BPL $8018	
+
+; stop music
 $801E	LDA #$FF	
 $8020	STA $0783	
-$8023	JSR $8105	
+$8023	JSR MusicInit	
+
+; stop sound effects
 $8026	LDA #$FF	
+
+SFXInit:
+
 $8028	TAX		
 $8029	BPL $802E	
-$802B	JMP $809E	
+$802B	JMP SFXStop	
 $802E	LDA SFXPlaying	
 $8031	BEQ $8055	
 $8033	AND $8AEF,X	
@@ -140,6 +173,9 @@ $809A	STA SFXPlaying
 $809D	RTS		
 ;---------------------------------------------------------------------------
 
+SFXStop:
+
+; stop channels 0-4 (SFX)
 $809E	LDX #$04	
 $80A0	LDA #$00	
 $80A2	STA TrackCounter,X	
@@ -148,8 +184,10 @@ $80A8	LDA #$FF
 $80AA	STA $06DC,X	
 $80AD	DEX		
 $80AE	BPL $80A0	
+
+; reinitialize SFX channel registers
 $80B0	LDX #$0F	
-$80B2	LDA $ChannelInit,X	
+$80B2	LDA ChannelInit,X	
 $80B5	STA RegistersSFX,X	
 $80B8	DEX		
 $80B9	BPL $80B2	
@@ -310,19 +348,19 @@ $8182	STA TrackPtrsH,X
 ; a note/rest is still going (or now going) on this track...
 $8185	JSR $8524	
 
-; decrease ??? counter
-$8188	DEC $065F,X	
+; decrease instrument step counter
+$8188	DEC InstrCounter,X	
 $818B	BNE $81A4
 	
-$818D	LDA $0669,X	
+$818D	LDA TrackInstrL,X	
 $8190	STA TrackPointer		
-$8192	LDA $0673,X	
+$8192	LDA TrackInstrH,X	
 $8195	STA TrackPointer+1		
 $8197	JSR $8541	
 $819A	LDA TrackPointer		
-$819C	STA $0669,X	
+$819C	STA TrackInstrL,X	
 $819F	LDA TrackPointer+1		
-$81A1	STA $0673,X	
+$81A1	STA TrackInstrH,X	
 
 ; done processing this track
 $81A4	DEX		
@@ -441,6 +479,8 @@ $8245	STA $4011	; [NES] Audio -> DPCM D/A data
 $8248	RTS		
 ;---------------------------------------------------------------------------
 
+; Used to test the signed-ness of 4-bit signed numbers in some instrument commands
+FourBitSign:
 $8249	.byte $08
 
 ; used on noise tracks to distinguish sample notes from actual noise notes
@@ -565,13 +605,13 @@ $82EB	ASL A
 $82EC	ASL A		
 $82ED	TAY		
 $82EE	LDA $88B1,Y	
-$82F1	STA $0669,X	
+$82F1	STA TrackInstrL,X	
 $82F4	LDA $88B2,Y	
-$82F7	STA $0673,X	
+$82F7	STA TrackInstrH,X	
 $82FA	LDA $872E,X	
-$82FD	STA $06CD,X	
+$82FD	STA InstrStackPos,X	
 $8300	LDA #$01	
-$8302	STA $065F,X	
+$8302	STA InstrCounter,X	
 $8305	RTS		
 ;---------------------------------------------------------------------------
 
@@ -623,7 +663,7 @@ $833F	JSR $85F3
 $8342	JMP TrackPlayContinue	
 
 ;---------------------------------------------------------------------------
-; Track command $F1 - Increase/decrease track volume
+; Track command $F1 - Volume slide
 ; 1 byte: volume increase (00-0F) or decrease (80-8F)
 ;---------------------------------------------------------------------------
 TrackCommandF1:
@@ -759,11 +799,14 @@ $83D7	JMP TrackPlayContinue
 
 ;---------------------------------------------------------------------------
 ; Track command $E2
+; 1 byte: ???
+; 1 byte: ??? 
 ;---------------------------------------------------------------------------
 TrackCommandE2:
 
 $83DA	CMP #$E2	
 $83DC	BNE TrackCommandE3	
+
 $83DE	JSR GetNextTrackByte	
 $83E1	PHA		
 $83E2	JSR GetNextTrackByte	
@@ -772,8 +815,10 @@ $83E8	INY
 $83E9	INY		
 $83EA	INY		
 $83EB	AND #$0F	
-$83ED	STA temp		
-$83EF	LDA $0627,Y	
+$83ED	STA temp
+
+; get 
+$83EF	LDA RegistersOld,Y	
 $83F2	AND #$10	
 $83F4	EOR #$10	
 $83F6	ORA temp		
@@ -785,8 +830,8 @@ $83FE	JSR $82E6
 $8401	JMP TrackPlayContinue	
 
 ;---------------------------------------------------------------------------
-; Track command $E3 - Increase/decrease channel timer
-; 1 byte: increase amount
+; Track command $E3 - pitch slide
+; 1 byte: slide amount (signed)
 ;---------------------------------------------------------------------------
 TrackCommandE3:
 
@@ -805,6 +850,8 @@ $8411	JMP TrackPlayContinue
 ; Track command $E1 - write to $0601
 ; 1 byte: value to write
 ; this address is never read by the entire game?
+; though it does come before $0602 / $0603 which are the global volume
+; settings for SFX and music, respectively
 ;---------------------------------------------------------------------------
 TrackCommandE1:
 	
@@ -825,8 +872,8 @@ $8423	BNE MoreTrackCommands
 
 $8425	LDA #$00	
 $8427	STA TrackCounter,X	
-$842A	STA $065F,X	
-$842D	JSR $85E7	
+$842A	STA InstrCounter,X	
+$842D	JSR UpdateVolume	
 $8430	RTS		
 ;---------------------------------------------------------------------------
 
@@ -1031,7 +1078,7 @@ $8506	INY
 $8507	INY		
 $8508	STA (RegistersPtr),Y	
 $850A	INY		
-$850B	LDA $0627,Y	
+$850B	LDA RegistersOld,Y	
 $850E	AND #$10	
 $8510	EOR #$10	
 $8512	ORA $851A,X	
@@ -1059,34 +1106,94 @@ $853A	JMP $82EE
 $853D	RTS		
 ;---------------------------------------------------------------------------
 
+;---------------------------------------------------------------------------
+; Instrument code
+;---------------------------------------------------------------------------
+
+InstrPlayContinue:
+
 $853E	JSR GetNextTrackByte	
+
+InstrPlay:
+
+; load the current instrument byte
 $8541	LDY #$00	
-$8543	LDA (TrackPointer),Y	
+$8543	LDA (TrackPointer),Y
+
+;---------------------------------------------------------------------------
+; Inst. commands 00-1F - set duration
+; How many frames to wait until the next command.
+;---------------------------------------------------------------------------
+
+; bytes $00 - $1F: set length
 $8545	AND #$E0	
-$8547	BNE $8553	
+$8547	BNE InstrCommand20	
 $8549	LDA (TrackPointer),Y	
 $854B	AND #$1F	
-$854D	STA $065F,X	
-$8550	JMP GetNextTrackByte	
+$854D	STA InstrCounter,X	
+$8550	JMP GetNextTrackByte
+
+;---------------------------------------------------------------------------
+; Inst. command $20-3F - pitch slide
+;
+; low nibble is slide amount, signed
+;
+; $2x - get more instrument bytes
+; $3x - wait for one frame
+;---------------------------------------------------------------------------
+
+InstrCommand20:
+
 $8553	CMP #$20	
-$8555	BNE $856D	
-$8557	JSR $8648	
+$8555	BNE InstrCommand40	
+
+; do pitch slide
+$8557	JSR GetFourBitSigned	
 $855A	JSR ChangeChannelTimer	
+
+; if bit 4 is clear, continue 
+ContinueOrNot:
+
 $855D	LDY #$00	
 $855F	LDA (TrackPointer),Y	
 $8561	AND #$10	
-$8563	BEQ $853E	
+$8563	BEQ InstrPlayContinue	
+; otherwise, wait one frame
 $8565	LDA #$01	
-$8567	STA $065F,X	
+$8567	STA InstrCounter,X	
 $856A	JMP GetNextTrackByte	
+
+;---------------------------------------------------------------------------
+; Inst. command $40-5F - set volume
+;
+; low nibble is new volume
+;
+; $4x - get more instrument bytes
+; $5x - wait for one frame
+;---------------------------------------------------------------------------
+
+InstrCommand40:
+
 $856D	CMP #$40	
-$856F	BNE $8578	
+$856F	BNE InstrCommand60	
 $8571	LDA (TrackPointer),Y	
 $8573	AND #$0F	
-$8575	JMP $8593	
+$8575	JMP UpdateVolumeAndContinue
+
+;---------------------------------------------------------------------------
+; Inst. command $60-7F - volume slide
+;
+; low nibble is slide amount, signed
+;
+; $6x - get more instrument bytes
+; $7x - wait for one frame
+;---------------------------------------------------------------------------
+
+InstrCommand60:
+
 $8578	CMP #$60	
-$857A	BNE $8599	
-$857C	JSR $8648	
+$857A	BNE InstrCommand80	
+$857C	JSR GetFourBitSigned	
 $857F	CLC		
 $8580	STA temp		
 $8582	LDA TrackVol,X	
@@ -1095,56 +1202,99 @@ $8587	ADC temp
 $8589	BPL $858D	
 $858B	LDA #$00	
 $858D	CMP #$10	
-$858F	BCC $8593	
+$858F	BCC UpdateVolumeAndContinue	
 $8591	LDA #$0F	
-$8593	JSR $85E7	
-$8596	JMP $855D	
+
+UpdateVolumeAndContinue:
+
+$8593	JSR UpdateVolume	
+$8596	JMP ContinueOrNot
+
+;---------------------------------------------------------------------------
+; Inst. command $80-9F - set pulse width
+;
+; low nibble: duty cycle ($4000 / $4004 bits 6-7)
+;
+; $8x - get more instrument bytes
+; $9x - wait for one frame
+;---------------------------------------------------------------------------
+
+InstrCommand80:
+
 $8599	CMP #$80	
-$859B	BNE $85B6	
+$859B	BNE InstrCommandF0	
 $859D	LDA (TrackPointer),Y	
 $859F	AND #$0F	
 $85A1	LDY TrackVoice,X	
+; move the low two bits of the command to the top bits
 $85A4	ROR A		
 $85A5	ROR A		
 $85A6	ROR A		
 $85A7	AND #$C0	
 $85A9	STA temp		
+; and combine with the other six bits in $4000/4003
 $85AB	LDA (RegistersPtr),Y	
 $85AD	AND #$3F	
 $85AF	ORA temp		
 $85B1	STA (RegistersPtr),Y	
-$85B3	JMP $855D	
+$85B3	JMP ContinueOrNot
+
+InstrCommandF0:
+	
 $85B6	CMP #$E0	
 $85B8	BNE $85E6	
 $85BA	LDA (TrackPointer),Y	
+
+;---------------------------------------------------------------------------
+; Inst. command $F0 - set pulse sweep
+;
+; next byte: pulse sweep settings ($4001 / $4005)
+;---------------------------------------------------------------------------
+
 $85BC	CMP #$F0	
 $85BE	BNE $85CC	
 $85C0	JSR GetNextTrackByte	
 $85C3	LDY TrackVoice,X	
 $85C6	INY		
 $85C7	STA (RegistersPtr),Y	
-$85C9	JMP $853E	
+$85C9	JMP InstrPlayContinue
+
+;---------------------------------------------------------------------------
+; Inst. command $FF - end instrument
+;---------------------------------------------------------------------------
+
 $85CC	CMP #$FF	
 $85CE	BNE $85D6	
 $85D0	LDA #$00	
-$85D2	STA $065F,X	
+$85D2	STA InstrCounter,X	
 $85D5	RTS		
 ;---------------------------------------------------------------------------
 
-$85D6	LDA $06CD,X	
+; $F8 - FF: same as for instrument position commands
+$85D6	LDA InstrStackPos,X	
 $85D9	STA StackPos		
-$85DB	JSR $8441	
+$85DB	JSR DoOtherTrackCommand	
 $85DE	LDA StackPos		
-$85E0	STA $06CD,X	
+$85E0	STA InstrStackPos,X	
 $85E3	JMP $8541	
 $85E6	RTS		
 ;---------------------------------------------------------------------------
 
+;---------------------------------------------------------------------------
+; Update track volume (A = new volume, 0 through F)
+;---------------------------------------------------------------------------
+
+UpdateVolume:
+
+; set the current note volume (lower nibble of TrackVol,X)
 $85E7	STA temp		
 $85E9	LDA TrackVol,X	
 $85EC	AND #$F0	
 $85EE	ORA temp		
 $85F0	STA TrackVol,X	
+
+; get the difference between current and maximum track volume
+; (upper nibble)
 $85F3	LDA #$FF	
 $85F5	SEC		
 $85F6	SBC TrackVol,X	
@@ -1152,7 +1302,9 @@ $85F9	LSR A
 $85FA	LSR A		
 $85FB	LSR A		
 $85FC	LSR A		
-$85FD	STA temp		
+$85FD	STA temp
+
+; subtract that difference from the current note volume		
 $85FF	LDA TrackVol,X	
 $8602	AND #$0F	
 $8604	SEC		
@@ -1160,13 +1312,15 @@ $8605	SBC temp
 $8607	BPL $860B	
 $8609	LDA #$00	
 $860B	STA temp		
+
+; factor in global volume ($0602 for SFX, $0603 for music)
 $860D	LDY #$00	
 $860F	CPX #$05	
 $8611	BCC $8614	
 $8613	INY		
 $8614	LDA #$FF	
 $8616	SEC		
-$8617	SBC $0602,Y	
+$8617	SBC SFXVolume,Y	
 $861A	LSR A		
 $861B	LSR A		
 $861C	LSR A		
@@ -1177,30 +1331,50 @@ $8621	ADC temp
 $8623	BPL $8627	
 $8625	LDA #$00	
 $8627	STA temp		
+
+; if this is the triangle channel (which doesn't have volume control),
+; handle the result differently
 $8629	LDY TrackVoice,X	
-$862C	CPY #$08	
-$862E	BEQ $863B	
+$862C	CPY #TriangleChn	
+$862E	BEQ CutTriangle	
+
 $8630	LDA (RegistersPtr),Y	
+; keep upper two bits
 $8632	AND #$C0	
+; enable length counter halt / constant volume
 $8634	ORA #$30	
 $8636	ORA temp		
 $8638	STA (RegistersPtr),Y	
 $863A	RTS		
 ;---------------------------------------------------------------------------
 
+; "volume control" for the triangle channel.
+CutTriangle:
+
 $863B	LDA temp		
+; volume below $04 = no triangle
 $863D	CMP #$04	
 $863F	LDA #$00	
 $8641	BCC $8645	
+; otherwise enable triangle
 $8643	LDA #$FF	
 $8645	STA (RegistersPtr),Y	
 $8647	RTS		
 ;---------------------------------------------------------------------------
 
+;---------------------------------------------------------------------------
+; Get a four-bit signed value from the current track (instrument) position.
+; The value is sign-extended to 16 bits (with the upper byte in Y)
+;---------------------------------------------------------------------------
+
+GetFourBitSigned:
+
 $8648	LDY #$00	
 $864A	LDA (TrackPointer),Y	
 $864C	AND #$0F	
-$864E	BIT $8249	
+
+; sign extend
+$864E	BIT FourBitSign	
 $8651	BEQ $8656	
 $8653	ORA #$F0	
 $8655	DEY		
