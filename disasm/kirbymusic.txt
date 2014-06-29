@@ -1,0 +1,109 @@
+init: $8105
+play: $8153
+
+---------------------------------------------------------------------------
+Music format:
+---------------------------------------------------------------------------
+
+$89A9 = song pointer low bytes
+$89E3 = song pointer high bytes
+$8A1D = song pointer bank bytes
+$??:A000 = start of tune 0 (vegetable valley overworld)
+
+The first byte is the number of tracks.
+From there, each track has 3 bytes consisting of a pointer to the track data (in A000-BFFF),
+and one byte for the channel:
+	- 00: square 1
+	- 04: square 2
+	- 08: triangle
+	- 0C: noise (also used for DPCM drum tracks?)
+
+Track data bytes:
+
+Bytes 00 through DF are note data.
+
+For noise/sample tracks:
+  lllspppp
+   \---------- l: note length (until next track data)
+     \-------- s: sample (1) or noise (0)
+        \----- p: sample pitch / noise period
+                  ($F = note off)
+
+For pulse/triangle tracks:
+  lllnnnnn
+   \---------- l: note length (until next track data)
+       \------ n: note (signed), relative to track's base note (default $27)
+                  ($10 = note off)
+                  change base note with command $F5
+              
+Note lengths 0 to 5 (bytes 0x to Ax, 1x to Bx) are relative to the current 
+track speed (command F2). Note length $6 (bytes Cx or Dx) means the next byte
+holds the actual length of the note in frames.
+ 
+Bytes greater than E0 are commands.
+
+0xE0: set sample address/length
+      (TODO: get list of usable pairs)
+0xE1: write next byte to $0601 (not used?)
+0xE2: set raw pitch (two bytes)
+0xE3: pitch slide (one byte, signed)
+0xF0: set volume (0-F)
+0xF1: volume slide (signed: 00-0F up, 80-8F down)
+0xF2: set track tempo to next byte * 6 (higher = slower)
+0xF3: delay track (next byte = frames to delay)
+0xF4: set track attack/decay? ($0691+X)
+0xF5: transpose track
+0xF6: set instrument (bit 7 set = enable tied notes)
+      if tied notes are enabled, playing a new note won't restart the instrument
+	  until the instrument is changed again.
+0xF7: select pitch table (next byte = table number)
+      unused? this seems to always be set to 00 in Kirby's Adventure
+	  (and there doesn't even seem to be more than one usable pitch table anyway)
+0xF8: jump to other track data (new track pointer)
+0xFA: play sequence (pointer)
+0xFB: end of sequence
+0xFC: loop start (next byte = loop count)
+0xFD: loop end
+0xFE: skip one byte of data
+0xFF: end of track
+
+Sequences are musical "subroutines" which can contain repeated musical phrases.
+They can be called from tracks or even other sequences.
+Both sequences and loops can be nested, though each track only has a limited amount of
+stack space available, so be careful.
+(Sequences use two bytes on the stack, loops use three)
+
+---------------------------------------------------------------------------
+Instrument data:
+---------------------------------------------------------------------------
+
+$88B1 = instrument pointer table (4 bytes each)
+
+Each instrument has a pointer to the instrument's "note on" phase, then one for "note off".
+
+Bytes 20 and up are commands that determine how an instrument sounds.
+
+These four take their parameter as the low nibble of the command byte.
+If 0x10 is added to the byte (0x20 -> 0x30), then one frame will pass before any more
+instrument commands are read.
+
+0x2x: pitch slide (signed)
+0x4x: set volume
+0x6x: volume slide (signed)
+0x8x: set pulse width (0 - 3)
+
+0xF0: set pulse sweep (next byte -> $4001 / $4005)
+
+The rest work the same way as the positional commands for track data, including sequences
+and loops:
+
+0xF8: jump to other instrument data (new instrument pointer)
+0xFA: play sequence (pointer)
+0xFB: end of sequence
+0xFC: loop start (next byte = loop count)
+0xFD: loop end
+0xFE: skip one byte of data
+0xFF: end of instrument
+
+Bytes 00 through 1F delay a number of frames until more instrument data is read.
+(00 = 256 frames, I think)

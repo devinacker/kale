@@ -57,6 +57,9 @@ TrackPtrsH   =	$0655
 TrackInstrL  =	$0669
 TrackInstrH  =	$0673
 
+; counter until an instrument transitions from note on to note off
+NoteOnCounter =	$067D
+
 TrackBaseNt  =	$0687
 
 ; high nibble = track volume
@@ -238,7 +241,7 @@ $80F7	STA TrackVoice,X
 ; indicate that something's playing on this track
 $80FA	LDA #$01	
 $80FC	STA TrackCounter,X	
-$80FF	STA $067D,X	
+$80FF	STA NoteOnCounter,X	
 
 $8102	DEC NumTracks		
 $8104	RTS		
@@ -359,7 +362,7 @@ $818D	LDA TrackInstrL,X
 $8190	STA TrackPointer		
 $8192	LDA TrackInstrH,X	
 $8195	STA TrackPointer+1		
-$8197	JSR $8541	
+$8197	JSR InstrPlay	
 $819A	LDA TrackPointer		
 $819C	STA TrackInstrL,X	
 $819F	LDA TrackPointer+1		
@@ -508,6 +511,31 @@ $8254	CMP #$E0
 $8256	BNE $825B	
 $8258	JMP DoTrackCommand	
 
+;---------------------------------------------------------------------------
+; bytes $00-DF are note data.
+;
+; format:
+; for noise channel:
+; lllspppp
+;  \---------- l: note length (until next track data)
+;    \-------- s: sample (1) or noise (0)
+;       \----- p: sample pitch / noise period
+;                 ($F = note off)
+;
+; for pulse/triangle channels:
+; lllnnnnn
+;  \---------- l: note length (until next track data)
+;      \------ n: note (signed), relative to track's base note (default $27)
+;                 ($10 = note off)
+;                 change base note with command $F5
+;              
+; note lengths $0 to $5 (bytes $0x to $Ax, $1x to $Bx) are relative to the 
+; current track length (command $F2).
+; note length $6 (bytes $Cx or $Dx) means the next byte holds the actual
+; length of the note in frames.
+; 
+;---------------------------------------------------------------------------
+
 ; otherwise, if this track is on the noise channel...
 
 $825B	LDA TrackVoice,X	
@@ -524,13 +552,13 @@ $8267	BNE DoSample
 
 $8269	AND #$0F	
 $826B	CMP #$0F	
-$826D	BEQ $82A1	
+$826D	BEQ NoteOff	
 
 ; otherwise, set the noise period/loop ($400E)
 
 $826F	LDY #$0E	
 $8271	STA (RegistersPtr),Y	
-$8273	JMP $82B8	
+$8273	JMP NoteOn	
 
 ; DPCM sample notes
 ; low nibble = sample frequency
@@ -545,7 +573,7 @@ $827B	LDA #$0F
 $827D	STA $4015	; [NES] IRQ status / Sound enable
 $8280	LDA #$1F	
 $8282	STA $4015	; [NES] IRQ status / Sound enable
-$8285	JMP $82B8	
+$8285	JMP NoteOn	
 
 ; Square and triangle notes
 
@@ -555,7 +583,8 @@ DoNormalVoice:
 $8288	LDA (TrackPointer),Y	
 $828A	AND #$1F	
 $828C	CMP #$10	
-$828E	BEQ $82A1	
+; note value $10 works differently (note off)
+$828E	BEQ NoteOff 	
 
 ; sign extend to 8 bits
 $8290	BIT FiveBitSign	
@@ -565,28 +594,32 @@ $8295	ORA #$E0
 ; add track's base note
 $8297	CLC		
 $8298	ADC TrackBaseNt,X	
-$829B	JSR $84E9	
-$829E	JMP $82B8
+$829B	JSR SetPitchValue	
+$829E	JMP NoteOn
 
-; note value $10 (minimum) = ??
-$82A1	JSR $8306	
+; note value $10 (minimum) = note off
+NoteOff:
+
+$82A1	JSR SetNoteLength	
 $82A4	PHA		
-$82A5	LDA $067D,X	
+; if the note is already off, don't do anything
+$82A5	LDA NoteOnCounter,X	
 $82A8	BEQ $82AF	
 $82AA	LDA #$01	
-$82AC	STA $067D,X	
+$82AC	STA NoteOnCounter,X	
 $82AF	PLA		
+; if the note-off has a length of 0, keep reading more track data
 $82B0	BEQ $82B5	
 $82B2	JMP GetNextTrackByte	
 $82B5	JMP TrackPlayContinue	
 
+NoteOn:
 
-
-$82B8	JSR $8306	
+$82B8	JSR SetNoteLength	
 $82BB	PHA		
 $82BC	TAY		
 $82BD	LDA #$FF	
-$82BF	STA $067D,X	
+$82BF	STA NoteOnCounter,X	
 $82C2	LDA $0691,X	
 $82C5	BEQ $82E0	
 $82C7	STA temp		
@@ -604,7 +637,7 @@ $82D7	STX temp
 $82D9	PLA		
 $82DA	TAX		
 $82DB	LDA temp		
-$82DD	STA $067D,X	
+$82DD	STA NoteOnCounter,X	
 $82E0	JSR SetInstrumentPtr	
 $82E3	JMP $82AF	
 
@@ -631,13 +664,24 @@ $8302	STA InstrCounter,X
 $8305	RTS		
 ;---------------------------------------------------------------------------
 
+;---------------------------------------------------------------------------
+; Get the length of the current note (in the upper three bits), $0-$6.
+; Lengths $0-5 are relative to the current note length for the track.
+; $6 means an absolute length is stored as the next byte.
+;---------------------------------------------------------------------------
+SetNoteLength:
+
 $8306	LDY #$00	
 $8308	LDA (TrackPointer),Y	
+; get the upper 3 bytes (length)
 $830A	AND #$E0	
+; length $6? next byte = absolute length
 $830C	CMP #$C0	
 $830E	BNE $8316	
 $8310	JSR GetNextTrackByte	
 $8313	JMP $8322	
+
+; otherwise add it to the current track's note length
 $8316	LSR A		
 $8317	LSR A		
 $8318	LSR A		
@@ -645,6 +689,7 @@ $8319	LSR A
 $831A	LSR A		
 $831B	ADC TrackNoteLen,X	
 $831E	TAY		
+; and get the length in frames to use until the next track data
 $831F	LDA $8955,Y	
 $8322	STA TrackCounter,X	
 $8325	RTS		
@@ -742,9 +787,9 @@ $837E	BNE TrackCommandF4
 $8380	JSR GetNextTrackByte	
 $8383	STA TrackCounter,X	
 
-; ???
+; keep the note-on state from being updated
 $8386	LDA #$FF	
-$8388	STA $067D,X	
+$8388	STA NoteOnCounter,X	
 
 ; increase track pointer but don't continue playing it for now
 $838B	JMP GetNextTrackByte	
@@ -1079,10 +1124,19 @@ $84E6	LDA (TrackPointer),Y
 $84E8	RTS		
 ;---------------------------------------------------------------------------
 
+;---------------------------------------------------------------------------
+; Set a channel's pitch value based on a note number (in A)
+;---------------------------------------------------------------------------
+
+SetPitchValue:
+
 $84E9	PHA		
+
+; is this ever non-zero?
 $84EA	LDA $06B9,X	
 $84ED	ASL A		
 $84EE	TAY		
+; this table only seems to have one pointer in it...
 $84EF	LDA $8738,Y	
 $84F2	STA $1C		
 $84F4	LDA $8739,Y	
@@ -1090,32 +1144,41 @@ $84F7	STA $1D
 $84F9	PLA		
 $84FA	ASL A		
 $84FB	TAY		
+
+; load the high byte of this note's pitch value (big-endian)
 $84FC	LDA ($1C),Y	
 $84FE	STA temp		
 $8500	INY		
+; and the low byte
 $8501	LDA ($1C),Y	
 $8503	LDY TrackVoice,X	
 $8506	INY		
 $8507	INY		
+; store the low byte
 $8508	STA (RegistersPtr),Y	
 $850A	INY		
+; update the length counter
 $850B	LDA RegistersOld,Y	
 $850E	AND #$10	
 $8510	EOR #$10	
-$8512	ORA $851A,X	
+$8512	ORA LengthCounter,X	
+; and write it with the high byte
 $8515	ORA temp		
 $8517	STA (RegistersPtr),Y	
 $8519	RTS		
 ;---------------------------------------------------------------------------
 
+LengthCounter:
+; written to high bits of $4003 / $4007 / $400B / $400F for SFX
 $851A	.byte $00, $00, $00, $00, $00
+; and for music tracks
 $851F	.byte $20, $20, $20, $20, $20
 
-$8524	LDA $067D,X
+$8524	LDA NoteOnCounter,X
 $8527	BEQ $853D
 $8529	CMP #$FF	
 $852B	BEQ $853D	
-$852D	DEC $067D,X	
+$852D	DEC NoteOnCounter,X	
 $8530	BNE $853D	
 $8532	LDA TrackInstr,X	
 $8535	ASL A		
@@ -1297,7 +1360,7 @@ $85D9	STA StackPos
 $85DB	JSR DoOtherTrackCommand	
 $85DE	LDA StackPos		
 $85E0	STA InstrStackPos,X	
-$85E3	JMP $8541	
+$85E3	JMP InstrPlay	
 $85E6	RTS		
 ;---------------------------------------------------------------------------
 
