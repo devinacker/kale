@@ -28,6 +28,7 @@ TilesetEditWindow::TilesetEditWindow(QWidget *parent) :
     tileView(new TilesetView(this, &tilesetPixmap)),
     tile8View(new Tile8View(this, gfxBanks)),
     tilesetPixmap(256*TILE_SIZE, TILE_SIZE),
+    tileset(0), currentTile(0),
     animTimer(this), animFrame(0)
 {
     ui->setupUi(this);
