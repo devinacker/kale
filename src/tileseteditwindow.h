@@ -53,6 +53,7 @@ public slots:
     void setTileset(int);
     void setTile(int);
     void updateTile();
+    void updateSubtract(int);
     void applyChange();
     void buttonClick(QAbstractButton*);
 

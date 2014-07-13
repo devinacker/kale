@@ -99,6 +99,9 @@ TilesetEditWindow::TilesetEditWindow(QWidget *parent) :
     QObject::connect(ui->comboBox_Behavior, SIGNAL(currentIndexChanged(int)),
                      this, SLOT(updateTile()));
 
+    QObject::connect(subtractBox, SIGNAL(valueChanged(int)),
+                     this, SLOT(updateSubtract(int)));
+
     QObject::connect(tileView, SIGNAL(tileSelected(int)),
                      this, SLOT(setTile(int)));
 
@@ -273,6 +276,10 @@ void TilesetEditWindow::updateTile() {
     thisTile->palette = ui->spinBox_Palette->value();
 
     refreshPixmap();
+}
+
+void TilesetEditWindow::updateSubtract(int val) {
+    tempTileSubtract[tileset] = val;
 }
 
 void TilesetEditWindow::applyChange() {
