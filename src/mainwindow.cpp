@@ -604,6 +604,24 @@ void MainWindow::saveFile() {
     // save palettes
     savePalettes(rom);
 
+    // terrible hack to fix a likely off-by-one error in the game itself which causes
+    // screen 15 to always have no collision. i'm doing this in a very hacky way right
+    // now and i hope to be able to move this into something nicer if i ever end up
+    // having to make more behind-the-scenes code changes, like the switch location fix
+    // which there isn't enough free ROM space to cleanly insert :(
+    // fixes issue #6 (and doesn't break anything else, i hope)
+    const romaddr_t screenCollisionMax[] = {
+        {0x3f, 0xf75d}, // most versions
+        {0x3f, 0xf77a}, // canada
+        {0x3f, 0xf777}  // japan
+    };
+    for (uint i = 0; i < 3; i++) {
+        if (rom.readByte(screenCollisionMax[i]) == 0x74) {
+            rom.writeByte(screenCollisionMax[i], 0x75);
+            break;
+        }
+    }
+
     status(tr("Saved %1").arg(fileName));
 
     unsaved = false;
