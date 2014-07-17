@@ -48,8 +48,8 @@ struct exit_t {
 
 /*
   Definition for level data.
-  Currently consists of tile and obstacle data and flags, as well as modified state
-  (both overall and for the current session), tileset #, and sprites/exits.
+  Currently consists of tile and obstacle data and flags, as well as modified state,
+  tileset #, and sprites/exits.
 */
 struct leveldata_t {
     header_t  header;
@@ -68,13 +68,9 @@ struct leveldata_t {
     // don't return to this level after losing a life?
     bool      noReturn;
 
-    // have any of the tile data fields been changed from the original data?
-    // (determined based on their position in the ROM file, also set as soon
-    // as level is edited)
-    bool      modified;
     // have any of the tile data fields been changed in this session?
     // (set when modified, cleared when saved)
-    bool      modifiedRecently;
+    bool      modified;
 
     leveldata_t() : tiles {{0}}, sprites(), exits() {}
     ~leveldata_t() {

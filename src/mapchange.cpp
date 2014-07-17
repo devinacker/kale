@@ -50,7 +50,6 @@ void MapChange::redo() {
 
         if (first) {
             level->modified = true;
-            level->modifiedRecently = true;
         }
     }
 

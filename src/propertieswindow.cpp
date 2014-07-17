@@ -205,7 +205,6 @@ void PropertiesWindow::accept() {
     level->noReturn     = ui->checkBox_NoReturn->checkState() == Qt::Checked;
 
     level->modified = true;
-    level->modifiedRecently = true;
 
     QDialog::accept();
 }

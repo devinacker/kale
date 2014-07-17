@@ -235,7 +235,6 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
             level->sprites.push_back(sprite);
             // TODO: simpler scene item refresh
             level->modified = true;
-            level->modifiedRecently = true;
             emit edited();
             refresh();
             event->accept();
@@ -246,7 +245,6 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
             level->exits.push_back(exit);
             // TODO: simpler scene item refresh
             level->modified = true;
-            level->modifiedRecently = true;
             emit edited();
             refresh();
             event->accept();
@@ -346,8 +344,7 @@ void MapScene::undo() {
         stack.undo();
         emit edited();
 
-        level->modified = true;
-        level->modifiedRecently = !isClean();
+        level->modified = !isClean();
     }
 }
 
@@ -357,8 +354,7 @@ void MapScene::redo() {
         stack.redo();
         emit edited();
 
-        level->modified = true;
-        level->modifiedRecently = !isClean();
+        level->modified = !isClean();
     }
 }
 
@@ -499,7 +495,6 @@ void MapScene::deleteItems() {
         }
 
         level->modified = true;
-        level->modifiedRecently = true;
     }
     emit edited();
 }

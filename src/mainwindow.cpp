@@ -66,7 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     currentLevel.header.screensH = 0;
     currentLevel.header.screensV = 0;
-    currentLevel.modifiedRecently = false;
+    currentLevel.modified = false;
 
     fileName   = settings->value("MainWindow/fileName", "").toString();
 
@@ -682,7 +682,7 @@ int MainWindow::closeFile() {
     // clear level displays
     currentLevel.header.screensH = 0;
     currentLevel.header.screensV = 0;
-    currentLevel.modifiedRecently = false;
+    currentLevel.modified = false;
 
     scene->cancelSelection();
     scene->refresh();
@@ -844,7 +844,7 @@ void MainWindow::saveCurrentLevel() {
         return;
 
     scene->setClean();
-    currentLevel.modifiedRecently = false;
+    currentLevel.modified = false;
     unsaved = true;
 
     leveldata_t *thisLevel = levels[level];
@@ -909,7 +909,7 @@ QMessageBox::StandardButton MainWindow::checkSaveLevel() {
 
     // TODO: i'm temporarily modifying this so that "unsaved" levels get saved anyway
     // since sprite/exit changes don't create a dirty state yet
-    if (!currentLevel.modifiedRecently) {
+    if (!currentLevel.modified) {
         saveCurrentLevel();
         return QMessageBox::Yes;
     }

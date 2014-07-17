@@ -197,7 +197,6 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
     }
 
     level->modified = false;
-    level->modifiedRecently = false;
 
     return level;
 }
