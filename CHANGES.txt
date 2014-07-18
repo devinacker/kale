@@ -1,3 +1,13 @@
+v0.91 [2014-07-18]
+- added usage info to some sprites on the sprite editor
+  (currently only for warp stars, cannons, and switches; maybe more in the future)
+- fixed two minor UI bugs with the tileset editor
+  (subtract from tile # box works correctly now)
+- removed a limitation in the game where all of screen 15 (and part of screen 14)
+  had no collision due to the tile collison detection code refusing to read that far
+  into the currently loaded map data for some reason
+  (thanks to CornetTheory for finding this issue)
+
 v0.90 [2014-06-12]
 - new HTML documentation
 - full tileset, BG palette, and sprite palette editing

@@ -1,6 +1,6 @@
 Kirby's Adventure Level Editor (KALE) 
 =====================================
-version 0.90
+version 0.91
 
 ![Screenshot](https://raw.githubusercontent.com/devinacker/kale/master/docs/images/mainwindow.png)
 
