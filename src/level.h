@@ -12,6 +12,7 @@
 
 #define SCREEN_WIDTH  16
 #define SCREEN_HEIGHT 12
+#define SCREEN_SIZE   (SCREEN_HEIGHT * SCREEN_WIDTH)
 
 // high/low parts of level pointer table are 328 bytes apart;
 // the last one seems to be bogus
