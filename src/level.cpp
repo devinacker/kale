@@ -233,24 +233,30 @@ DataChunk packLevel(const leveldata_t *level, uint num) {
                    &level->tiles[v * SCREEN_HEIGHT + y][h * SCREEN_WIDTH], SCREEN_WIDTH);
         }
 
-        // does an identical screen already exist?
-        bool found = false;
-        for (uint s = 0; s < unique; s++) {
-            if (!memcmp(uniques[s], tempScreen, SCREEN_SIZE)) {
-                // reuse the same screen index
-                screens[i] = s;
-                found = true;
-                break;
+        // combine unique screens instead of writing multiple copies of them.
+        // this is currently only done for rotating tower rooms (0CD, 0D4, 0DF, 0E6)
+        // because they require this in order for their exits to work correctly.
+        // doing it anywhere else can cause destroyable tiles to inadvertedly
+        // affect more than one part of the level at the same time.
+        if (num == 0xCD || num == 0xD4 || num == 0xDF || num == 0xE6) {
+            // does an identical screen already exist?
+            bool found = false;
+            for (uint s = 0; !found && s < unique; s++) {
+                if (!memcmp(uniques[s], tempScreen, SCREEN_SIZE)) {
+                    // reuse the same screen index
+                    screens[i] = s;
+                    found = true;
+                }
             }
-        }
-        if (found) continue;
+            if (found) continue;
 
-        // write the new unique screen
+            // add this screen to the unique screens
+            memcpy(uniques[unique], tempScreen, SCREEN_SIZE);
+        }
+
+        // write the new unique screen to the level data
         uint8_t *newScreen = tiles + (SCREEN_SIZE * unique);
-        // to the level data
         memcpy(newScreen, tempScreen, SCREEN_SIZE);
-        // and to the unique screens
-        memcpy(uniques[unique], tempScreen, SCREEN_SIZE);
 
         // use a new screen index
         screens[i] = unique++;
