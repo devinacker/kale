@@ -217,18 +217,42 @@ DataChunk packLevel(const leveldata_t *level, uint num) {
 
     uint numScreens = level->header.screensV * level->header.screensH;
 
+    // all current unique screens
+    uint8_t uniques[16][SCREEN_HEIGHT * SCREEN_WIDTH] = {{0}};
+    uint unique = 0;
+
     for (uint i = 0; i < numScreens; i++) {
-        // screen index
-        screens[i] = i;
+        // temporary screen
+        uint8_t tempScreen[SCREEN_HEIGHT * SCREEN_WIDTH] = {0};
 
         // write tile data for screen
-        uint8_t *screen = tiles + (SCREEN_HEIGHT * SCREEN_WIDTH * i);
         uint h = i % header->screensH;
         uint v = i / header->screensH;
         for (uint y = 0; y < SCREEN_HEIGHT; y++) {
-            memcpy(screen + (y * SCREEN_WIDTH),
+            memcpy(tempScreen + (y * SCREEN_WIDTH),
                    &level->tiles[v * SCREEN_HEIGHT + y][h * SCREEN_WIDTH], SCREEN_WIDTH);
         }
+
+        // does an identical screen already exist?
+        bool found = false;
+        for (uint s = 0; s < unique; s++) {
+            if (!memcmp(uniques[s], tempScreen, SCREEN_HEIGHT * SCREEN_WIDTH)) {
+                // reuse the same screen index
+                screens[i] = s;
+                found = true;
+            }
+        }
+        if (found) continue;
+
+        // write the new unique screen
+        uint8_t *newScreen = tiles + (SCREEN_HEIGHT * SCREEN_WIDTH * unique);
+        // to the level data
+        memcpy(newScreen, tempScreen, SCREEN_HEIGHT * SCREEN_WIDTH);
+        // and to the unique screens
+        memcpy(uniques[unique], tempScreen, SCREEN_HEIGHT * SCREEN_WIDTH);
+
+        // use a new screen index
+        screens[i] = unique++;
     }
 
     // pack and return
