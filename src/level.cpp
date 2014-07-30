@@ -240,6 +240,7 @@ DataChunk packLevel(const leveldata_t *level, uint num) {
                 // reuse the same screen index
                 screens[i] = s;
                 found = true;
+                break;
             }
         }
         if (found) continue;
