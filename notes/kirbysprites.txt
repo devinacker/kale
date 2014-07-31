@@ -1,0 +1,68 @@
+13:A9D2 (0269E2): table of sprite classes
+	05: Powerups (tomato/1up/candy/etc)
+	06: Warp Star / Cannon / Star Rod / etc
+	0A: Museum enemies
+	0B: Cannon fuse
+	0C: dummy? (assigned to all unused sprites)
+	0E: Waddle Dee
+	0F: Waddle Doo
+	10: Shotzo
+	11: Sparky
+	12: Poppy Bros. Jr.
+	13: Poppy Bros. Jr. (apple)
+	14: Poppy Bros. Jr. (tomato)
+	16: Laser Ball
+	17: Flamer
+	18: Blipper
+	19: Bounder
+	1B: Coner
+	1C: Kabu
+	1D: Squishy
+	1A: Nut bomb
+	1E: Twizzy
+	1F: Glunk
+	20: Broom Hatter
+	21: Cappy
+	22: Poppy Bros. Sr.
+	23: Rocky
+	24: Twister
+	25: Bomber
+	26: Meta Knight (candy)
+	28: UFO
+	29: Hothead
+	2A: Parasol with enemy attached
+	2B: Blade Knight
+	2C: Slippy
+	2D: Bubbles
+	2E: Noddy
+	2F: Starman
+	30: Meta Knight team battles
+	36: Wheelie
+	37: Cool Spook
+	38: Bronto Burt
+	39: Gordo
+	3A: Pengy
+	3B: Chilly
+	3C: Spiny
+	3D: Kracko
+	3F: Nightmare Orb
+	40: Scarfy
+	41: Sir Kibble
+	42: Meta Knight
+	43: Whispy Woods
+	44: Paint Roller
+	45: Mr. Shine / Mr. Bright
+	46: Heavy Mole
+	47: King Dedede
+	48: Mr. Frosty
+	49: Grand Wheelie
+	4A: Buggzy
+	4B: Rolling Turtle
+	4C: Bonkers
+	4D: Fire Lion
+	4E: Nightmare
+	4F: Mr. Tick Tock
+	6F: Switch
+
+13:AAD2 (026AE2): table of sprite variations
+	(upper nibble = speed, lower nibble = behavior)

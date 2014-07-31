@@ -1,0 +1,11 @@
+saved game locations (US PRG0): $7915, $7961, $79AD
+$4C (76) bytes each, $26 bytes of save data repeated twice
+
+offset | desc
+     0 | checksum for bytes $02 through $25
+     1 | XOR checksum for ""
+     2 | "percentage" progression ($00 - $3F)
+     3 | level progression? ($08 = finish)
+   4-A | stage completion flags (first = level 7, last = level 1)
+  B-11 | switch pressed flags (same order)
+ 12-25 | ?

@@ -1,0 +1,46 @@
+$AD5E: check special level properties
+$9E92 (25EA2 in US PRG0) = 6-byte structure consisting of:
+0: low byte of room number
+1: ?? (value in $78C8 << 1) + high bit of room number
+	- both $FF: end of list
+2: if $FE: wind (can be used together with $FF or normal, just use multiple records for the same room)
+   if $FF: mid-room miniboss encounter
+   otherwise, normal:
+   x? (low nibble = tile x, high nibble = value in $78CD (screen x?))
+
+for normal:
+3: y? (low nibble = tile y, high nibble = value in $78CF (screen y?))
+	- applies to top tile of door
+4: tile to cover up door with (top)
+5: tile to cover up door with (bottom)
+
+for byte 2 $FE:
+3: wind type (value in $78D0)
+	- $FF: no wind
+	- $00: wind blowing upwards (unused)
+	- $01: strong wind blowing upwards
+	- $02: stronger wind blowing upwards (unused)
+	- $03-05: "" to right ($03 and $05 unused)
+	- $06-08: "" downwards (all unused)
+	- $09-0B: "" to left (all unused)
+4: unused
+5: unused
+
+for byte 2 $FF:
+3: screen scrolling control? (value in $78C9)
+	- $02 to lock screen
+4: locked screen x-scroll position LSB (in pixels)
+5: locked screen x-scroll position MSB
+
+I don't know if this is checked before or after the room is actually loaded, but this would be great to use a small ASM hack to move it to that bunch of unused space in the level header so you could specify these properties for every room instead of relying on this table...
+
+$AE4D: create door after boss destroyed
+$78C8 = ?
+$78C9 = screen scrolling control?
+$78CA = door top tile / locked screen x-scroll position LSB (in pixels)
+$78CB = door bottom tile / locked screen x-scroll position MSB
+$78CC = door X pos << 4?
+$78CD = door X screen? (-> $4B)
+$78CE = door Y pos << 4
+$78CF = door Y screen? (-> $4C)
+$78D0 = wind type

@@ -1,0 +1,197 @@
+MMC3 on the left, MMC5 on the right
+
+mapper init ($FFF1):
+
+PRG: makes $8000-9FFF swappable and $C000-DFFF fixed,
+CHR: sets up 2x2kb lower and 4x1kb upper
+(probably only PRG part matters here; this should probably be replaced with
+ an entire MMC5 init routine somewhere else, which may also set up the CHR-ROM
+ bank setup that is normally asserted when selecting banks on the MMC3,
+ as well as PRG-RAM and other stuff)
+
+lda #$00
+sta $8000
+
+new MMC5 init routine:
+
+8kb PRG banks
+1kb CHR banks
+map last 16KB of PRG ROM to C000+
+PRG ram present and write-enabled
+nametable setting: horizontal mirroring
+also try to imitate any details of MMC3 boot state (TODO)
+
+lda #$03
+sta $5100
+sta $5101
+lda #$FE (or #$BE when unexpanded)
+sta $5116
+lda #$FF (or #$BF when unexpanded)
+sta $5116
+lda #$02
+sta $5102
+lda #$01
+sta $5103
+lda #$50
+sta $5105
+lda #$00
+sta $5113
+
+IRQ disable (various):
+
+sta $E000	lsr $5204
+
+enable PRG RAM ($C04B, second to last bank?):
+probably NOP this out, it'll be part of the new init
+
+lda #$80
+sta $A001
+
+select $8000-9FFF ($D787):
+
+PRG: select 8000-9FFF
+CHR: sets up 4x1kb lower, 2x2kb upper
+
+pha 		ora #$80
+lda #$86	sta $5114
+sta $38		sta $48
+sta $8000	rts
+pla
+sta $48
+sta $8001
+rts
+
+select $A000-BFFF ($D796):
+
+PRG: select A000-BFFF
+CHR: sets up 4x1kb lower, 2x2kb upper
+
+pha 		ora #$80
+lda #$87	sta $5115
+sta $38		sta $49
+sta $8000	rts
+pla
+sta $49
+sta $8001
+rts
+
+select/execute bank 1D ($F804):
+
+PRG: select 8000-9FFF temporarily to bank $1D, then execute $8000
+CHR: sets up 4x1kb lower, 2x2kb upper
+
+lda $48		lda $48
+pha 		pha
+ldx #$86	lda #$9D
+stx $38 	sta $48
+lda #$1D	sta $5114
+sta $48		jsr $8000
+stx $8000	pla
+sta $8001	sta $48
+jsr $8000	sta $5114
+ldx #$86	rts
+stx $38
+pla
+sta $48
+stx $8000
+sta $8001
+rts
+
+use banks $1D and value of $0600 ($F8A0):
+
+PRG: select 8000-9FFF temporarily to bank $1D, then execute $8153
+     select A000-BFFF temporarily to bank stored in RAM $0600
+CHR: sets up 4x1kb lower, 2x2kb upper
+
+initial routine could fit in here, maybe
+
+lda $38		lda $48
+pha 		pha
+lda $48		lda #$9d
+pha 		sta $5114
+ldx #$86	lda $49
+stx $38		pha
+lda #$1d	lda $0600
+sta $48		sta $49
+stx $8000	sta $5115
+sta $8001	jsr $8153
+lda $49		pla
+pha 		sta $49
+ldx #$87	sta $5115
+stx $38		pla
+lda $0600	sta $48
+sta $49		sta $5114
+stx $8000	rts
+sta $8001
+jsr $8153
+ldx #$87
+stx $38
+pla
+sta $49
+stx $8000
+sta $8001
+ldx #$86
+stx $38
+pla
+sta $48
+stx $8000
+sta $8001
+pla
+sta $38
+rts
+
+refresh $8000 bank setting ($C397):
+just NOP this out entirely, probably
+
+lda $38
+sta $8000
+
+IRQ latch, reload, and enable ($CB66):
+
+(note: what does the IRQ counter reload value indicate? scanline number?
+this may need the entire subroutine it's part of to be reworked to calculate the
+target scanline correctly)
+
+9 bytes 	8 bytes
+
+sta $C000	sta $5203
+sta $C001	lda #$80
+sta $E001	sta $5204
+
+ingame CHR bank select ($C401):
+
+CHR: $42 -> 2kb at $1000
+     $43 -> 2kb at $1800
+	 $44 -> 1kb at $0000
+	 $45 -> 1kb at $0400
+	 $46 -> 1kb at $0800
+	 $47 -> 1kb at $0c00
+
+idea: this routine could also repurpose an unused byte in the level data to be used as
+the upper bits of the background CHR page numbers (could use four bytes, but it'd be a pain
+to deal with this and the preset CHR bank combinations at the same time...)
+
+42 bytes	35 bytes
+
+lda $38		ldx #$03
+pha 		-
+ldx #$05	lda $44,x
+-   		sta $5120,x
+txa 		dex
+ora #$80	bpl -
+sta $38		lda $42
+sta $8000	and #$FE
+lda $42,x	sta $5124
+sta $8001	ora #$01
+dex 		sta $5125
+bne -		lda $43
+lda $01A5	and #$FE
+bne +		sta $5126
+lda #$80	ora #$01
+sta $38		sta $5127
+sta $8000	rts
+lda $42		
+sta $8001	
+pla
+sta $38
+rts
