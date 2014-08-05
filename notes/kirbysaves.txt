@@ -1,11 +1,22 @@
-saved game locations (US PRG0): $7915, $7961, $79AD
+saved game locations (PRG0): $7915, $7961, $79AD
+                     (PRG1 starts at $7903, same format)
 $4C (76) bytes each, $26 bytes of save data repeated twice
-
+ 
 offset | desc
-     0 | checksum for bytes $02 through $25
+     0 | checksum for bytes $00-25
      1 | XOR checksum for ""
-     2 | "percentage" progression ($00 - $3F)
-     3 | level progression? ($08 = finish)
-   4-A | stage completion flags (first = level 7, last = level 1)
-  B-11 | switch pressed flags (same order)
- 12-25 | ?
+     2 | File "% progression" (3F = 100%, which enables Extra)
+     3 | level progression (08 = Finish; 09 = Perfect)
+   4-A | stage clear flags (first = level 7, last = level 1)
+     B | (unused)
+  C-12 | stage switch flags (same order)
+    13 | (unused)
+ 14-1A | Level Bosses (same order, set to 80?)
+    1B | Level intro to play
+    1C | Current level
+ 1D-20 | Room, screen, and pos. to start from [roomhigh][room][screen][xy pos]
+ 21-24 | Room, screen, and pos. to exit to/last entered (?)
+    25 | ?
+ 
+The first copy of the file is the one that is loaded when selected from the main menu.
+The second is a backup that is copied to the first when opening the main menu.

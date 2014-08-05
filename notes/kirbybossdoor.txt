@@ -2,38 +2,51 @@ $AD5E: check special level properties
 $9E92 (25EA2 in US PRG0) = 6-byte structure consisting of:
 0: low byte of room number
 1: ?? (value in $78C8 << 1) + high bit of room number
-	- both $FF: end of list
-2: if $FE: wind (can be used together with $FF or normal, just use multiple records for the same room)
-   if $FF: mid-room miniboss encounter
-   otherwise, normal:
-   x? (low nibble = tile x, high nibble = value in $78CD (screen x?))
-
-for normal:
-3: y? (low nibble = tile y, high nibble = value in $78CF (screen y?))
-	- applies to top tile of door
+        - both $FF: end of list
+ 
+2: Entry type:
+        - FE: Wind
+        - FF: Screen lock
+        - Else: Midboss "door", X. (See next)
+ 
+Door:
+2: Top tile X position (high nibble: screen (x, top row), low nibble: tile x)
+3: Top tile Y position (low nibble = tile y, high nibble = value in $78CF/screen y? (glitchy))
 4: tile to cover up door with (top)
 5: tile to cover up door with (bottom)
-
-for byte 2 $FE:
-3: wind type (value in $78D0)
-	- $FF: no wind
-	- $00: wind blowing upwards (unused)
-	- $01: strong wind blowing upwards
-	- $02: stronger wind blowing upwards (unused)
-	- $03-05: "" to right ($03 and $05 unused)
-	- $06-08: "" downwards (all unused)
-	- $09-0B: "" to left (all unused)
-4: unused
-5: unused
-
-for byte 2 $FF:
-3: screen scrolling control? (value in $78C9)
-	- $02 to lock screen
-4: locked screen x-scroll position LSB (in pixels)
-5: locked screen x-scroll position MSB
-
-I don't know if this is checked before or after the room is actually loaded, but this would be great to use a small ASM hack to move it to that bunch of unused space in the level header so you could specify these properties for every room instead of relying on this table...
-
+Only works properly at the top row of the level, in lower screens it will be misplaced and missing the top tile
+ 
+Wind (FE)
+3: Type
+- $00: weak, upwards
+- $01: normal, upwards (used in 3-4)
+- $02: strong, upwards
+- $03: weak, right
+- $04: normal, right (used in 4-3)
+- $05: strong, right
+- $06: weak, down
+- $07: normal, down
+- $08: strong, down
+- $09: weak, left
+- $0A: normal, left
+- $0B: strong, left
+- $FF: no wind
+(4, 5: unused)
+Higher ones than 0B obviously load garbage data, but is worth mentioning they give diagonal momentum.
+Overrides all "push" tile behaviour
+ 
+Screen lock (FF)
+3: 02 = lock scroll, free when midboss defeated
+        (03 = lock scroll when midboss defeated? (glitch))
+4: position in pixels within the screen at which to lock it
+5: screen to the lock scroll at
+Horizontal scroll only
+ 
+Notes:
+There can only be one screen lock OR door per room. (first used)
+There can only be one wind type per room. (last used)
+-------------------
+ 
 $AE4D: create door after boss destroyed
 $78C8 = ?
 $78C9 = screen scrolling control?
