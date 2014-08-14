@@ -37,7 +37,7 @@ private:
     std::list<SpriteItem*> sprites;
     std::list<ExitItem*>   exits;
 
-    uint copyBuffer[64][64];
+    uint copyBuffer[16*SCREEN_HEIGHT][16*SCREEN_WIDTH];
     uint copyWidth, copyLength;
 
     QUndoStack stack;
