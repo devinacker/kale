@@ -1,6 +1,6 @@
 debug/
 release/
-Makefile
+/Makefile
 Makefile.Release
 Makefile.Debug
 object_script.*

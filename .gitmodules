@@ -1,0 +1,3 @@
+[submodule "src/patches/xkas"]
+	path = src/patches/xkas
+	url = https://github.com/devinacker/xkas-plus
