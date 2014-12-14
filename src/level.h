@@ -31,6 +31,14 @@ struct header_t {
 };
 #pragma pack()
 
+struct extradata_t {
+    int8_t   wind;
+    uint8_t  bossCount;
+    uint8_t  doorX, doorY, doorTop, doorBottom;
+    bool     lock;
+    uint8_t  lockScreen, lockPos;
+};
+
 struct sprite_t {
     uint8_t type;
     uint x, y;
