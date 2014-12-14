@@ -453,6 +453,13 @@ void MainWindow::saveFile() {
         }
     }
 
+#define save_done \
+    rom.close(); \
+    setEditActions(true); \
+    saving = false; \
+    return
+// end macro
+
     status(tr("Saving to file ") + fileName);
 
     // disable saving/editing while already saving
@@ -476,33 +483,42 @@ void MainWindow::saveFile() {
                               .arg(maxExits).arg(numExits),
                               QMessageBox::Ok);
 
-        rom.close();
-
-        // re-enable editing
-        setEditActions(true);
-        saving = false;
-
-        return;
+        save_done;
     }
 
     // 0x12 banks available, first one has the first 0xA00 bytes used by palettes)
     const uint freeSpace = (BANK_SIZE * lastBank) - nextAddr.addr;
+
+    // keep track of the amount of free space left
     uint usedSpace = 0;
+    uint usedBanks = 0;
+    uint bankSpace = BANK_SIZE - 0x0A00;
+    uint chunkSize;
+
+#define update_size \
+    chunkSize = chunks.back().size; \
+    usedSpace += chunkSize; \
+    if (chunkSize > bankSpace) { \
+        usedBanks++; \
+        bankSpace = BANK_SIZE; \
+    } \
+    bankSpace -= chunkSize
+// end macro
 
     // pack level and sprite data
     for (uint i = 0; i < NUM_LEVELS; i++) {
         chunks.push_back(packLevel(levels[i], i));
-        usedSpace += chunks.back().size;
+        update_size;
 
         chunks.push_back(packSprites(levels[i], i));
-        usedSpace += chunks.back().size;
+        update_size;
 
         QCoreApplication::processEvents();
     }
     // pack tilesets
     for (uint i = 0; i < NUM_TILESETS; i++) {
         chunks.push_back(packTileset(i));
-        usedSpace += chunks.back().size;
+        update_size;
 
         QCoreApplication::processEvents();
     }
@@ -510,7 +526,9 @@ void MainWindow::saveFile() {
     // (they must be stored in the same PRG bank, and the uncompressed data is already
     //  stored elsewhere)
     chunks.push_back(DataChunk(NULL, 0x300, DataChunk::banks, 0));
-    usedSpace += chunks.back().size;
+    update_size;
+
+#undef update_size
 
     // panic if there's too much space
     if (usedSpace > freeSpace) {
@@ -519,13 +537,17 @@ void MainWindow::saveFile() {
                               .arg(freeSpace).arg(usedSpace),
                               QMessageBox::Ok);
 
-        rom.close();
+        save_done;
+    }
+    // or if some free space couldn't be used
+    else if (usedBanks >= lastBank) {
+        QMessageBox::critical(this, tr("Error saving file"),
+                              tr("Unable to save all level data because not all individual free space segments "
+                                 "would be large enough. Try reducing the size of some map or sprite data and "
+                                 "trying again."),
+                              QMessageBox::Ok);
 
-        // re-enable editing
-        setEditActions(true);
-        saving = false;
-
-        return;
+        save_done;
     }
 
     // sort packed chunks
@@ -540,14 +562,10 @@ void MainWindow::saveFile() {
                               .arg(chunk.type).arg(chunk.num).arg(chunk.size),
                               QMessageBox::Ok);
 
-        rom.close();
-
-        // re-enable editing
-        setEditActions(true);
-        saving = false;
-
-        return;
+        save_done;
     }
+
+    // finally
 
     while (chunks.size()) {
         // find biggest chunk that will fit in the current ROM bank
@@ -625,11 +643,10 @@ void MainWindow::saveFile() {
     status(tr("Saved %1").arg(fileName));
 
     unsaved = false;
-    rom.close();
 
-    // re-enable editing
-    setEditActions(true);
-    saving = false;
+    save_done;
+
+#undef save_done
 }
 
 void MainWindow::saveFileAs() {
