@@ -1,8 +1,3 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2014-01-04T21:49:17
-#
-#-------------------------------------------------
 
 QT       += core gui
 
@@ -20,6 +15,11 @@ win32:RC_FILE = src/windows.rc
 
 # build on OS X with xcode/clang and libc++
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
+
+# build assembler and patches (separate makefile)
+patches.commands = $(MAKE) -C src/patches
+QMAKE_EXTRA_TARGETS += patches
+PRE_TARGETDEPS += patches
 
 SOURCES += \
     src/romfile.cpp \
@@ -87,4 +87,6 @@ OTHER_FILES += \
     src/windows.rc \
     TODO.txt \
     CHANGES.txt \
-    README.md
+    README.md \
+    src/patches/mapextra.asm \
+    src/patches/Makefile
