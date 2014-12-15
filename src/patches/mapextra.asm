@@ -1,5 +1,3 @@
-//; BIG TODO: account for differences in code locations between versions
-
 arch nes.cpu
 header
 banksize $2000
@@ -144,23 +142,33 @@ LockScreen:
 //; ---------------------------------------------------------------------------
 
 //; Insert jumps to new code here
-//; TODO bankswitch correctly
 bank $28
 org {SwitchOld}
-	jmp   SwitchFix
+	lda   {Bank8Num}
+	pha
+	lda   #$12
+	jsr   {SwapBank8}
+	jsr   SwitchFix
+	pla
+	jmp   {SwapBank8}
 
 //; as with the code that references it, this data table is at the same location
 //; in every version of the game
 bank $12
 org $9e92
 
+//; ---------------------------------------------------------------------------
+//; Modify the star switch position check to allow it to be placed on any 
+//; screen
+//; ---------------------------------------------------------------------------
+
 //; signify that these hacks have been added
 db "KALE"
 
 define SwitchTemp $00
 SwitchFix:
-	//; initial destination = screen 0
-	ldx   #0
+	//; initial destination = horizontal screen #
+	ldx   {PlayerXHi}
 	
 	//; get the upper 8 bits of 12-bit Y position
 	lda   {PlayerYHi} //; upper 4 bits
