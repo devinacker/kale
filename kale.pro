@@ -16,11 +16,6 @@ win32:RC_FILE = src/windows.rc
 # build on OS X with xcode/clang and libc++
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
-# build assembler and patches (separate makefile)
-patches.commands = $(MAKE) -C src/patches
-QMAKE_EXTRA_TARGETS += patches
-PRE_TARGETDEPS += patches
-
 SOURCES += \
     src/romfile.cpp \
     src/mapscene.cpp \
