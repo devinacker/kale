@@ -87,6 +87,4 @@ OTHER_FILES += \
     src/windows.rc \
     TODO.txt \
     CHANGES.txt \
-    README.md \
-    src/patches/mapextra.asm \
-    src/patches/Makefile
+    README.md
