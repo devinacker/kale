@@ -5,20 +5,6 @@ header
 banksize $2000
 
 //; ---------------------------------------------------------------------------
-//; General ingame variables and stuff
-//; ---------------------------------------------------------------------------
-define PlayerXLo     $83
-
-define PlayerYLo     $b9
-define PlayerYHi     $cb
-
-define ExitToScreen  $0568
-define ExitToPos     $0569
-
-define MapHeader     $67ee
-define MapWidth      {MapHeader}+0
-
-//; ---------------------------------------------------------------------------
 //; Move extra level data (wind speed, miniboss screen lock/door close) to
 //; unused space in the regular room data header and read it from there
 //; instead.
@@ -60,6 +46,7 @@ define WindType      $78d0
 define DoorXTemp     $4b
 define DoorYTemp     $4c
 
+//; This code is at the same location in all versions
 bank $38
 org $ad6f
 	lda   {MapWindType}
@@ -157,7 +144,13 @@ LockScreen:
 //; ---------------------------------------------------------------------------
 
 //; Insert jumps to new code here
+//; TODO bankswitch correctly
+bank $28
+org {SwitchOld}
+	jmp   SwitchFix
 
+//; as with the code that references it, this data table is at the same location
+//; in every version of the game
 bank $12
 org $9e92
 
@@ -166,9 +159,6 @@ db "KALE"
 
 define SwitchTemp $00
 SwitchFix:
-	//; TODO: keep the SwitchTemp setup and stuff in its original location?
-	//; that way we don't have to insert as much code elsewhere
-
 	//; initial destination = screen 0
 	ldx   #0
 	
@@ -210,7 +200,7 @@ SwitchFix:
 	ora   {SwitchTemp}
 	sta   {ExitToPos}
 	
-	//; jump back to original code here
+	rts
 
 //; will this actually work? it's right on a bank boundary so xkas might get confused
 warnpc $a000

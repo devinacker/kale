@@ -1,5 +1,7 @@
-maphacks.ips: xkas/xkas mapextra.asm
-	xkas/xkas -ips -o maphacks.ips -e maphacks.ram.nl mapextra.asm
+%.ips: %.asm xkas/xkas
+	xkas/xkas -ips -o $@ $<
+
+all: maphacks-us0.ips maphacks-us1.ips maphacks-eu.ips maphacks-de.ips maphacks-fc.ips maphacks-jp.ips
 
 xkas/xkas:
 	$(MAKE) -C xkas

@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>patches/maphacks.ips</file>
+        <file>patches/maphacks-de.ips</file>
+        <file>patches/maphacks-eu.ips</file>
+        <file>patches/maphacks-fc.ips</file>
+        <file>patches/maphacks-jp.ips</file>
+        <file>patches/maphacks-us0.ips</file>
+        <file>patches/maphacks-us1.ips</file>
+    </qresource>
+</RCC>

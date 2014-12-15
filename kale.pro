@@ -76,7 +76,8 @@ FORMS += \
     src/paletteeditwindow.ui
 
 RESOURCES += \
-    src/icons.qrc
+    src/icons.qrc \
+    src/patches.qrc
 
 OTHER_FILES += \
     src/windows.rc \
