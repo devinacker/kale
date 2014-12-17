@@ -143,6 +143,7 @@ QVariant PaletteModel::data(const QModelIndex &index, int role) const {
         return QSize(32, 32);
 
     case Qt::DisplayRole:
+    case Qt::EditRole:
         return hexFormat(color, 2);
     }
 
