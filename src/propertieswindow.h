@@ -40,7 +40,7 @@ private:
     uint8_t  tileset;
 
     HexSpinBox *tileBox, *tilePalBox, *spriteBox, *spritePalBox, *doorTopBox, *doorBottomBox;
-    TilesetView *tileView;
+    TilesetView *tileView, *doorTopView, *doorBottomView;
     SpritesView *spritesView;
 
 private slots:

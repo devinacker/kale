@@ -123,10 +123,17 @@
     <addaction name="action_Show_Screen_Boundaries"/>
     <addaction name="action_See_Through_Breakable_Tiles"/>
    </widget>
+   <widget class="QMenu" name="menuExtra">
+    <property name="title">
+     <string>E&amp;xtra</string>
+    </property>
+    <addaction name="action_Extra_Data_Patch"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuLevel"/>
    <addaction name="menuView"/>
+   <addaction name="menuExtra"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -548,6 +555,11 @@
    </property>
    <property name="text">
     <string>Edit Palettes...</string>
+   </property>
+  </action>
+  <action name="action_Extra_Data_Patch">
+   <property name="text">
+    <string>Apply Extra Room Data Patch...</string>
    </property>
   </action>
  </widget>

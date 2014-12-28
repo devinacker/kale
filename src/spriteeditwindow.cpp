@@ -72,10 +72,14 @@ void SpriteEditWindow::setSpriteInfo(int index) {
     // FE-FF: floor and ceiling switch
     case 0xFE:
     case 0xFF:
-        text = "Switches must be placed on screen 0 or 1 of a 1-screen-wide room. "
-               "Otherwise, the player will be returned to the incorrect location "
-               "and the \"switch pressed\" animation may never finish, leading to "
-               "glitchy behavior on the overworld.";
+        if (!leveldata_t::hasExtra) {
+            text = "Switches must be placed on screen 0 or 1 of a 1-screen-wide room. "
+                   "Otherwise, the player will be returned to the incorrect location "
+                   "and the \"switch pressed\" animation may never finish, leading to "
+                   "glitchy behavior on the overworld.\n\n"
+                   "This can be remedied by applying the extra room data patch from the "
+                   "Extra menu.";
+        }
         break;
     }
 

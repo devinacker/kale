@@ -28,6 +28,8 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     doorTopBox(new HexSpinBox(this, 2)),
     doorBottomBox(new HexSpinBox(this, 2)),
     tileView(new TilesetView(this, tileset)),
+    doorTopView(new TilesetView(this, tileset, 0)),
+    doorBottomView(new TilesetView(this, tileset, 0)),
     spritesView(new SpritesView(this))
 {
     ui->setupUi(this);
@@ -50,10 +52,14 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     QWidget::setTabOrder(spriteBox, spritePalBox);
 
     layout = ui->gridLayout_Extra;
-    layout->addWidget(doorTopBox, 3, 1, 1, 1);
+    layout->addWidget(doorTopView, 3, 1, 1, 1);
+    layout->setAlignment(doorTopView, Qt::AlignRight);
+    layout->addWidget(doorTopBox, 3, 2, 1, 1);
     doorTopBox->setMaximum(255);
     QWidget::setTabOrder(ui->spinBox_DoorY, doorTopBox);
-    layout->addWidget(doorBottomBox, 3, 4, 1, 1);
+    layout->addWidget(doorBottomView, 3, 4, 1, 1);
+    layout->setAlignment(doorBottomView, Qt::AlignRight);
+    layout->addWidget(doorBottomBox, 3, 5, 1, 1);
     doorBottomBox->setMaximum(255);
     QWidget::setTabOrder(doorTopBox, doorBottomBox);
 
@@ -99,6 +105,11 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
                      this, SLOT(applyChange()));
     QObject::connect(ui->spinBox_Width, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
+
+    QObject::connect(this->doorTopBox, SIGNAL(valueChanged(int)),
+                     this->doorTopView, SLOT(setSingleTile(int)));
+    QObject::connect(this->doorBottomBox, SIGNAL(valueChanged(int)),
+                     this->doorBottomView, SLOT(setSingleTile(int)));
 
     // set up signals to handle width/length constraints
     QObject::connect(ui->spinBox_Height, SIGNAL(valueChanged(int)),
@@ -162,7 +173,8 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
     ui->checkBox_NoReturn->setCheckState(level->noReturn ? Qt::Checked : Qt::Unchecked);
 
     // disable extra tab for unpatched roms
-    ui->extraTab->setEnabled(leveldata_t::hasExtra);
+    ui->groupBox_Extra->setEnabled(leveldata_t::hasExtra);
+    ui->label_Extra->setHidden(leveldata_t::hasExtra);
 
     // set extra properties
     ui->comboBox_Wind->setCurrentIndex(level->extra.wind);
@@ -171,7 +183,9 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
     ui->spinBox_DoorX->setValue(level->extra.doorX);
     ui->spinBox_DoorY->setValue(level->extra.doorY);
     this->doorTopBox->setValue(level->extra.doorTop);
+    this->doorTopView->setSingleTile(level->extra.doorTop);
     this->doorBottomBox->setValue(level->extra.doorBottom);
+    this->doorBottomView->setSingleTile(level->extra.doorBottom);
     ui->spinBox_ScreenLock->setValue(level->extra.lockPos);
 
     // save pointer

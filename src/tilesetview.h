@@ -8,9 +8,12 @@ class TilesetView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit TilesetView(QWidget *parent, const QPixmap *tiles);
+    explicit TilesetView(QWidget *parent, const QPixmap *tiles, int singleTile = -1);
     QSize sizeHint() const;
     void setMouseEnabled(bool);
+
+public slots:
+    void setSingleTile(int tile) { singleTile = tile; }
 
 protected:
     void paintEvent(QPaintEvent*);
@@ -21,7 +24,7 @@ protected:
 
     QTimer timer;
     bool mouseEnabled;
-    int currTile;
+    int currTile, singleTile;
 
 private:
     const QPixmap* pixmap;

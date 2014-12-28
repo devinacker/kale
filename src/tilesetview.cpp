@@ -9,10 +9,11 @@
 
 const QColor TilesetView::infoColor(255, 192, 192, 192);
 
-TilesetView::TilesetView(QWidget *parent, const QPixmap *tiles) :
+TilesetView::TilesetView(QWidget *parent, const QPixmap *tiles, int singleTile) :
     QWidget(parent),
     timer(this),
     currTile(-1),
+    singleTile(singleTile),
     pixmap(tiles)
 {
     this->setFixedSize(sizeHint());
@@ -26,6 +27,9 @@ TilesetView::TilesetView(QWidget *parent, const QPixmap *tiles) :
 }
 
 QSize TilesetView::sizeHint() const {
+    if (singleTile > -1)
+        return QSize(TILE_SIZE, TILE_SIZE);
+
     return QSize(16 * TILE_SIZE, 16 * TILE_SIZE);
 }
 
@@ -36,20 +40,26 @@ void TilesetView::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     QRect rect = event->rect();
 
-    uint tile = 0;
-    for (int h = rect.top() / TILE_SIZE; tile < 256 && h <= rect.bottom() / TILE_SIZE; h++) {
-        for (int w = rect.left() / TILE_SIZE; tile < 256 && w <= rect.right() / TILE_SIZE; w++) {
-            QRect destRect(w * TILE_SIZE, h * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            QRect srcRect (tile * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE);
-            painter.drawPixmap(destRect, *pixmap, srcRect);
+    if (singleTile < 0) {
+        uint tile = 0;
+        for (int h = rect.top() / TILE_SIZE; tile < 256 && h <= rect.bottom() / TILE_SIZE; h++) {
+            for (int w = rect.left() / TILE_SIZE; tile < 256 && w <= rect.right() / TILE_SIZE; w++) {
+                QRect destRect(w * TILE_SIZE, h * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                QRect srcRect (tile * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE);
+                painter.drawPixmap(destRect, *pixmap, srcRect);
 
-            tile++;
+                tile++;
+            }
         }
-    }
 
-    if (currTile >= 0)
-        painter.fillRect((currTile % 16) * TILE_SIZE, (currTile / 16) * TILE_SIZE, TILE_SIZE, TILE_SIZE,
-                         TilesetView::infoColor);
+        if (currTile >= 0)
+            painter.fillRect((currTile % 16) * TILE_SIZE, (currTile / 16) * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                             TilesetView::infoColor);
+    } else {
+        QRect destRect(rect.top(), rect.left(), TILE_SIZE, TILE_SIZE);
+        QRect srcRect (singleTile * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE);
+        painter.drawPixmap(destRect, *pixmap, srcRect);
+    }
 }
 
 void TilesetView::setMouseEnabled(bool on) {
