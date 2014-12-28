@@ -208,6 +208,16 @@ void PropertiesWindow::accept() {
     // apply return flag
     level->noReturn     = ui->checkBox_NoReturn->checkState() == Qt::Checked;
 
+    // apply extra settings
+    level->extra.wind = ui->comboBox_Wind->currentIndex();
+    level->extra.bossCount = ui->spinBox_BossCount->value();
+    level->extra.lock = ui->comboBox_BossAct->currentIndex() > 0;
+    level->extra.doorX = ui->spinBox_DoorX->value();
+    level->extra.doorY = ui->spinBox_DoorY->value();
+    level->extra.doorTop = this->doorTopBox->value();
+    level->extra.doorBottom = this->doorBottomBox->value();
+    level->extra.lockPos = ui->spinBox_ScreenLock->value();
+
     level->modified = true;
 
     QDialog::accept();

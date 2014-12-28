@@ -66,7 +66,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QSpinBox" name="spinBox">
+       <widget class="QSpinBox" name="spinBox_BossCount">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -154,7 +154,7 @@
        </widget>
       </item>
       <item row="0" column="2" colspan="3">
-       <widget class="QComboBox" name="comboBox">
+       <widget class="QComboBox" name="comboBox_Wind">
         <item>
          <property name="text">
           <string>No wind</string>
@@ -259,7 +259,7 @@
        </spacer>
       </item>
       <item row="1" column="3" colspan="2">
-       <widget class="QComboBox" name="comboBox_2">
+       <widget class="QComboBox" name="comboBox_BossAct">
         <item>
          <property name="text">
           <string>Hide/show a door</string>
@@ -617,9 +617,9 @@
   <tabstop>spinBox_Height</tabstop>
   <tabstop>comboBox_Music</tabstop>
   <tabstop>checkBox_NoReturn</tabstop>
-  <tabstop>comboBox</tabstop>
-  <tabstop>spinBox</tabstop>
-  <tabstop>comboBox_2</tabstop>
+  <tabstop>comboBox_Wind</tabstop>
+  <tabstop>spinBox_BossCount</tabstop>
+  <tabstop>comboBox_BossAct</tabstop>
   <tabstop>spinBox_DoorX</tabstop>
   <tabstop>spinBox_DoorY</tabstop>
   <tabstop>spinBox_ScreenLock</tabstop>

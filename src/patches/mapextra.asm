@@ -48,6 +48,9 @@ define DoorYTemp     $4c
 bank $38
 org $ad6f
 	lda   {MapWindType}
+	//; game uses 0xFF for no wind, KALE uses zero (for convenience)
+	sec
+	sbc   #$01
 	sta   {WindType}
 	
 	//; midboss stuff?
