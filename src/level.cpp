@@ -50,6 +50,7 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
     uint8_t  buf[DATA_SIZE] = {0};
     header_t *header  = (header_t*)buf + 0;
     uint8_t  *screens = buf + 8;
+    uint8_t  *extra   = screens + 16;
     uint8_t  *tiles   = buf + 0xDA;
 
     size_t result = file.readFromPointer(ptrMapDataL, ptrMapDataH, ptrMapDataB, 0, buf, num);
@@ -81,6 +82,22 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
 
         delete level;
         return NULL;
+    }
+
+    // read extra info
+    // (if the extra info patch isn't active then this stuff will all be 0 and will be
+    //  overwritten later)
+    level->extra.wind = extra[0];
+    level->extra.bossCount = extra[1];
+    level->extra.lock = extra[2] == 0xFF;
+
+    if (level->extra.lock) {
+        level->extra.lockPos = extra[3] + (extra[4] << 8);
+    } else {
+        level->extra.doorX = extra[2];
+        level->extra.doorY = extra[3];
+        level->extra.doorTop = extra[4];
+        level->extra.doorBottom = extra[5];
     }
 
     // kinda slow, but eh
@@ -211,11 +228,28 @@ DataChunk packLevel(const leveldata_t *level, uint num) {
     uint8_t buf[MAP_DATA_SIZE] = {0};
     header_t *header  = (header_t*)buf + 0;
     uint8_t  *screens = buf + 8;
+    uint8_t  *extra   = screens + 16;
     uint8_t  *tiles   = buf + 0xDA;
 
     *header = level->header;
 
     uint numScreens = level->header.screensV * level->header.screensH;
+
+    // save extra data
+    // (TODO: skip this if the extra info patch isn't active)
+    extra[0] = level->extra.wind;
+    extra[1] = level->extra.bossCount;
+
+    if (level->extra.lock) {
+        extra[2] = 0xFF;
+        extra[3] = level->extra.lockPos & 0xFF;
+        extra[4] = level->extra.lockPos >> 8;
+    } else {
+        extra[2] = level->extra.doorX;
+        extra[3] = level->extra.doorY;
+        extra[4] = level->extra.doorTop;
+        extra[5] = level->extra.doorBottom;
+    }
 
     // all current unique screens
     uint8_t uniques[16][SCREEN_SIZE] = {{0}};

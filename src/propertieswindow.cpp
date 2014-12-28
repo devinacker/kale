@@ -160,6 +160,16 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
     // set no return value
     ui->checkBox_NoReturn->setCheckState(level->noReturn ? Qt::Checked : Qt::Unchecked);
 
+    // set extra properties
+    ui->comboBox_Wind->setCurrentIndex(level->extra.wind);
+    ui->spinBox_BossCount->setValue(level->extra.bossCount);
+    ui->comboBox_BossAct->setCurrentIndex(level->extra.lock ? 1 : 0);
+    ui->spinBox_DoorX->setValue(level->extra.doorX);
+    ui->spinBox_DoorY->setValue(level->extra.doorY);
+    this->doorTopBox->setValue(level->extra.doorTop);
+    this->doorBottomBox->setValue(level->extra.doorBottom);
+    ui->spinBox_ScreenLock->setValue(level->extra.lockPos);
+
     // save pointer
     this->level = level;
     // and original data, in case user cancels

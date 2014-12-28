@@ -32,11 +32,11 @@ struct header_t {
 #pragma pack()
 
 struct extradata_t {
-    int8_t   wind;
+    uint8_t   wind;
     uint8_t  bossCount;
     uint8_t  doorX, doorY, doorTop, doorBottom;
     bool     lock;
-    uint8_t  lockScreen, lockPos;
+    uint16_t lockPos;
 };
 
 struct sprite_t {
@@ -62,6 +62,7 @@ struct exit_t {
 */
 struct leveldata_t {
     header_t  header;
+    extradata_t extra;
 
     // The maximum number of screens in a map is 16 (due to memory limits),
     // and each screen is 16x12 tiles.

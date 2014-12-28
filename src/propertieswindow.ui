@@ -61,7 +61,7 @@
          </sizepolicy>
         </property>
         <property name="maximum">
-         <number>255</number>
+         <number>254</number>
         </property>
        </widget>
       </item>
@@ -182,7 +182,7 @@
         </item>
         <item>
          <property name="text">
-          <string>RIght, normal</string>
+          <string>Right, normal</string>
          </property>
         </item>
         <item>
