@@ -25,13 +25,15 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     tilePalBox(new HexSpinBox(this, 2)),
     spriteBox(new HexSpinBox(this, 2)),
     spritePalBox(new HexSpinBox(this, 2)),
+    doorTopBox(new HexSpinBox(this, 2)),
+    doorBottomBox(new HexSpinBox(this, 2)),
     tileView(new TilesetView(this, tileset)),
     spritesView(new SpritesView(this))
 {
     ui->setupUi(this);
 
     // add spinboxes
-    QGridLayout *layout = ui->gridLayout;
+    QGridLayout *layout = ui->gridLayout_Room;
     layout->addWidget(tileBox,      2, 2, 1, 1);
     tileBox->setMaximum(NUM_TILESETS - 1);
     QWidget::setTabOrder(ui->slider_AnimSpeed, tileBox);
@@ -46,6 +48,14 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     layout->addWidget(spritePalBox, 3, 5, 1, 1);
     spritePalBox->setMaximum(49);
     QWidget::setTabOrder(spriteBox, spritePalBox);
+
+    layout = ui->gridLayout_Extra;
+    layout->addWidget(doorTopBox, 3, 1, 1, 1);
+    doorTopBox->setMaximum(255);
+    QWidget::setTabOrder(ui->spinBox_DoorY, doorTopBox);
+    layout->addWidget(doorBottomBox, 3, 4, 1, 1);
+    doorBottomBox->setMaximum(255);
+    QWidget::setTabOrder(doorTopBox, doorBottomBox);
 
     // add tile & sprite views
     layout = ui->tilesetTabLayout;
@@ -99,12 +109,6 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
 PropertiesWindow::~PropertiesWindow()
 {
     delete ui;
-    delete tileBox;
-    delete tilePalBox;
-    delete spriteBox;
-    delete spritePalBox;
-    delete tileView;
-    delete spritesView;
 }
 
 void PropertiesWindow::setMaxLevelWidth(int height) {

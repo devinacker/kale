@@ -39,7 +39,7 @@ private:
     header_t header;
     uint8_t  tileset;
 
-    HexSpinBox *tileBox, *tilePalBox, *spriteBox, *spritePalBox;
+    HexSpinBox *tileBox, *tilePalBox, *spriteBox, *spritePalBox, *doorTopBox, *doorBottomBox;
     TilesetView *tileView;
     SpritesView *spritesView;
 
