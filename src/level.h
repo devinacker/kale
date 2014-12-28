@@ -92,12 +92,15 @@ struct leveldata_t {
             delete *i;
     }
 
+    // has the extra map data patch been applied or not?
+    static bool hasExtra;
 };
 
 /*
   Functions for loading/saving level data
 */
 leveldata_t*  loadLevel(ROMFile& file, uint num);
+void          readExtraData(ROMFile& file, leveldata_t **levels);
 DataChunk     packLevel  (const leveldata_t *level, uint num);
 DataChunk     packSprites(const leveldata_t *level, uint num);
 void          saveLevel(ROMFile& file, const DataChunk &chunk, const leveldata_t *level, romaddr_t offset);

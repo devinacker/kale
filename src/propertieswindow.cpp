@@ -64,7 +64,8 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     layout->addWidget(spritesView, 0, 0, 1, 1);
 
     // set initial tab index
-    ui->tabWidget->setCurrentIndex(0);
+    ui->tabWidget_View->setCurrentIndex(0);
+    ui->tabWidget_Properties->setCurrentIndex(0);
 
     // add music names to other dropdown
     for (StringMap::const_iterator i = musicNames.begin(); i != musicNames.end(); i++) {
@@ -159,6 +160,9 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
 
     // set no return value
     ui->checkBox_NoReturn->setCheckState(level->noReturn ? Qt::Checked : Qt::Unchecked);
+
+    // disable extra tab for unpatched roms
+    ui->extraTab->setEnabled(leveldata_t::hasExtra);
 
     // set extra properties
     ui->comboBox_Wind->setCurrentIndex(level->extra.wind);

@@ -25,6 +25,8 @@
 
 #define MAP_DATA_SIZE 0xCDA
 
+bool leveldata_t::hasExtra = false;
+
 //Locations of chunk data in ROM (using CPU addressing.)
 //currently assumes table locations are constant in all versions,
 // may need to change this later to use version arrays like kdceditor
@@ -40,6 +42,7 @@ const romaddr_t ptrExitsL   = {0x12, 0x8f82};
 const romaddr_t ptrExitsH   = {0x12, 0x90cb};
 const uint      ptrExitsB   = 0x12;
 const romaddr_t bossExits   = {0x12, 0x9c4a};
+const romaddr_t extraData   = {0x12, 0x9e92};
 
 /*
   Load a level by number. Returns pointer to the level data as a struct.
@@ -93,7 +96,14 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
 
     if (level->extra.lock) {
         level->extra.lockPos = extra[3] + (extra[4] << 8);
+
+        level->extra.doorX = 0;
+        level->extra.doorY = 0;
+        level->extra.doorTop = 0;
+        level->extra.doorBottom = 0;
     } else {
+        level->extra.lockPos = 0;
+
         level->extra.doorX = extra[2];
         level->extra.doorY = extra[3];
         level->extra.doorTop = extra[4];
@@ -219,6 +229,55 @@ leveldata_t* loadLevel (ROMFile& file, uint num) {
 }
 
 /*
+ * Try to read extra map info from the original table if it exists,
+ * or mark that the extra map info patch has been applied to the ROM otherwise.
+ */
+void readExtraData(ROMFile &file, leveldata_t **levels) {
+    if (file.readByte(extraData) == 'K' &&
+        file.readByte(extraData+1) == 'A' &&
+        file.readByte(extraData+2) == 'L' &&
+        file.readByte(extraData+3) == 'E') {
+
+        leveldata_t::hasExtra = true;
+        return;
+    }
+
+    leveldata_t::hasExtra = false;
+    romaddr_t addr = extraData;
+    uint8_t bytes[6];
+
+    while (true) {
+        file.readBytes(addr, 6, bytes);
+        if (bytes[0] == 0xFF && bytes[1] == 0xFF) {
+            return;
+        }
+
+        int level = (bytes[0] + (bytes[1] << 8)) & 0x1FF;
+        if (level >= NUM_LEVELS) continue;
+
+        if (bytes[2] == 0xFE) {
+            levels[level]->extra.wind = bytes[3] + 1;
+
+        } else if (bytes[2] == 0xFF) {
+            levels[level]->extra.bossCount = (bytes[1] >> 1) + 1;
+            levels[level]->extra.lock = true;
+            levels[level]->extra.lockPos = bytes[4] + (bytes[5] << 8);
+
+        } else {
+            levels[level]->extra.bossCount = (bytes[1] >> 1) + 1;
+            levels[level]->extra.lock = false;
+            levels[level]->extra.doorX = bytes[2];
+            levels[level]->extra.doorY = bytes[3];
+            levels[level]->extra.doorTop = bytes[4];
+            levels[level]->extra.doorBottom = bytes[5];
+        }
+
+        addr.addr += 6;
+    }
+
+}
+
+/*
  * Returns a compressed data chunk based on level data (tile map only).
  * This is inserted into the big list of data chunks and then
  * later passed back to saveLevel in order to save it to the ROM
@@ -236,19 +295,20 @@ DataChunk packLevel(const leveldata_t *level, uint num) {
     uint numScreens = level->header.screensV * level->header.screensH;
 
     // save extra data
-    // (TODO: skip this if the extra info patch isn't active)
-    extra[0] = level->extra.wind;
-    extra[1] = level->extra.bossCount;
+    if (leveldata_t::hasExtra) {
+        extra[0] = level->extra.wind;
+        extra[1] = level->extra.bossCount;
 
-    if (level->extra.lock) {
-        extra[2] = 0xFF;
-        extra[3] = level->extra.lockPos & 0xFF;
-        extra[4] = level->extra.lockPos >> 8;
-    } else {
-        extra[2] = level->extra.doorX;
-        extra[3] = level->extra.doorY;
-        extra[4] = level->extra.doorTop;
-        extra[5] = level->extra.doorBottom;
+        if (level->extra.lock) {
+            extra[2] = 0xFF;
+            extra[3] = level->extra.lockPos & 0xFF;
+            extra[4] = level->extra.lockPos >> 8;
+        } else {
+            extra[2] = level->extra.doorX;
+            extra[3] = level->extra.doorY;
+            extra[4] = level->extra.doorTop;
+            extra[5] = level->extra.doorBottom;
+        }
     }
 
     // all current unique screens

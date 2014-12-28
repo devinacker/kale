@@ -407,6 +407,10 @@ void MainWindow::openFile() {
             for (uint i = 0; i < 7; i++)
                 loadMapClearData(rom, i, levels[i]->header.screensH);
 
+            // see if the original extra map data table exists
+            // and get information from it, if necessary
+            readExtraData(rom, levels);
+
             // show first level
             setLevel(0);
             setOpenFileActions(true);
