@@ -106,7 +106,8 @@ org $ad6f
 	lda   {MapDoorTop}
 	pha
 	ldx   {DoorX}
-	jsr   $ef90
+	ldy   {DoorY}
+	jsr   {GetTilePtr}
 	ldy   $10
 	lda   ($16),y
 	sta   {DoorTopTile}
@@ -117,7 +118,7 @@ org $ad6f
 	clc
 	adc   #$10
 	tay
-	jsr   $ef90
+	jsr   {GetTilePtr}
 	ldy   $10
 	lda   ($16),y
 	sta   {DoorBtmTile}

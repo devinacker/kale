@@ -110,6 +110,10 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
                      this, SLOT(applyChange()));
     QObject::connect(ui->comboBox_BossAct, SIGNAL(currentIndexChanged(int)),
                      this, SLOT(applyChange()));
+    QObject::connect(this->doorTopBox, SIGNAL(valueChanged(int)),
+                     this, SLOT(applyChange()));
+    QObject::connect(this->doorBottomBox, SIGNAL(valueChanged(int)),
+                     this, SLOT(applyChange()));
     QObject::connect(ui->spinBox_DoorX, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
     QObject::connect(ui->spinBox_DoorY, SIGNAL(valueChanged(int)),
