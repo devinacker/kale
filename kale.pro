@@ -38,7 +38,8 @@ SOURCES += \
     src/mapclear.cpp \
     src/mapcleareditwindow.cpp \
     src/tileseteditwindow.cpp \
-    src/paletteeditwindow.cpp
+    src/paletteeditwindow.cpp \
+    src/patches.cpp
 
 HEADERS  += \
     src/romfile.h \
@@ -62,7 +63,8 @@ HEADERS  += \
     src/mapclear.h \
     src/mapcleareditwindow.h \
     src/tileseteditwindow.h \
-    src/paletteeditwindow.h
+    src/paletteeditwindow.h \
+    src/patches.h
 
 FORMS += \
     src/mainwindow.ui \

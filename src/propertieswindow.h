@@ -37,6 +37,7 @@ private:
 
     leveldata_t *level;
     header_t header;
+    extradata_t extra;
     uint8_t  tileset;
 
     HexSpinBox *tileBox, *tilePalBox, *spriteBox, *spritePalBox, *doorTopBox, *doorBottomBox;

@@ -26,6 +26,7 @@ private:
     static const QColor infoColor, infoBackColor;
     static const QColor selectionColor, selectionBorder;
     static const QColor layerColor;
+    static const QColor extraColor;
     static const QFont infoFont;
     static const QFontMetrics infoFontMetrics;
 
@@ -48,7 +49,7 @@ private:
     uint animFrame;
     QTimer animTimer;
 
-    bool showBounds, seeThrough;
+    bool showBounds, seeThrough, showExtra;
     uint tileSize;
 
     // used to display map clear rects when non-null
@@ -94,6 +95,7 @@ public slots:
     void setShowBounds(bool);
     void setSeeThrough(bool);
     void setClearRects(const std::vector<QRect>*);
+    void setShowExtra(bool);
 
 signals:
     void doubleClicked();

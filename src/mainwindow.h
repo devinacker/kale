@@ -64,6 +64,9 @@ protected slots:
     // view stuff
     void setDoubleSize(bool);
 
+    // extras
+    void applyExtraDataPatch();
+
     // help menu
     void showHelp() const;
     void showAbout();

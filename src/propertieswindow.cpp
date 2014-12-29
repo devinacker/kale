@@ -106,6 +106,17 @@ PropertiesWindow::PropertiesWindow(QWidget *parent, const QPixmap *tileset) :
     QObject::connect(ui->spinBox_Width, SIGNAL(valueChanged(int)),
                      this, SLOT(applyChange()));
 
+    QObject::connect(ui->spinBox_BossCount, SIGNAL(valueChanged(int)),
+                     this, SLOT(applyChange()));
+    QObject::connect(ui->comboBox_BossAct, SIGNAL(currentIndexChanged(int)),
+                     this, SLOT(applyChange()));
+    QObject::connect(ui->spinBox_DoorX, SIGNAL(valueChanged(int)),
+                     this, SLOT(applyChange()));
+    QObject::connect(ui->spinBox_DoorY, SIGNAL(valueChanged(int)),
+                     this, SLOT(applyChange()));
+    QObject::connect(ui->spinBox_ScreenLock, SIGNAL(valueChanged(int)),
+                     this, SLOT(applyChange()));
+
     QObject::connect(this->doorTopBox, SIGNAL(valueChanged(int)),
                      this->doorTopView, SLOT(setSingleTile(int)));
     QObject::connect(this->doorBottomBox, SIGNAL(valueChanged(int)),
@@ -192,6 +203,7 @@ void PropertiesWindow::startEdit(leveldata_t *level) {
     this->level = level;
     // and original data, in case user cancels
     this->header  = level->header;
+    this->extra   = level->extra;
     this->tileset = level->tileset;
 
     this->exec();
@@ -224,6 +236,16 @@ void PropertiesWindow::applyChange() {
     level->header.screensV = ui->spinBox_Height->value();
     level->header.screensH = ui->spinBox_Width ->value();
 
+    // apply extra settings
+    level->extra.wind = ui->comboBox_Wind->currentIndex();
+    level->extra.bossCount = ui->spinBox_BossCount->value();
+    level->extra.lock = ui->comboBox_BossAct->currentIndex() > 0;
+    level->extra.doorX = ui->spinBox_DoorX->value();
+    level->extra.doorY = ui->spinBox_DoorY->value();
+    level->extra.doorTop = this->doorTopBox->value();
+    level->extra.doorBottom = this->doorBottomBox->value();
+    level->extra.lockPos = ui->spinBox_ScreenLock->value();
+
     emit changed();
 }
 
@@ -236,16 +258,6 @@ void PropertiesWindow::accept() {
     // apply return flag
     level->noReturn     = ui->checkBox_NoReturn->checkState() == Qt::Checked;
 
-    // apply extra settings
-    level->extra.wind = ui->comboBox_Wind->currentIndex();
-    level->extra.bossCount = ui->spinBox_BossCount->value();
-    level->extra.lock = ui->comboBox_BossAct->currentIndex() > 0;
-    level->extra.doorX = ui->spinBox_DoorX->value();
-    level->extra.doorY = ui->spinBox_DoorY->value();
-    level->extra.doorTop = this->doorTopBox->value();
-    level->extra.doorBottom = this->doorBottomBox->value();
-    level->extra.lockPos = ui->spinBox_ScreenLock->value();
-
     level->modified = true;
 
     QDialog::accept();
@@ -255,6 +267,7 @@ void PropertiesWindow::accept() {
 void PropertiesWindow::reject() {
     // return to original settings
     level->header  = this->header;
+    level->extra   = this->extra;
     level->tileset = this->tileset;
 
     emit changed();

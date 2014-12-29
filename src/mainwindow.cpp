@@ -29,6 +29,7 @@
 #include "coursewindow.h"
 #include "version.h"
 #include "stuff.h"
+#include "patches.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -191,6 +192,10 @@ void MainWindow::setupSignals() {
     QObject::connect(ui->action_See_Through_Breakable_Tiles, SIGNAL(toggled(bool)),
                      scene, SLOT(setSeeThrough(bool)));
 
+    // extra menu
+    QObject::connect(ui->action_Extra_Data_Patch, SIGNAL(triggered()),
+                     this, SLOT(applyExtraDataPatch()));
+
     // help menu
     QObject::connect(ui->action_Contents, SIGNAL(triggered()),
                      this, SLOT(showHelp()));
@@ -326,6 +331,9 @@ void MainWindow::setEditActions(bool val) {
 
     ui->action_Edit_Tilesets   ->setEnabled(val);
     ui->action_Edit_Palettes   ->setEnabled(val);
+    ui->action_Edit_Map_Clear_Data->setEnabled(val && level < 7);
+
+    ui->action_Extra_Data_Patch->setEnabled(val && !leveldata_t::hasExtra);
 }
 
 /*
@@ -751,7 +759,9 @@ void MainWindow::enableSelectExits(bool on) {
 void MainWindow::levelProperties() {
     if (currentLevel.header.screensH == 0) return;
 
+    scene->setShowExtra(true);
     propWindow->startEdit(&currentLevel);
+    scene->setShowExtra(false);
 }
 
 void MainWindow::editMapClearData() {
@@ -796,6 +806,18 @@ void MainWindow::setDoubleSize(bool on) {
 }
 
 /*
+ * Extra menu item slots
+ */
+void MainWindow::applyExtraDataPatch() {
+    int version = getGameVersion();
+
+    if (version > -1 && version < extraDataPatches.size()) {
+        leveldata_t::hasExtra |= applyPatch(this->rom, extraDataPatches[version]);
+        ui->action_Extra_Data_Patch->setDisabled(leveldata_t::hasExtra);
+    }
+}
+
+/*
   Help menu item slots
 */
 void MainWindow::showHelp() const {
@@ -803,7 +825,7 @@ void MainWindow::showHelp() const {
                                    + "/docs/index.htm"));
 }
 
-void MainWindow::showAbout() {
+void MainWindow::showAbout()  {
     QMessageBox::information(this,
                              tr("About"),
                              tr("%1 version %2\nby Devin Acker (Revenant)")

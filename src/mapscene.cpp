@@ -36,6 +36,8 @@ const QColor MapScene::selectionBorder(255, 192, 192, 255);
 
 const QColor MapScene::layerColor(0, 192, 224, 192);
 
+const QColor MapScene::extraColor(240, 0, 0, 255);
+
 /*
   Overridden constructor which inits some scene info
  */
@@ -51,7 +53,7 @@ MapScene::MapScene(QObject *parent, leveldata_t *currentLevel)
       level(currentLevel),
       tilesetPixmap(256*TILE_SIZE, TILE_SIZE),
       animFrame(0), animTimer(this),
-      showBounds(true), seeThrough(true),
+      showBounds(true), seeThrough(true), showExtra(false),
       clearRects(NULL)
 {
     /*
@@ -671,8 +673,17 @@ void MapScene::setSeeThrough(bool on) {
  * so that the cleared-out area surrounding the selected level can be shown.
  */
 void MapScene::setClearRects(const std::vector<QRect>* rects) {
-    this->clearRects = rects;
-    this->update();
+    clearRects = rects;
+    update();
+}
+
+/*
+ * Show/hide screen/door locking for minibosses (and anything else which can
+ * be edited from the "Extra Properties" tab)
+ */
+void MapScene::setShowExtra(bool on) {
+    showExtra = on;
+    update();
 }
 
 /*
@@ -728,6 +739,23 @@ void MapScene::drawBackground(QPainter *painter, const QRectF &rect) {
                 painter->drawPixmap(destRect, tilesetPixmap, srcRect);
                 painter->setOpacity(1.0);
             }
+        }
+    }
+
+    // draw screen lock (or door) boundaries when editing extra properties
+    if (showExtra && level->extra.bossCount) {
+        painter->setPen(QPen(extraColor, 4));
+
+        if (level->extra.lock) {
+            uint lp = level->extra.lockPos;
+
+            painter->drawLine(lp, rec.top(), lp, rec.bottom());
+            painter->drawLine(lp + 256, rec.top(), lp + 256, rec.bottom());
+        } else {
+            uint x = level->extra.doorX * TILE_SIZE;
+            uint y = level->extra.doorY * TILE_SIZE;
+
+            painter->drawRect(x, y, TILE_SIZE, 2 * TILE_SIZE);
         }
     }
 
