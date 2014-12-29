@@ -10,28 +10,48 @@ SpriteEditWindow::SpriteEditWindow(QWidget *parent, sprite_t *sprite) :
             | Qt::WindowTitleHint
             | Qt::WindowCloseButtonHint
             | Qt::MSWindowsFixedSizeDialogHint),
-    ui(new Ui::SpriteEditWindow)
+    ui(new Ui::SpriteEditWindow),
+    sprite(sprite)
 {
     ui->setupUi(this);
 
-    this->sprite = sprite;
-
-    for (StringMap::const_iterator i = spriteTypes.begin(); i != spriteTypes.end(); i++) {
-            ui->comboBox->addItem(i->second, i->first);
-    }
+    // is sprite->type in the list of known types or not?
+    // if not then include both known and unknown types
+    setIncludeAll(spriteTypes.count(sprite->type) == 0);
 
     QObject::connect(ui->comboBox, SIGNAL(currentIndexChanged(int)),
                      this, SLOT(setSpriteInfo(int)));
+    QObject::connect(ui->checkBox_ShowAll, SIGNAL(toggled(bool)),
+                     this, SLOT(setIncludeAll(bool)));
 
-    ui->comboBox->setCurrentIndex(std::distance(spriteTypes.begin(),
-                                                spriteTypes.find(sprite->type)));
+    if (includeAll) {
+        ui->comboBox->setCurrentIndex(sprite->type);
+    } else {
+        ui->comboBox->setCurrentIndex(std::distance(spriteTypes.begin(),
+                                                    spriteTypes.find(sprite->type)));
+    }
     setSpriteInfo(ui->comboBox->currentIndex());
-
 }
 
 SpriteEditWindow::~SpriteEditWindow()
 {
     delete ui;
+}
+
+void SpriteEditWindow::setIncludeAll(bool on) {
+    includeAll = on;
+    ui->checkBox_ShowAll->setChecked(on);
+
+    ui->comboBox->clear();
+    if (on) {
+        for (uint i = 0; i < 256; i++) {
+            ui->comboBox->addItem(spriteType(i), i);
+        }
+    } else {
+        for (StringMap::const_iterator i = spriteTypes.begin(); i != spriteTypes.end(); i++) {
+            ui->comboBox->addItem(i->second, i->first);
+        }
+    }
 }
 
 void SpriteEditWindow::setSpriteInfo(int index) {

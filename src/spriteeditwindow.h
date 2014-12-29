@@ -21,10 +21,12 @@ protected:
 
 private slots:
     void setSpriteInfo(int);
+    void setIncludeAll(bool);
 
 private:
     Ui::SpriteEditWindow *ui;
     sprite_t *sprite;
+    bool includeAll;
 };
 
 #endif // SPRITEEDITWINDOW_H
