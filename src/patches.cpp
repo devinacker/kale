@@ -100,8 +100,10 @@ bool applyPatch(ROMFile &file, QString path) {
     }
 
     QMessageBox::information(0, QWidget::tr("Apply Patch"),
-                          QWidget::tr("Patch applied successfully!").arg(file.fileName()),
+                          QWidget::tr("Patch applied successfully!"),
                           QMessageBox::Ok);
+    patch.close();
+    file.close();
 
     return true;
 }
