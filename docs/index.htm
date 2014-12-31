@@ -10,7 +10,7 @@
 <body>
 
 <h1>KALE - Kirby's Adventure Level Editor</h1>
-version 0.91
+version 0.92
 <p>
 
 <table><tr><td>
@@ -20,8 +20,7 @@ version 0.91
 </td></tr></table>
 <p>
 
-<a name="intro"></a>
-<h1>Introduction</h1>
+<h1 id="intro">Introduction</h1>
 <b>KALE</b> is a level editor for <i>Kirby's Adventure</i>.
 <p>
 KALE supports editing almost every part of the game's level data, including sprite and exit locations, tilesets, palettes, and overworld progression. The editor supports all North American, European, and Japanese ROMs. 
@@ -30,8 +29,7 @@ Source code is available on <a href="http://github.com/devinacker/kale" target="
 <p>
 <span class="smallLink">(<a href="#top">top</a>)</span>
 
-<a name="main"></a>
-<h1>The main window</h1>
+<h1 id="main">The main window</h1>
 <img class="center" src="images/mainwindow.png">
 <p>
 The main window is where all level editing takes place. When you load a ROM, level data is shown tile-for-tile exactly as it appears in game, with sprites and exits represented by red and blue squares, respectively. Each room is divided into screens (16 tiles wide by 12 tiles tall), which are numbered in the upper left corner. (These screen numbers are used to determine exit destinations; see the <a href="exits">exit editing</a> section for more info.)
@@ -52,8 +50,7 @@ The "Save Room" option in the Level menu will save all outstanding changes to th
 <p>
 <span class="smallLink">(<a href="#top">top</a>)</span>
 
-<a name="tiles"></a>
-<h1>Editing tiles</h1>
+<h1 id="tiles">Editing tiles</h1>
 <img class="right" src="images/tiles.png">
 <p>
 This is the window which appears when you double-click a selection of tiles or select the "Edit Tiles" menu option. All 256 tiles in the current tile set are displayed here, and mousing over a tile will display its behavior underneath. Clicking a tile will change all of the currently selected tiles in the room.
@@ -62,8 +59,7 @@ To select which tiles and graphics a room uses, open the <a href="#properties">p
 <p>
 <span class="smallLink">(<a href="#top">top</a>)</span>
 
-<a name="exits"></a>
-<h1>Editing exits</h1>
+<h1 id="exits">Editing exits</h1>
 <img class="right" src="images/exits.png">
 <p>
 This is the window which appears when you double-click an exit. 
@@ -79,8 +75,7 @@ Additionally, when exit type 1F ("next level") is selected, some additional info
 <p>
 <span class="smallLink">(<a href="#top">top</a>)</span>
 
-<a name="properties"></a>
-<h1>The properties window</h1>
+<h1 id="properties">The properties window</h1>
 <img src="images/properties.png">
 <p>
 The properties window allows you to customize some details of the current room.
@@ -97,10 +92,22 @@ The sprite box determines the graphics used for the current room's sprites. Spri
 <p>
 Both tile and sprite palettes can be modified using the <a href="#palette">palette editor</a>.
 <p>
+<h2>Extended properties</h2>
+<p>
+This tab allows you to define some additional properties which are not part of the original room data format. For these options to be available, you must first apply a small patch to your ROM by selecting "Apply Extra Room Data Patch..." from the Extra menu. This allows some additional info, which was originally restricted to specific rooms, to be used anywhere.
+<p>
+The properties currently available on this tab are:
+<ul><li>Wind, how fast it blows and in which direction</li>
+<li>A position to lock the screen at when facing a miniboss, or a position to generate a door when a miniboss is defeated</li>
+<li>The number of minibosses that appear</li></ul>
+<p>
+Note that when generating a door, the "open" door should be placed in the room itself, and the two tiles which initially cover it up are specified in this tab.
+<p>
+The extra room data patch has the additional benefit of allowing star switches (sprites 0xFE and 0xFF) to be placed anywhere in a room of any size, removing a limitation of the original game.
+<p>
 <span class="smallLink">(<a href="#top">top</a>)</span>
 
-<a name="mapclear"></a>
-<h1>Editing map clear data</h1>
+<h1 id="mapclear">Editing map clear data</h1>
 <img src="images/mapclear.png">
 <p>
 This window is available from the Level menu or the toolbar, and allows you to control which parts of overworlds are revealed when a level is cleared or a switch is pressed.
@@ -111,8 +118,7 @@ The currently selected regions can be previewed by looking at the main window; t
 <p>
 <span class="smallLink">(<a href="#top">top</a>)</span>
 
-<a name="tileset"></a>
-<h1>Editing tilesets</h1>
+<h1 id="tileset">Editing tilesets</h1>
 <img src="images/tileset.png">
 <p>
 The tileset editor allows you to assemble 16x16 tiles and select their behavior and color information. The "display properties" box works the same way as the corresponding controls on the room properties window; their values default to the ones used by the current room.
@@ -123,8 +129,7 @@ The "subtract this # when tiles are broken" box determines the number (in hexade
 <p>
 <span class="smallLink">(<a href="#top">top</a>)</span>
 
-<a name="palette"></a>
-<h1>Editing palettes</h1>
+<h1 id="palette">Editing palettes</h1>
 <img src="images/palette.png">
 <p>
 Finally, the palette editor allows you to edit both background tile and sprite palettes. Once again, this window's settings default to the palettes used by the current room.
@@ -135,9 +140,7 @@ To edit a color, double-click it and enter a valid NES color number (in hexadeci
 <p>
 <span class="smallLink">(<a href="#top">top</a>)</span>
 
-
-<a name="credits"></a>
-<h1>Credits</h1>
+<h1 id="credits">Credits</h1>
 The author would like to extend well-earned salami sandwiches to each of the following individuals and groups:
 <p>
 <ul>
@@ -154,22 +157,21 @@ The author would like to extend well-earned salami sandwiches to each of the fol
 <p>
 <span class="smallLink">(<a href="#top">top</a>)</span>
 
-<a name="changes"></a>
-<h1>What's new</h1>
+<h1 id="changes">What's new</h1>
 See <a href="../CHANGES.txt" target="_blank">the full changelog</a> for a complete version history.
 <p>
 <span class="smallLink">(<a href="#top">top</a>)</span>
 
-<a name="blahblah"></a>
-<h1>Remarks</h1>
-Well, here's my second Kirby editor. Will there be a third? I have no idea. I started this at the very beginning of 2014 (doing preliminary hacking work over Christmas break, actually), and as of version 0.90, it's now June. That's longer than I was expecting it to take to get to this point, but isn't that how it always goes? I mostly have my laziness to blame, of course, but at least it didn't take as long as the Dream Course editor did.
+<h1 id="blahblah">Remarks</h1>
+This program has now been in on-and-off development for at least a whole year now. The KALE repo on GitHub was created on New Year's Day 2014, consisting of a single experimental Lua script for FCEUX, and slowly grew from there. I didn't do as much with it in the later half of the year, due mostly to gaining a full-time job as a C++/Qt developer and other real-life nonsense, but I'm happy with the editor nonetheless.
 <p>
-Hopefully this will be a bit more popular than KDCEditor was (just like their respective games, I guess). Most of the stuff left to be done, aside from any bugs that might pop up later, is just UI-related convenience. I don't know what else I'll start working on in the meantime, or if any of it will be ROM hacking-related at all (aside from a translation or two I've had on the back burner for a while). Who knows?
+Now I'm writing this in the very first minutes of New Year's Eve, 364 days after the first commit, and getting ready to push what might be the final ROM hacking utility release of the year. It's been a bit exciting to see a few people actually putting it to use in that time; maybe Kirby hacking will finally become a Big Thing one of these days.
+<p>
+Some minor things are still indefinitely unfinished due mostly to lack of free time, but I hope you still find this pet project useful. Happy new year.
 <p>
 <span class="smallLink">(<a href="#top">top</a>)</span>
 
-<a name="contact"></a>
-<h1>Contact</h1>
+<h1 id="contact">Contact</h1>
 If you want to yell at me about something, here's how you can:
 <p>
 <b>Email</b>:<br>
@@ -177,8 +179,7 @@ If you want to yell at me about something, here's how you can:
 <p>
 <b>IRC</b>:<br>
 "devin"     on irc.badnik.net<br>
-"Revenant"  on irc.oftc.net<br>
-"Revenant`" on irc.synirc.net and irc.dal.net
+"Revenant`" on OFTC, SynIRC, DALnet, and EsperNet
 <p>
 <b>Forums</b>:<br>
 <a href="http://jul.rustedlogic.net/profile.php?id=504" target="_blank">http://jul.rustedlogic.net/profile.php?id=504</a><br>
@@ -187,6 +188,6 @@ If you want to yell at me about something, here's how you can:
 <span class="smallLink">(<a href="#top">top</a>)</span>
 
 <p>
-copyright 2014 Devin "Revenant" Acker - "life is but a dream"
+copyright 2014-2015 Devin "Revenant" Acker - "life is but a dream"
 </body>
 </html>

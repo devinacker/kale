@@ -1,3 +1,16 @@
+v0.92 [2014-12-30]
+- added "extra room info" patch which does three things (so far):
+    - allows wind effects to be used in any room
+    - allows miniboss encounters in any room
+    - allows star switches to be placed on any screen
+- added option to allow adding unknown/unused sprite types
+- added missing sfx/jingles to music selection (for the sake of completeness)
+- fixed exits from rotating tower rooms (0CD, 0D4, 0DF, 0E6) not working
+- fixed copy-pasting more than 4 screens wide/tall not working correctly
+  (due to old static buffer sizes from KDCEditor and because I am an idiot)
+- fixed rare instances of corruption where map data chunks would be saved at bad
+  locations if no other suitable free space was available
+
 v0.91 [2014-07-18]
 - added usage info to some sprites on the sprite editor
   (currently only for warp stars, cannons, and switches; maybe more in the future)

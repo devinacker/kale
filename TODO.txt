@@ -1,7 +1,7 @@
 for whenever:
 
-- generate correct exit location data for tower rooms
-  (and maybe be able to select which four rooms those are)
+- ability to select sprite type/subtype per ID
+- use hexadecimal coordinates within the current screen when showing coords on the status bar
 - replace "boss level" part of exit editor w/ new dialog and list
 - double click (instead of right-click) to insert sprites/exits?
 - generate undo/redo actions when moving sprites/exits
