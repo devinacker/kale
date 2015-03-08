@@ -192,7 +192,6 @@ SwitchFix:
 -
 	cmp   #12
 	bcc   +
-	sec
 	sbc   #12
 	pha
 	txa
