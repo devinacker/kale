@@ -1,7 +1,4 @@
-
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core widgets
 
 QMAKE_CFLAGS += -std=c99
 QMAKE_CXXFLAGS += -std=c++11
@@ -10,8 +7,25 @@ TARGET = kale
 TEMPLATE = app
 CONFIG += c++11
 
+CONFIG(debug, debug|release) {
+    DESTDIR = debug
+}
+CONFIG(release, debug|release) {
+    DESTDIR = release
+}
+
+# copy docs on build
+copydata.commands += \
+    $(COPY_DIR) $$PWD/docs $$DESTDIR
+
+first.depends = $(first) copydata
+export(first.depends)
+export(copydata.commands)
+QMAKE_EXTRA_TARGETS += first copydata
+
 # OS-specific metadata and stuff
 win32:RC_FILE = src/windows.rc
+macx:ICON = src/images/main.icns
 
 # build on OS X with xcode/clang and libc++
 macx:QMAKE_CXXFLAGS += -stdlib=libc++
