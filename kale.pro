@@ -21,8 +21,8 @@ RCC_DIR = $$OBJECTS_DIR
 # copy docs on build
 copydata.commands += \
     $(COPY_DIR) $$PWD/docs $$DESTDIR &&\
-    $(COPY_DIR) $$PWD/CHANGES.txt $$DESTDIR &&\
-    $(COPY_DIR) $$PWD/COPYING.txt $$DESTDIR
+    $(COPY_FILE) $$PWD/CHANGES.txt $$DESTDIR &&\
+    $(COPY_FILE) $$PWD/COPYING.txt $$DESTDIR
 
 first.depends = $(first) copydata
 export(first.depends)
