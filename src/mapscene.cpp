@@ -383,7 +383,7 @@ void MapScene::copyTiles(bool cut = false) {
     // if there is no selection, don't do anything
     if (selWidth == 0 || selLength == 0) return;
 
-    MapChange *edit;
+    MapChange *edit = NULL;
     if (cut) {
         edit = new MapChange(level, selX, selY, selWidth, selLength);
         edit->setText("cut");
@@ -401,7 +401,7 @@ void MapScene::copyTiles(bool cut = false) {
     copyWidth = selWidth;
     copyLength = selLength;
 
-    if (cut) {
+    if (cut && edit) {
         pushChange(edit);
     }
 
