@@ -13,7 +13,7 @@
 #define INFO_DESC   "Kirby's Adventure level editor\0"
 #define INFO_VERS   "0.92\0"
 #define INFO_VNUM   0, 92, 0, 0
-#define INFO_NAME   "kale.exe\0"
+#define INFO_NAME   "KALE\0"
 #define INFO_FILE   "kale.exe\0"
 
 #endif // VERSION_H
