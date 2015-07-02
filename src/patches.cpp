@@ -78,18 +78,18 @@ bool applyPatch(ROMFile &file, QString path) {
     char rle;
     while (true) {
         buf[0] = 0;
-        patch.read((char*)buf+1, 3);
+        if (patch.read((char*)buf+1, 3) < 0) goto error;
         addr = qFromBigEndian<uint32_t>(buf);
         if (addr == 0x454F46) break; // "EOF"
         file.seek(addr);
 
-        patch.read((char*)buf, 2);
+        if (patch.read((char*)buf, 2) < 0) goto error;
         size = qFromBigEndian<uint16_t>(buf);
 
         if (!size) { // RLE patch entry
-            patch.read((char*)buf, 2);
+            if (patch.read((char*)buf, 2) < 0) goto error;
             size = qFromBigEndian<uint16_t>(buf);
-            patch.read(&rle, 1);
+            if (patch.read(&rle, 1) < 0) goto error;
 
             for (uint i = 0; i < size; i++) {
                 file.write(&rle, 1);
@@ -106,4 +106,13 @@ bool applyPatch(ROMFile &file, QString path) {
     file.close();
 
     return true;
+
+error:
+    QMessageBox::critical(0, QWidget::tr("Error Applying Patch"),
+                          QWidget::tr("Applying patch failed. The patch appears to be corrupt."),
+                          QMessageBox::Ok);
+    patch.close();
+    file.close();
+
+    return false;
 }
