@@ -104,7 +104,7 @@ size_t ROMFile::readBytes(romaddr_t addr, uint size, void *buffer) {
 
     } else {
         this->seek(toOffset(addr));
-        return qMax(read((char*)buffer, size), 0);
+        return qMax((int)read((char*)buffer, size), 0);
     }
 }
 
