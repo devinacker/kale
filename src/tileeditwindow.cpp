@@ -31,7 +31,6 @@ TileEditWindow::TileEditWindow(QWidget *parent, leveldata_t *level, QRect rect, 
 TileEditWindow::~TileEditWindow()
 {
     delete ui;
-    delete view;
 }
 
 void TileEditWindow::setTileLabel(int tile) {

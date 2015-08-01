@@ -28,7 +28,6 @@ CourseWindow::CourseWindow(QWidget *parent) :
 CourseWindow::~CourseWindow()
 {
     delete ui;
-    delete spinBox;
 }
 
 int CourseWindow::select(uint level) {

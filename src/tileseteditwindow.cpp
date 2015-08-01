@@ -115,15 +115,6 @@ TilesetEditWindow::TilesetEditWindow(QWidget *parent) :
 TilesetEditWindow::~TilesetEditWindow()
 {
     delete ui;
-    delete tilesetBox;
-    delete tilePalBox;
-    delete subtractBox;
-    delete tileView;
-    delete tile8View;
-    delete tileBoxes[0];
-    delete tileBoxes[1];
-    delete tileBoxes[2];
-    delete tileBoxes[3];
 }
 
 void TilesetEditWindow::startEdit(const leveldata_t *level) {

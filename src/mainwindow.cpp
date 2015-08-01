@@ -109,14 +109,6 @@ MainWindow::~MainWindow()
 {
     saveSettings();
     delete ui;
-    delete levelLabel;
-    delete selectGroup;
-    delete scene;
-    delete settings;
-    delete propWindow;
-    delete clearWindow;
-    delete tilesetWindow;
-    delete paletteWindow;
 }
 
 void MainWindow::setupSignals() {

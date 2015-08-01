@@ -41,8 +41,6 @@ MapClearEditWindow::MapClearEditWindow(QWidget *parent) :
 MapClearEditWindow::~MapClearEditWindow()
 {
     delete ui;
-    delete model;
-    delete delegate;
 }
 
 int MapClearEditWindow::exec() {

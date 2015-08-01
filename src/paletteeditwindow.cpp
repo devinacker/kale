@@ -35,8 +35,6 @@ PaletteEditWindow::PaletteEditWindow(QWidget *parent) :
 PaletteEditWindow::~PaletteEditWindow()
 {
     delete ui;
-    delete model;
-    delete spinBox;
 }
 
 void PaletteEditWindow::startEdit(uint pal, uint sprPal) {

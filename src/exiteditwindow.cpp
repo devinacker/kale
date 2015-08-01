@@ -55,8 +55,6 @@ ExitEditWindow::ExitEditWindow(QWidget *parent, exit_t *exit) :
 ExitEditWindow::~ExitEditWindow()
 {
     delete ui;
-    delete spinBox_Level;
-    delete spinBox_BossLevel;
 }
 
 void ExitEditWindow::enableBossInfo(int index) {
